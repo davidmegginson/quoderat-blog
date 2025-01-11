@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>android &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/tag/android/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Mon, 17 Mar 2014 22:15:22 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>android &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>The mobile development challenge</title>
+		<link>https://quoderat.megginson.com/2013/06/23/the-mobile-development-challenge/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 23 Jun 2013 18:37:33 +0000</pubDate>
+				<category><![CDATA[Coding]]></category>
+		<category><![CDATA[Mobile]]></category>
+		<category><![CDATA[android]]></category>
+		<category><![CDATA[development]]></category>
+		<category><![CDATA[mobile]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=717</guid>
+
+					<description><![CDATA[A bit over a week ago, I set myself a challenge: develop a mobile app entirely using mobile devices. I must never touch the app with a laptop or desktop computer, for even the most-trivial reason.&#160; I don&#8217;t have a &#8230; <a href="https://quoderat.megginson.com/2013/06/23/the-mobile-development-challenge/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>A bit over a week ago, I set myself a challenge: develop a mobile app <em>entirely using mobile devices.</em> I must never touch the app with a laptop or desktop computer, for even the most-trivial reason.&nbsp; I don&#8217;t have a lot of free time in my life, so I&#8217;ve been able to tinker for only an hour here or there, but so far, I&#8217;ve had good success.&nbsp; </p>
+<p><strong>Tools</strong></p>
+<p>Here are the ingredients:</p>
+<ul>
+<li>the Android OS (Jellybean) running on a Nexus 7 tablet, with a small Bluetooth keyboard</li>
+<li>the <a href="https://play.google.com/store/apps/details?id=com.aide.ui">Android Integrated Development</a> (AIDE) app, which uses the Eclipse project format and includes a git client</li>
+<li><a href="https://github.com">GitHub</a>, for storing my source code</li>
+</ul>
+<p><strong>Progress and gotchas</strong></p>
+<p>I decided to create a kind of app that made sense as a mobile app (rather than a web site): a SQL query tool for databases on the device.&nbsp; I&#8217;m calling it &#8220;Sloop-SQL&#8221;, and while my early prototype isn&#8217;t in the Play Store yet, you can grab the Public Domain source from GitHub: <a href="https://github.com/davidmegginson/sloop-sql">https://github.com/davidmegginson/sloop-sql</a> and build your own copy with AIDE on your phone/tablet or Eclipse on your laptop/desktop.</p>
+<p>The process has worked surprisingly well so far. When I want to test on my phone (rather than my tablet), it takes only a few seconds to do a git pull on the phone, and build and run using AIDE.&nbsp; I also enjoy the simpler AIDE UI over the cluttered Eclipse one.&nbsp; </p>
+<p>I&#8217;ve run into only two significant annoyances:</p>
+<ol>
+<li>GitHub doesn&#8217;t have a mobile-friendly site, and their mobile app is severely limited, so it was a bit frustrating creating the repository.</li>
+<li>As of Jellybean, Android doesn&#8217;t let apps request permission to see other apps&#8217; logs, so AIDE can&#8217;t show me the app&#8217;s logcat (which includes crash reports from uncaught, top-level exceptions).</li>
+</ol>
+<p>I could work around the second problem by rooting my N7, but that&#8217;s also cheating. </p>
+<p>I hope that the Android team will consider adding the read-logs permission back in &#8212; perhaps backed by a special developer setting &#8212; so that Android can grow into a full software development environment, rather than being nothing more than a development target (like iOS).</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

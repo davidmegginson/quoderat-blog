@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: REST design question #1: identification	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Thu, 24 Feb 2005 02:23:41 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Mark		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-85</link>
+
+		<dc:creator><![CDATA[Mark]]></dc:creator>
+		<pubDate>Thu, 24 Feb 2005 02:23:41 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-85</guid>
+
+					<description><![CDATA[PROBLEM: You cannot remember the source of the data you&#039;ve just retrieved over an ambiguous duration or disposition through time.
+
+SOLUTION{?}: Attribute an external identifier (the information may not need to care where its from after, you do.) I would elect: www.example.org.airports.ca.cyow.xml
+or allow embedded paths: &#039;www.example.org/airports/ca/cyow.xml&#039;]]></description>
+			<content:encoded><![CDATA[<p>PROBLEM: You cannot remember the source of the data you&#8217;ve just retrieved over an ambiguous duration or disposition through time.</p>
+<p>SOLUTION{?}: Attribute an external identifier (the information may not need to care where its from after, you do.) I would elect: <a href="http://www.example.org.airports.ca.cyow.xml" rel="nofollow ugc">http://www.example.org.airports.ca.cyow.xml</a><br />
+or allow embedded paths: &#8216;www.example.org/airports/ca/cyow.xml&#8217;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Bo		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-81</link>
+
+		<dc:creator><![CDATA[Bo]]></dc:creator>
+		<pubDate>Tue, 22 Feb 2005 23:05:20 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-81</guid>
+
+					<description><![CDATA[Your intial assumptions are wrong. Identifiers, in the business sense that you mean, have nothing to do with URLs. Identifiers should be GUIDs and should never, ever change. URLs are not identifiers and trying to use them as such is silly. It&#039;s common in many systems for a single resource to be located by several URLs and it&#039;s also common for the business entity represented by a URL to change over time (eg http://www.weather.com/nyc results to a new business entity every 20 minutes). You&#039;re not downloading a resource when you GET a URL, you&#039;re downloading a representation of a resource. The representation of the resource should contain zero information about its URL (unless that makes sense for the RSS, for example RSS documents) but it should contain an identifer to prevent the need for conversational state.]]></description>
+			<content:encoded><![CDATA[<p>Your intial assumptions are wrong. Identifiers, in the business sense that you mean, have nothing to do with URLs. Identifiers should be GUIDs and should never, ever change. URLs are not identifiers and trying to use them as such is silly. It&#8217;s common in many systems for a single resource to be located by several URLs and it&#8217;s also common for the business entity represented by a URL to change over time (eg <a href="http://www.weather.com/nyc" rel="nofollow ugc">http://www.weather.com/nyc</a> results to a new business entity every 20 minutes). You&#8217;re not downloading a resource when you GET a URL, you&#8217;re downloading a representation of a resource. The representation of the resource should contain zero information about its URL (unless that makes sense for the RSS, for example RSS documents) but it should contain an identifer to prevent the need for conversational state.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Ryan Tomayko		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-80</link>
+
+		<dc:creator><![CDATA[Ryan Tomayko]]></dc:creator>
+		<pubDate>Tue, 22 Feb 2005 21:41:17 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-80</guid>
+
+					<description><![CDATA[It may be interesting to note that Atom accepted &lt;code&gt;&#060;link rel=&quot;self&quot;&#062;&lt;/code&gt; for identifying the location of a feed instead of &lt;code&gt;xml:base&lt;/code&gt;.
+
+See &lt;a href=&quot;http://www.intertwingly.net/wiki/pie/PaceFeedLink&quot; rel=&quot;nofollow&quot;&gt;PaceFeedLink&lt;/a&gt; and &lt;a href=&quot;http://www.google.com/search?hl=en&#038;lr=&#038;safe=off&#038;q=+site:www.imc.org+PaceFeedLink+xml:base&quot; rel=&quot;nofollow&quot;&gt;Discussion&lt;/a&gt; on atom-syntax mailing list.
+
+This is great stuff, btw, David.]]></description>
+			<content:encoded><![CDATA[<p>It may be interesting to note that Atom accepted <code>&lt;link rel="self"&gt;</code> for identifying the location of a feed instead of <code>xml:base</code>.</p>
+<p>See <a href="http://www.intertwingly.net/wiki/pie/PaceFeedLink" rel="nofollow">PaceFeedLink</a> and <a href="http://www.google.com/search?hl=en&amp;lr=&amp;safe=off&amp;q=+site:www.imc.org+PaceFeedLink+xml:base" rel="nofollow">Discussion</a> on atom-syntax mailing list.</p>
+<p>This is great stuff, btw, David.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Danny		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-78</link>
+
+		<dc:creator><![CDATA[Danny]]></dc:creator>
+		<pubDate>Thu, 17 Feb 2005 09:17:22 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-78</guid>
+
+					<description><![CDATA[I&#039;m not 100% sure about RESTafarians considering identification and location one and the same thing - surely resources are identified (via URIs), representations are located (via HTTP).
+The question of where the document identifier should go is spawned by your creating a new resource, albeit with the same representation as the original. A possible solution might be to wrap the content of the document to identify the resource which it represents, i.e.
+
+&#060;rdf:Description rdf:about=&quot;http://www.example.org/airports/ca/cyow.xml&quot;&#062;]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m not 100% sure about RESTafarians considering identification and location one and the same thing &#8211; surely resources are identified (via URIs), representations are located (via HTTP).<br />
+The question of where the document identifier should go is spawned by your creating a new resource, albeit with the same representation as the original. A possible solution might be to wrap the content of the document to identify the resource which it represents, i.e.</p>
+<p>&lt;rdf:Description rdf:about=&#8221;http://www.example.org/airports/ca/cyow.xml&#8221;&gt;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Sjoerd Visscher		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-77</link>
+
+		<dc:creator><![CDATA[Sjoerd Visscher]]></dc:creator>
+		<pubDate>Wed, 16 Feb 2005 11:14:19 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-77</guid>
+
+					<description><![CDATA[The default base URI of the root element when there is not xml:base attribute is the base URI of the document, i.e. the URI used to retrieve the document. So you&#039;re just asserting what is already the default.
+
+Even when you don&#039;t need a document identifier it seems good practice, as it makes your data location independent.]]></description>
+			<content:encoded><![CDATA[<p>The default base URI of the root element when there is not xml:base attribute is the base URI of the document, i.e. the URI used to retrieve the document. So you&#8217;re just asserting what is already the default.</p>
+<p>Even when you don&#8217;t need a document identifier it seems good practice, as it makes your data location independent.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mark Baker		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-76</link>
+
+		<dc:creator><![CDATA[Mark Baker]]></dc:creator>
+		<pubDate>Wed, 16 Feb 2005 05:10:06 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-76</guid>
+
+					<description><![CDATA[xml:base has, on occasion, the same value as the URL from which the document was retrieved, but that&#039;s accidental.  Consider that it makes no sense to have a base URI that ends with anything other than &quot;/&quot;, which most URLs do not do.  rdf:about is the closest thing to what David&#039;s looking for AFAICT.
+
+Full response forthcoming on my weblog ...]]></description>
+			<content:encoded><![CDATA[<p>xml:base has, on occasion, the same value as the URL from which the document was retrieved, but that&#8217;s accidental.  Consider that it makes no sense to have a base URI that ends with anything other than &#8220;/&#8221;, which most URLs do not do.  rdf:about is the closest thing to what David&#8217;s looking for AFAICT.</p>
+<p>Full response forthcoming on my weblog &#8230;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Sjoerd Visscher		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-75</link>
+
+		<dc:creator><![CDATA[Sjoerd Visscher]]></dc:creator>
+		<pubDate>Tue, 15 Feb 2005 17:57:19 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-75</guid>
+
+					<description><![CDATA[xml:base isn&#039;t just a cute hack to set the base URI. From the very beginning of HTML [1] the base href is meant to provide the original URI of the document, to be used when the document is read out of context. XInclude extends this practice by providing with xml:base the url of the originating document.
+
+So I&#039;d expect that xml:base would usually contain a resolvable URI of a document, and not a URI like http://www.example.org/airports/ca/
+
+[1] http://w3future.com/weblog/2005/01/13.xml#stillBugsInTheImplementationOfHtmlHyperlinks]]></description>
+			<content:encoded><![CDATA[<p>xml:base isn&#8217;t just a cute hack to set the base URI. From the very beginning of HTML [1] the base href is meant to provide the original URI of the document, to be used when the document is read out of context. XInclude extends this practice by providing with xml:base the url of the originating document.</p>
+<p>So I&#8217;d expect that xml:base would usually contain a resolvable URI of a document, and not a URI like <a href="http://www.example.org/airports/ca/" rel="nofollow ugc">http://www.example.org/airports/ca/</a></p>
+<p>[1] <a href="http://w3future.com/weblog/2005/01/13.xml#stillBugsInTheImplementationOfHtmlHyperlinks" rel="nofollow ugc">http://w3future.com/weblog/2005/01/13.xml#stillBugsInTheImplementationOfHtmlHyperlinks</a></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Norman Walsh		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-74</link>
+
+		<dc:creator><![CDATA[Norman Walsh]]></dc:creator>
+		<pubDate>Tue, 15 Feb 2005 16:37:40 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-74</guid>
+
+					<description><![CDATA[Resolving cyyz.xml against a base URI of http://www.example.org/airports/ca/cyow.xml will result in http://www.example.org/airports/ca/cyyz.xml. That looks like a reasonable use of xml:base to me, though it seems like a slight extension. I&#039;d have expected the xml:base to be http://www.example.org/airports/ca/ (the trailing slash is significant) but maybe that&#039;s just narrow-minded of me.]]></description>
+			<content:encoded><![CDATA[<p>Resolving cyyz.xml against a base URI of <a href="http://www.example.org/airports/ca/cyow.xml" rel="nofollow ugc">http://www.example.org/airports/ca/cyow.xml</a> will result in <a href="http://www.example.org/airports/ca/cyyz.xml" rel="nofollow ugc">http://www.example.org/airports/ca/cyyz.xml</a>. That looks like a reasonable use of xml:base to me, though it seems like a slight extension. I&#8217;d have expected the xml:base to be <a href="http://www.example.org/airports/ca/" rel="nofollow ugc">http://www.example.org/airports/ca/</a> (the trailing slash is significant) but maybe that&#8217;s just narrow-minded of me.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Bob DuCharme		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-73</link>
+
+		<dc:creator><![CDATA[Bob DuCharme]]></dc:creator>
+		<pubDate>Tue, 15 Feb 2005 14:13:32 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-73</guid>
+
+					<description><![CDATA[XLink processors? What XLink processors?]]></description>
+			<content:encoded><![CDATA[<p>XLink processors? What XLink processors?</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Sjoerd Visscher		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-72</link>
+
+		<dc:creator><![CDATA[Sjoerd Visscher]]></dc:creator>
+		<pubDate>Tue, 15 Feb 2005 09:32:03 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-72</guid>
+
+					<description><![CDATA[I think this is exactly what xml:base is for. IMHO tools (like browsers) that allow XML documents to be retrieved from the web and stored somewhere else should automatically add an xml:base attribute.
+
+XLink tools are either not xml:base aware or they will resolve the links correctly. I don&#039;t think you&#039;ll ever get cyow.xmlcyyz.xml.
+
+Applications that are compatible with DOM Level 3 or with the XML Information Set should give you the base URI for every node.]]></description>
+			<content:encoded><![CDATA[<p>I think this is exactly what xml:base is for. IMHO tools (like browsers) that allow XML documents to be retrieved from the web and stored somewhere else should automatically add an xml:base attribute.</p>
+<p>XLink tools are either not xml:base aware or they will resolve the links correctly. I don&#8217;t think you&#8217;ll ever get cyow.xmlcyyz.xml.</p>
+<p>Applications that are compatible with DOM Level 3 or with the XML Information Set should give you the base URI for every node.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: AsynchronousBlog		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-71</link>
+
+		<dc:creator><![CDATA[AsynchronousBlog]]></dc:creator>
+		<pubDate>Tue, 15 Feb 2005 04:28:17 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-71</guid>
+
+					<description><![CDATA[&lt;strong&gt;Re: REST Design Questions&lt;/strong&gt;
+Dave Megginson has posted some questions about his understanding of REST. First off, please do look beyond the &quot;there are only 4 [HTTP] verbs&quot; aspect of REST. &quot;Hypermedia as the engine of application state&quot; is hand-in-hand with Constrained Interfac...]]></description>
+			<content:encoded><![CDATA[<p><strong>Re: REST Design Questions</strong><br />
+Dave Megginson has posted some questions about his understanding of REST. First off, please do look beyond the &#8220;there are only 4 [HTTP] verbs&#8221; aspect of REST. &#8220;Hypermedia as the engine of application state&#8221; is hand-in-hand with Constrained Interfac&#8230;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #3: meaning of a link		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-79</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #3: meaning of a link]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-79</guid>
+
+					<description><![CDATA[[...] is the third in a series of REST design questions.  The first design question asked about &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/&quot; rel=&quot;nofollow&quot;&gt;keeping track of location and identification infor [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] is the third in a series of REST design questions.  The first design question asked about <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/" rel="nofollow">keeping track of location and identification infor [&#8230;]</a></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #4: how much normalization?		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-82</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #4: how much normalization?]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-82</guid>
+
+					<description><![CDATA[[...] still knows where to look for more complete information.  It can also use the link URLs as &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/&quot; rel=&quot;nofollow&quot;&gt;identifiers&lt;/a&gt; for disambiguating people, compani [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] still knows where to look for more complete information.  It can also use the link URLs as <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/" rel="nofollow">identifiers</a> for disambiguating people, compani [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-83</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-83</guid>
+
+					<description><![CDATA[[...] ons has danced around the edge of the content problem dipping in its toes with issues like &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/&quot; rel=&quot;nofollow&quot;&gt;identification&lt;/a&gt; and linking, but now that the d [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ons has danced around the edge of the content problem dipping in its toes with issues like <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/" rel="nofollow">identification</a> and linking, but now that the d [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)		</title>
+		<link>https://quoderat.megginson.com/2005/02/14/rest-design-question-1-identification/#comment-84</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=19#comment-84</guid>
+
+					<description><![CDATA[[...] ons has danced around the edge of the content problem dipping in its toes with issues like &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/&quot; rel=&quot;nofollow&quot;&gt;identification&lt;/a&gt; and linking, but now that the d [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ons has danced around the edge of the content problem dipping in its toes with issues like <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/14/rest-design-question-1-identification/" rel="nofollow">identification</a> and linking, but now that the d [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

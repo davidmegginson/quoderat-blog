@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: xml:id	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/08/xmlid/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/08/xmlid/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Thu, 10 Feb 2005 19:16:23 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Anne		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-47</link>
+
+		<dc:creator><![CDATA[Anne]]></dc:creator>
+		<pubDate>Thu, 10 Feb 2005 19:16:23 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-47</guid>
+
+					<description><![CDATA[Ah, thanks to &quot;barenames&quot; I found it. The official specification calls them &lt;a href=&quot;http://www.w3.org/TR/2003/REC-xptr-framework-20030325/#shorthand&quot; rel=&quot;nofollow&quot;&gt;shorthand pointers&lt;/a&gt; nowadays. Unfortunately the specification does not provide a simple example along with it.]]></description>
+			<content:encoded><![CDATA[<p>Ah, thanks to &#8220;barenames&#8221; I found it. The official specification calls them <a href="http://www.w3.org/TR/2003/REC-xptr-framework-20030325/#shorthand" rel="nofollow">shorthand pointers</a> nowadays. Unfortunately the specification does not provide a simple example along with it.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-46</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 10 Feb 2005 19:12:12 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-46</guid>
+
+					<description><![CDATA[Anne and Oleg are both correct, as far as I understand the specs.  In the general case, like in the toolbar of a browser, it&#039;s not safe to assume that a bare name in a fragment identifier has any special meaning, like Oleg says; however, the XLink spec states that the fragment identifier in the value of the xlink:href attribute is an XPointer, and the XPointer spec states that a bare name is an ID (and explicitly mentions the application/xml MIME type), like Anne says.
+
+I didn&#039;t explicitly mention XLink and XPointer in the original posting, so here&#039;s an example that (I think) is correct, assuming that the &lt;em&gt;xlink&lt;/em&gt; prefix is already declared on an ancestor element:
+
+&lt;code&gt;&#060;employee-ref xlink:type=&quot;simple&quot; xlink:href=&quot;http://www.example.org/employees.xml#dmeg123&quot;/&#062;&lt;/code&gt;
+
+I&#039;ll be glad when we don&#039;t have to include &lt;em&gt;xlink:type&lt;/em&gt; any more.  Anne: &lt;a href=&quot;http://www.w3.org/TR/WD-xptr#bare-names&quot; rel=&quot;nofollow&quot;&gt;here&#039;s&lt;/a&gt; where the XPointer spec defines bare names.]]></description>
+			<content:encoded><![CDATA[<p>Anne and Oleg are both correct, as far as I understand the specs.  In the general case, like in the toolbar of a browser, it&#8217;s not safe to assume that a bare name in a fragment identifier has any special meaning, like Oleg says; however, the XLink spec states that the fragment identifier in the value of the xlink:href attribute is an XPointer, and the XPointer spec states that a bare name is an ID (and explicitly mentions the application/xml MIME type), like Anne says.</p>
+<p>I didn&#8217;t explicitly mention XLink and XPointer in the original posting, so here&#8217;s an example that (I think) is correct, assuming that the <em>xlink</em> prefix is already declared on an ancestor element:</p>
+<p><code>&lt;employee-ref xlink:type="simple" xlink:href="http://www.example.org/employees.xml#dmeg123"/&gt;</code></p>
+<p>I&#8217;ll be glad when we don&#8217;t have to include <em>xlink:type</em> any more.  Anne: <a href="http://www.w3.org/TR/WD-xptr#bare-names" rel="nofollow">here&#8217;s</a> where the XPointer spec defines bare names.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Anne		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-45</link>
+
+		<dc:creator><![CDATA[Anne]]></dc:creator>
+		<pubDate>Thu, 10 Feb 2005 18:57:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-45</guid>
+
+					<description><![CDATA[I always thought that #foo was short for XPointer #xpointer(id(&#039;foo&#039;)) in XML context. However, I can not find it in the XPointer specification.]]></description>
+			<content:encoded><![CDATA[<p>I always thought that #foo was short for XPointer #xpointer(id(&#8216;foo&#8217;)) in XML context. However, I can not find it in the XPointer specification.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Oleg Tkachenko		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-44</link>
+
+		<dc:creator><![CDATA[Oleg Tkachenko]]></dc:creator>
+		<pubDate>Thu, 10 Feb 2005 18:32:51 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-44</guid>
+
+					<description><![CDATA[Oops, I meant
+&#060;xi:include href=&quot;http://www.example.org/employees.xml&quot; xpointer=&quot;dmeg123&quot;/&#062;]]></description>
+			<content:encoded><![CDATA[<p>Oops, I meant<br />
+&lt;xi:include href=&#8221;http://www.example.org/employees.xml&#8221; xpointer=&#8221;dmeg123&#8243;/&gt;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Oleg Tkachenko		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-43</link>
+
+		<dc:creator><![CDATA[Oleg Tkachenko]]></dc:creator>
+		<pubDate>Thu, 10 Feb 2005 18:30:33 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-43</guid>
+
+					<description><![CDATA[A bit of nitpicking: I&#039;d say http://www.example.org/employees.xml#dmeg123 is bad example here.
+As per &quot;Architecture of the World Wide Web&quot;:
+&quot;When the media type assigned to representation data is &quot;application/xml&quot;, there are no semantics defined for fragment identifiers, and authors should not make use of fragment identifiers in such data. The same is true if the assigned media type has the suffix &quot;+xml&quot; (defined in &quot;XML Media Types&quot; [RFC3023]), and the data format specification does not specify fragment identifier semantics. In short, just knowing that content is XML does not provide information about fragment identifier semantics.
+
+Many people assume that the fragment identifier #abc, when referring to XML data, identifies the element in the document with the ID &quot;abc&quot;. However, there is no normative support for this assumption. A revision of RFC 3023 is expected to address this.&quot;
+
+In XInclude it would be
+]]></description>
+			<content:encoded><![CDATA[<p>A bit of nitpicking: I&#8217;d say <a href="http://www.example.org/employees.xml#dmeg123" rel="nofollow ugc">http://www.example.org/employees.xml#dmeg123</a> is bad example here.<br />
+As per &#8220;Architecture of the World Wide Web&#8221;:<br />
+&#8220;When the media type assigned to representation data is &#8220;application/xml&#8221;, there are no semantics defined for fragment identifiers, and authors should not make use of fragment identifiers in such data. The same is true if the assigned media type has the suffix &#8220;+xml&#8221; (defined in &#8220;XML Media Types&#8221; [RFC3023]), and the data format specification does not specify fragment identifier semantics. In short, just knowing that content is XML does not provide information about fragment identifier semantics.</p>
+<p>Many people assume that the fragment identifier #abc, when referring to XML data, identifies the element in the document with the ID &#8220;abc&#8221;. However, there is no normative support for this assumption. A revision of RFC 3023 is expected to address this.&#8221;</p>
+<p>In XInclude it would be</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; Rumours of xml:id trouble in the W3C		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-48</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; Rumours of xml:id trouble in the W3C]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-48</guid>
+
+					<description><![CDATA[[...] xml:id specification (released only days ago as a Candidate Recommendation, as I mentioned &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/08/xmlid/&quot; rel=&quot;nofollow&quot;&gt;here&lt;/a&gt;) &#8211; there is some other specification (not named) that has a bug, mo [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] xml:id specification (released only days ago as a Candidate Recommendation, as I mentioned <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/08/xmlid/" rel="nofollow">here</a>) &#8211; there is some other specification (not named) that has a bug, mo [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/xmlid/#comment-49</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #5: the &#8220;C&#8221; word (content)]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=13#comment-49</guid>
+
+					<description><![CDATA[[...] ml:id can allow links to point to fragments of XML documents easily, making it possible to &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/08/xmlid/&quot; rel=&quot;nofollow&quot;&gt;refer to embedded resources&lt;/a&gt;. 	 &#060;data&#062;   &#060;person xml:id=&quot;dpm&quot;&#062;     &#060;na [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ml:id can allow links to point to fragments of XML documents easily, making it possible to <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/08/xmlid/" rel="nofollow">refer to embedded resources</a>. 	 &lt;data&gt;   &lt;person xml:id=&#8221;dpm&#8221;&gt;     &lt;na [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

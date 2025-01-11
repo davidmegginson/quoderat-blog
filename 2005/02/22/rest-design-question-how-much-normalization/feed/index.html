@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: REST design question #4: how much normalization?	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/22/rest-design-question-how-much-normalization/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/22/rest-design-question-how-much-normalization/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Thu, 24 Feb 2005 11:24:11 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Danny		</title>
+		<link>https://quoderat.megginson.com/2005/02/22/rest-design-question-how-much-normalization/#comment-101</link>
+
+		<dc:creator><![CDATA[Danny]]></dc:creator>
+		<pubDate>Thu, 24 Feb 2005 11:24:11 +0000</pubDate>
+		<guid isPermaLink="false">/?p=24#comment-101</guid>
+
+					<description><![CDATA[I think the RDF version does force you to be more explicit about the nature of the label (and really it uses the URI as an identifier, there&#039;s not inbuilt notion of linking), but that doesn&#039;t make it much more messy:
+
+&#060;director rdf:about=&quot;http://www.example.org/objects/014002.xml/487847.xml&quot; xxx:name=&quot;John Hughes&quot; /&#062;
+
+There is quite a bit of information being conveyed here, the direct statements being:
+
+487847.xml rdf:type yyy:director
+487847.xml xxx:name &quot;John Hughes&quot;
+
+but also by inference:
+487847.xml rdf:type rdfs:Resource
+yyy:director rdf:type rdfs:Class
+xxx:name rdf:type rdf:Property
+etc.]]></description>
+			<content:encoded><![CDATA[<p>I think the RDF version does force you to be more explicit about the nature of the label (and really it uses the URI as an identifier, there&#8217;s not inbuilt notion of linking), but that doesn&#8217;t make it much more messy:</p>
+<p>&lt;director rdf:about=&#8221;http://www.example.org/objects/014002.xml/487847.xml&#8221; xxx:name=&#8221;John Hughes&#8221; /&gt;</p>
+<p>There is quite a bit of information being conveyed here, the direct statements being:</p>
+<p>487847.xml rdf:type yyy:director<br />
+487847.xml xxx:name &#8220;John Hughes&#8221;</p>
+<p>but also by inference:<br />
+487847.xml rdf:type rdfs:Resource<br />
+yyy:director rdf:type rdfs:Class<br />
+xxx:name rdf:type rdf:Property<br />
+etc.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: AsynchronousBlog		</title>
+		<link>https://quoderat.megginson.com/2005/02/22/rest-design-question-how-much-normalization/#comment-100</link>
+
+		<dc:creator><![CDATA[AsynchronousBlog]]></dc:creator>
+		<pubDate>Wed, 23 Feb 2005 18:53:19 +0000</pubDate>
+		<guid isPermaLink="false">/?p=24#comment-100</guid>
+
+					<description><![CDATA[&lt;strong&gt;RE: REST Design Question #4, part 2&lt;/strong&gt;
+In response to Dave&#039;s update... Responding to the RDF bits, I guess RDF/XML makes what you&#039;re trying to express a bit more verbose, but it&#039;s hard to call it difficult. It&#039;d end up being... &#060;!-- ... --&#062; &#060;director rdf:about=&quot;12345.html&quot;&#038;gt...]]></description>
+			<content:encoded><![CDATA[<p><strong>RE: REST Design Question #4, part 2</strong><br />
+In response to Dave&#8217;s update&#8230; Responding to the RDF bits, I guess RDF/XML makes what you&#8217;re trying to express a bit more verbose, but it&#8217;s hard to call it difficult. It&#8217;d end up being&#8230; &lt;!&#8211; &#8230; &#8211;&gt; &lt;director rdf:about=&#8221;12345.html&#8221;&#038;gt&#8230;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: AsynchronousBlog		</title>
+		<link>https://quoderat.megginson.com/2005/02/22/rest-design-question-how-much-normalization/#comment-99</link>
+
+		<dc:creator><![CDATA[AsynchronousBlog]]></dc:creator>
+		<pubDate>Wed, 23 Feb 2005 14:51:03 +0000</pubDate>
+		<guid isPermaLink="false">/?p=24#comment-99</guid>
+
+					<description><![CDATA[&lt;strong&gt;RE: REST Design Question #4&lt;/strong&gt;
+Dave Megginson&#039;s 4th REST Design Question ... I don&#039;t see how this is REST design question in particular. I think questions and concerns like this are why a number of RESTafarians are also RDF-heads. I think the ultimate response to...]]></description>
+			<content:encoded><![CDATA[<p><strong>RE: REST Design Question #4</strong><br />
+Dave Megginson&#8217;s 4th REST Design Question &#8230; I don&#8217;t see how this is REST design question in particular. I think questions and concerns like this are why a number of RESTafarians are also RDF-heads. I think the ultimate response to&#8230;</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

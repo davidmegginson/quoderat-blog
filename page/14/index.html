@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+Quoderat | Open information and technology. | Page 14</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://quoderat.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=163'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9xdW9kZXJhdC5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14988159"
+		+ "&time=1736549151";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Feed" href="../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Comments Feed" href="../../comments/feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/wp-content/mu-plugins/jetpack-plugin/sun/modules/infinite-scroll/infinity.css?m=1685115060i&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-6-1' href='https://s2.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/coblocks-style.css?m=1681832297i&cssminify=yes' type='text/css' media='all' />
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s1.wp.com/_static/??-eJyFT8sOwjAM+yFKtsMmLohv6UpWuqUPLamm/T1BAgRCGjfbsi0b1mJcToJJQG4YkaHUAWRVYVMVBspu5qNjPsA/L8tGaNbicvwJxGoKVR8Sw4Ja6hV6UNcH3Qt5zEanWAk5fREzkg3LXnRCKdbNTw5cE8R8raT7QxpDCoKG3ZKJXrfelx61l3hu+1PXtl3TN9MdtNJzCA==&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s2.wp.com/wp-content/themes/h4/global.css?m=1420737423i&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14988159","postID":"0","siteURL":"https:\/\/quoderat.megginson.com","xhrURL":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://quoderat.megginson.com/page/14/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/sun\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/wp-content/js/rlt-proxy.js?m=1720530689i'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://quoderatech.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel='shortlink' href='https://wp.me/10T6v' />
+
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Quoderat" />
+<meta property="og:description" content="Open information and technology." />
+<meta property="og:url" content="https://quoderat.megginson.com/" />
+<meta property="og:site_name" content="Quoderat" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:creator" content="@david_megginson" />
+<meta name="twitter:site" content="@david_megginson" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s2.wp.com/i/webclip.png" />
+<link rel='openid.server' href='../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../osd.xml" title="Quoderat" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Quoderat" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Open information and technology." /><meta name="description" content="Open information and technology." />
+</head>
+
+<body class="home blog paged paged-14 customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<h1 id="site-title">
+					<span>
+						<a href="../../index.html" title="Quoderat" rel="home">Quoderat</a>
+					</span>
+				</h1>
+				<div id="site-description">Open information and technology.</div>
+
+									<a class="home-link" href="../../index.html" title="Quoderat" rel="home">
+						<img src="../../wp-content/uploads/2010/08/cropped-manuscript-scribe12-172v-1604.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+	<div id="nav-above" class="navigation">
+		<div class="nav-previous"><a href="../15/index.html" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+		<div class="nav-next"><a href="../13/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+	</div><!-- #nav-above -->
+
+
+
+	
+			<div id="post-163" class="post-163 post type-post status-publish format-standard hentry category-rest tag-architecture tag-tips tag-web">
+			<h2 class="entry-title"><a href="../../2007/02/15/rest-the-quick-pitch/index.html" rel="bookmark">REST: the quick&nbsp;pitch</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/02/15/rest-the-quick-pitch/index.html" title="9:47 pm" rel="bookmark"><span class="entry-date">February 15, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Now that <a href="http://jcp.org/en/jsr/detail?id=311">the Java world is noticing REST</a>, the low-pain alternative to <a href="http://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a> standards like <a href="http://en.wikipedia.org/wiki/List_of_Web_service_specifications">WS-*</a>, people are starting to <a href="http://www.cafeaulait.org/oldnews/news2007February14.html">blog about it</a> again.  Gossip with other IT folks also tells me that people&#8217;s customers are actually <em>asking</em> for <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> explicitly (rather than having to be convinced to use it).  With that in mind, I&#8217;m going to try to explain what I think matters about REST, and what you can safely ignore.</p>
+<div id="elevator">
+<h2>The elevator pitch</h2>
+<blockquote><p>
+With REST, every piece of information has its own URL.
+</p></blockquote>
+<p>If you just do that and nothing else, you&#8217;ve got 90%+ of REST&#8217;s benefits right off the bat.  You can <strong>cache</strong>, <strong>bookmark</strong>, <strong>index</strong>, and <strong>link</strong> your information into a giant, well, web.  It works &mdash; you&#8217;re reading this, after all, aren&#8217;t you?  Betcha got here by following a link somewhere, not by parsing a WSDL to find what ports and services were available.</p>
+</div>
+<div id="best">
+<h2>Real best practices</h2>
+<p>If you want to do REST well (rather than just doing REST), you can spend 2-3 minutes after your elevator ride learning a few very simple best practices to get most of the remaining 10% of REST&#8217;s benefits:</p>
+<p><strong>Use HTTP POST to <em>update</em> information.</strong>  Here&#8217;s the simple rule: GET to read, POST to change. That way, no body deletes or modifies something by accident when trying to read it.</p>
+<p><strong>Make sure your information contains links (URLs) for retrieving related information.</strong>  That&#8217;s how search engines index the web, and it can work for other kinds of information (XML, PDF, JSON, etc.) as well.  Once you have one thing, you can follow links to find just about everything else (assuming that you understand the file format).</p>
+<p><strong>Try to avoid request parameters (the stuff after the question mark).</strong>  It&#8217;s much better to have a URL like</p>
+<blockquote><p>
+<code>http://www.example.org/systems/foo/components/bar/</code>
+</p></blockquote>
+<p>than</p>
+<blockquote><p>
+<code>http://www.example.org/get-component.asp?system=foo&amp;component=bar</code>
+</p></blockquote>
+<p>Search engines are more likely to index it, you&#8217;re less likely to end up with duplicates in caches and hash tables (e.g. if someone lists the request parameters in a different order), URLs won&#8217;t change when you refactor your code or switch to a different web framework, and you can always switch to static, pregenerated files for efficiency if you want to.  <strong>Exceptions:</strong> searches (<code>http://www.example.org/search?q=foo</code>) and paging through long lists (<code>http://www.example.org/systems/?start=1000&amp;max=200</code>) &mdash; in both of these cases, it&#8217;s really OK to use the request parameters instead of tying yourself in a knot trying to avoid them.</p>
+<p><strong>Avoid scripting-language file extensions.</strong> If your URLs end with &#8220;.php&#8221;, &#8220;.asp&#8221;, &#8220;.jsp&#8221;, &#8220;.pl&#8221;, &#8220;.py&#8221;, etc., (a) you&#8217;re telling every cracker in the world what exploits to use against you, and (b) the URLs will change when your code does.  Use Apache <a href="http://en.wikipedia.org/wiki/Rewrite_engine">mod-rewrite</a> or equivalent to make your resources look like static files, ending in &#8220;.html&#8221;, &#8220;.xml&#8221;, etc.</p>
+<p><strong>Avoid cookies and URL rewriting.</strong> Well, maybe you can&#8217;t, but the idea of REST is that the state is in the thing the server has returned to you (an HTML or XML file, for example) rather than in a session object on the server.  This can be tricky with authentication, so you won&#8217;t always pull it off, but HTTP authentication (which doesn&#8217;t require cookies or session IDs tacked onto URLs) will work surprisingly often.  Do what you have to do to make your app work, but don&#8217;t use sessions just because your web framework tells you to (they also tie up a lot of resources on your server).</p>
+</div>
+<div id="speculative">
+<h2>Speculative stuff (skip this)</h2>
+<p>The strength of REST is that it&#8217;s been proven through almost two decades of use on the Web, but not everything that some of the hard-core RESTafarians (and others) try to make us do has been part of that trial.  Stop reading now if you just want to go ahead and do something useful with REST.  Really, stop!  Some of this stuff is moderately interesting, but it won&#8217;t really help you, and will probably just mess up your project, or at least make it slower and more expensive.</p>
+<p>[maybe some day] <strong>Use HTTP PUT to create a resource, and DELETE to get rid of one.</strong> These sound like great ideas, and they add a nice symmetry to REST, but they&#8217;re just not used enough for us to know if they&#8217;d really work on a web scale, and firewalls often block them anyway.  In real-life REST applications, rightly or wrongly, people just use POST for creation, modification, <em>and</em> deletion.  It&#8217;s not as elegant, but we know it works.</p>
+<p>[don&#8217;t bother] <strong>Use URLs to point to <em>resources</em> rather than <em>representations</em>.</strong> Huh?  OK, a <em>resource</em> is a sort-of <a href="http://en.wikipedia.org/wiki/Platonic_idealism">Platonic ideal</a> of something (e.g. &#8220;a picture of Cairo&#8221;), while a <em>representation</em> is the resource&#8217;s physical manifestation (e.g. &#8220;an 800&#215;600 24-bit RGB picture of Cairo in JPEG format&#8221;).  Yes, as you&#8217;d guess, it was people with or working on Ph.D.&#8217;s who thought of that.  For a long time, the W3C pushed the idea of URLs like &#8220;<code>http://www.example.org/pics/cairo</code>&#8221; instead of &#8220;<code>http://www.example.org/pics/cairo.jpg</code>&#8220;, under the assumption that web clients and servers could use <a href="http://en.wikipedia.org/wiki/Content_negotiation">content negotiation</a> to decide on the best format to deliver.  I guess that people hated the fact that HTTP was so simple, and wanted to find ways to make it more complicated.  Fortunately, there were very few nibbles, and this is not a common practice on the web.  Screw Plato!  Viva materialism!  Go ahead and put &#8220;.xml&#8221; at the end of your URLs.</p>
+<p>[blech] <strong>Use <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Name">URN</a>s instead of URLs.</strong>  I think even the hard-core URN lovers have given up on this now &mdash; it&#8217;s precisely the kind of excessive abstraction that sent people running screaming from WS-* into REST&#8217;s arms in the first place (see also &#8220;content negotiation&#8221;, above), and it would be a shame to scare them away from REST as well.  URLs are fine, as long as you make some minore efforts to ensure that they <a href="http://www.w3.org/Provider/Style/URI">don&#8217;t change</a>.</p>
+<p>[n/a] <strong>REST needs security, reliable messaging, etc.</strong> The RESTafarians don&#8217;t say this, but I&#8217;m worried that the JSR (the Java REST group) will.  We already have a secure version of HTTP <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">TLS/SSL</a>, and it works fine for hundreds of thousands or millions of web sites.  Reliable messaging can be handled fine in the application layer, since everyone&#8217;s requirements are different anyway, or maybe we want a reliable-messaging spec for HTTP in general.  In either case, please don&#8217;t pile this stuff on REST.</p>
+<p>So to sum up, just give every piece of information its own URL, then have fun.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/rest/index.html" rel="category tag">REST</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/architecture/index.html" rel="tag">architecture</a>, <a href="../../tag/tips/index.html" rel="tag">tips</a>, <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/02/15/rest-the-quick-pitch/index.html#comments">19 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-163 -->
+
+		
+	
+
+	
+			<div id="post-162" class="post-162 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2007/01/28/thinking-about-structure/index.html" rel="bookmark">Thinking about structure</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/28/thinking-about-structure/index.html" title="10:47 pm" rel="bookmark"><span class="entry-date">January 28, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Douglas Crockford left an excellent comment on my recent posting <a href="http://www.megginson.com/blogs/quoderat/2007/01/03/all-markup-ends-up-looking-like-xml/">All markup ends up looking like XML</a>, which he later made into its own blog posting, <a href="http://blog.360.yahoo.com/blog-TBPekxc1dLNy5DOloPfzVvFIVOWMB0li?p=632">For the trees</a>. I agree with his reworking of the structure: given the data that I provided, the JSON, LISP, <em>and</em> XML markup all could have been simpler.</p>
+<p>If he&#8217;s right about the examples, though, he&#8217;s wrong about two things.  First, my posting doesn&#8217;t represent any kind of softening to JSON among its opponents in the XML community, simply because I&#8217;ve never been one of those opponents.  Second, I spend at least one order of magnitude more time working with SQL and programming languages (<em>not</em> processing XML) than I do with XML, so if anything, my perspective on XML would likely be tainted by them rather than the other way around.  Instead, I think the examples were complicated because I built for tomorrow instead of today.</p>
+<div id="tomorrow">
+<h2>Tomorrow</h2>
+<p>So what might tomorrow look like for an application dealing with names?  Consider, for example, this XML markup, moving gender out of the element/property name as Doug suggests, and eliminating the other attributes (since they don&#8217;t add much to the discussion):</p>
+<blockquote>
+<pre>
+&lt;names&gt;
+  &lt;name gender="male"&gt;&lt;surname&gt;Saddam&lt;/surname&gt; Hussein&lt;/name&gt;
+  &lt;name gender="female"&gt;Susan B. &lt;surname&gt;Anthony&lt;/surname&gt;&lt;/name&gt;
+  &lt;name gender="male"&gt;Al &lt;surname&gt;Unser&lt;/surname&gt; Jr.&lt;/name&gt;<br />
+  &lt;name gender="male"&gt;Don Alonso &lt;surname&gt;Quixote&lt;/surname&gt;
+    de la Mancha&lt;/name&gt;
+&lt;/names&gt;
+</pre>
+</blockquote>
+<p>It&#8217;s surprisingly messy breaking each name down into a simple property list.  If we tried the approach Doug used for my simpler examples, we&#8217;d end up with this (note that this is a list of names, not of people):</p>
+<blockquote>
+<pre>
+{"names": [
+    {"gender": "male", "given-name": "Hussein", "surname": "Saddam"},
+    {"gender": "female", "given-name": "Susan B.", "surname": "Anthony"},
+    {"gender": "male", "given-name": "Al Jr.", "surname": "Unser"}
+    {"gender": "male", "given-name": "Don Alonso Quixote de la",
+      "surname": "Mancha"}
+]}
+</pre>
+</blockquote>
+<p>This list needs a bit of patching.  First, if we reconstruct the names as strings, we don&#8217;t want to end up with &#8220;Hussein Saddam&#8221; instead of &#8220;Saddam Hussein&#8221;, so we&#8217;ll have to add a property specifying whether the surname comes first or last:</p>
+<blockquote>
+<pre>
+{"gender": "male", "given-name": "Hussein", "surname": "Saddam",
+  "surname-after-given-name": false}
+</pre>
+</blockquote>
+<p>Great &mdash; that&#8217;s all we need to fix that, and now we know to print &#8220;Saddam Hussein&#8221;.  Now, let&#8217;s look at Susan &mdash; there&#8217;s no problem recreating the string &#8220;Susan B. Anthony&#8221; from these properties, but we probably should rename the property <var>given-name</var> to <var>given-names</var>, just to avoid confusion:</p>
+<blockquote>
+<pre>
+{"gender": "female", "given-names": "Susan B.", "surname": "Anthony",
+  "surname-after-given-names": true}
+</pre>
+</blockquote>
+<p>Al Unser Jr. is a bit trickier, because there was no obvious place to put the &#8220;Jr.&#8221;.  Strictly speaking, it&#8217;s neither a given name nor a surname, so for now, let&#8217;s just call it a postfix (although that assumes a physical position that might not apply to all languages):</p>
+<blockquote>
+<pre>
+{"gender": "male", "given-names": "Al", "surname": "Unser",
+  "surname-after-given-names": true, "postfix": "Jr."}
+</pre>
+</blockquote>
+<p>Don Quixote, however, forces us to reconsider some of our assumptions, because &#8220;Don&#8221; is not a given name but an honorific.  Assuming, however, that we don&#8217;t care whether it&#8217;s a name or an honorific, lets just call it <var>prefix</var> for now, to go with <var>postfix</var>:</p>
+<blockquote>
+<pre>
+{"gender": "male", "prefix": "Don", given-name: "Alonso",
+  "surname": "Quixote", "surname-after-given-names": true,
+  "postfix": "de la Mancha"}
+</pre>
+</blockquote>
+<p>Finally, just to throw a wrench into things, let&#8217;s assume that our list might contain things other than names, so that we need to add a <var>type</var> property:</p>
+<blockquote>
+<pre>
+{"type": "name", "gender": "male", "prefix": "Don",
+  "given-name": "Alonso", "surname": "Quixote",
+  "surname-after-given-names": true, "postfix": "de la Mancha"}
+</pre>
+</blockquote>
+<p>Granted, that sort-of works, but it&#8217;s really not very nice, and it&#8217;s extremely brittle: there are names with extra words in the middle (such as &#8220;de&#8221;) that are properly not part of the given name or surnames, for example. Then again, why overtag it?  Perhaps we don&#8217;t need to know what&#8217;s a given name or honorific, as long as we can distinguish the surname. <ins>One possibility is simple to break it down to four properties:</ins></p>
+<blockquote>
+<pre><ins>
+{"type": "name", "gender": "male", "presurname": "Don Alonso",
+  "surname": "Quixote", "postsurname": "de la Mancha"}
+</ins></pre>
+</blockquote>
+<p><ins>While I&#8217;m a big fan of Agile development in principle, however, I&#8217;ve worked on enough broken legacy systems to leave a little wiggle room for future requirements, like, say, a need to isolate the primary given name for a mail merge or index, even if we&#8217;re not going to isolate it right now.</ins>  Fortunately JSON, like XML, has a natural ability to represent ordered information much more elegantly &mdash; let&#8217;s make the name into an ordered array:</p>
+<blockquote>
+<pre>
+{"type": "name", "gender": "male",
+  "value:" ["Don Alonso", {"type": "surname", "value": "Quixote}, "de la Mancha"]}
+</pre>
+</blockquote>
+<p><ins>This approach provides us with almost limitless flexibility (for example, if we start isolating honorifics, we can deal with a language where the honorific comes at the end of the name with no extra trouble), and is just as simple and easy to read as the much less flexible <var>presurname</var>/<var>postsurname</var> approach.  Building for today is great, but if you have a choice between two roughly equivalent approaches where one provides an easy future upgrade path and the other doesn&#8217;t, which is the best choice?  JSON is new enough that the JSON community hasn&#8217;t yet had to deal much with the life cycle of information &mdash; once enough people have built apps relying on specific JSON formats, it will be very, <em>very</em> hard to make any changes: v.2 of any popular data format generally results in enormous costs (in money and goodwill), and v.3 rarely happens.</ins></p>
+<p>Some people might prefer to shorten the above example a bit by following a simple convention: the first member of each array is a label, the second is a map with properties describing the rest of the array, and the remainder is the value, where order may be significant:</p>
+<blockquote>
+<pre>
+["name", {"gender": "male"},
+  "Don Alonso", ["surname", {}, "Quixote"],  "de la Mancha"]
+</pre>
+</blockquote>
+<p>That is trickier to dump straight into a data structure or database table, but it&#8217;s a much more natural way to represent the information, and a lot easier to read on the screen.  And just in case it doesn&#8217;t look look familiar, compare:</p>
+<blockquote>
+<pre>
+&lt;name gender="male"&gt;Don Alonso &lt;surname&gt;Quixote&lt;/surname&gt;
+  de la Mancha&lt;/name&gt;
+</pre>
+</blockquote>
+<p>If your information isn&#8217;t this complicated, JSON, XML, or LISP can be simple, as Doug pointed out <ins>&mdash; the XML could just as easily be</ins></p>
+<blockquote>
+<pre><ins>
+&lt;name gender="male" presurname="Don Alonso" surname="Quixote"
+  postsurname="de la Mancha"/&gt;
+</ins></pre>
+</blockquote>
+<p><ins>The reason you don&#8217;t see that much is not because XML people never thought of it &mdash; read the xml-dev archives from ten years ago to read megabytes of discussion &mdash; but because it kept breaking in production systems as soon as the customer (or users) thought of a new requirement.</ins> When the information gets complicated, as I pointed out, there&#8217;s a bit of a tendency for all markup to end up looking like XML<ins>; when the information is simple, of course, XML can just as easily look like JSON or LISP</ins>.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2007/01/28/thinking-about-structure/index.html#comments">10 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-162 -->
+
+		
+	
+
+	
+			<div id="post-161" class="post-161 post type-post status-publish format-standard hentry tag-business">
+			<h2 class="entry-title"><a href="../../2007/01/25/tech-botox/index.html" rel="bookmark">Tech botox</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/25/tech-botox/index.html" title="8:47 am" rel="bookmark"><span class="entry-date">January 25, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><img alt="plastic surgery picture" src="https://i0.wp.com/www.megginson.com/img/plastic-surgery.jpg" align="right" /></p>
+<p>Elliotte Harold is absolutely right when he suggests that <a href="http://cafe.elharo.com/java/why-java-doesnt-need-properties-it-already-has-them/">people should leave Java alone</a>.  New technologies compete on features; mature technologies compete on deployment.</p>
+<p>Let&#8217;s value our mature, middle-aged technologies for what they are, rather than destroying their dignity by pumping them full of features botox and slashing them up with plastic-surgery keyword changes to try to trick people into thinking they&#8217;re young and immature.</p>
+<p>With some minor lapses, the W3C has done well avoiding the temptation to improve XML to death.  XML is still, in every way that matters, the same as it was when the initial recommendation came out nine years ago &mdash; warts and all &mdash; and that&#8217;s why it&#8217;s so widely used.  Sun should pay very close attention, since Java&#8217;s around the same age, and is deployed in many of the same places.  The people who actually decide to use Java and XML to run organizations and do real work (not bloggers, but architects, project managers and even sometimes CTOs) appreciate them for precisely that stability and dependability.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/business/index.html" rel="tag">business</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/25/tech-botox/index.html#comments">4 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-161 -->
+
+		
+	
+
+	
+			<div id="post-160" class="post-160 post type-post status-publish format-standard hentry tag-web">
+			<h2 class="entry-title"><a href="../../2007/01/24/msie-mia/index.html" rel="bookmark">MSIE MIA?</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/24/msie-mia/index.html" title="9:44 am" rel="bookmark"><span class="entry-date">January 24, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>What happened to <a href="http://en.wikipedia.org/wiki/Internet_Explorer">Windows Internet Explorer</a>?</p>
+<div id="browser">
+<h3>Browser stats</h3>
+<p>I just took a peek at my server stats for <a href="http://www.megginson.com/">megginson.com</a> (I&#8217;m pretty lazy about following them) and had a huge surprise.  I&#8217;ve adjusted these to exclude &#8220;Unknown&#8221;, which I assume are mostly spiders and blog aggregators:</p>
+<ul>
+<li>MS Internet Explorer: 42%</li>
+<li>Firefox: 37%</li>
+<li>Mozilla: 7%</li>
+<li>NetNewsWire: 6%</li>
+<li>Opera: 3%</li>
+<li>Safari: 2%</li>
+<li>Netscape: 1%</li>
+</ul>
+<p>I cut off the list at 1%.  MSIE is still in the lead, but it has suffered a huge drop from a few months ago &mdash; could it be that my ISP&#8217;s version of <a href="http://en.wikipedia.org/wiki/Awstats">AWStats</a> doesn&#8217;t recognize MSIE 7 and is lumping it with &#8220;Unknown&#8221;, or is there a chance that the movement to Firefox is becoming a stampede?  The last time I remember changes this fast was when MSIE was crushing Netscape in the late 1990s.</p>
+</div>
+<div id="os">
+<h3>Operating system stats</h3>
+<p>My site is not primarily a Linux or Open-Source software site, and it does not seem to attract a disproportionately high share of non-Windows users.  Again, excluding &#8220;Unknown&#8221;, here is the OS distribution for visitors:</p>
+<ul>
+<li>MS Windows: 74%</li>
+<li>Linux: 15%</li>
+<li>MacOS: 12%</li>
+</ul>
+<p>Linux might be a touch high here, but megginson.com is no SlashDot.  Something&#8217;s going on &mdash; either Firefox is doing to MSIE what MSIE did to Netscape (knocking off a stale browser sitting smugly on its assumed monopoly), or, as I mentioned, it&#8217;s just a reporting glitch.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/24/msie-mia/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-160 -->
+
+		
+	
+
+	
+			<div id="post-159" class="post-159 post type-post status-publish format-standard hentry tag-conferences tag-tips tag-web">
+			<h2 class="entry-title"><a href="../../2007/01/19/xml-2006-pickled-and-preserved/index.html" rel="bookmark">XML 2006 pickled and&nbsp;preserved</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/19/xml-2006-pickled-and-preserved/index.html" title="3:45 pm" rel="bookmark"><span class="entry-date">January 19, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>The <a href="http://2006.xmlconference.org/">XML 2006 site</a> is now pickled and preserved for long-term storage.  Almost all of the presenters got their papers or slides in for the proceedings, if not on time, at least <em>in</em> time.  Unfortunately, if you want to see a paper or slides from one of the few who didn&#8217;t send us anything, you&#8217;ll now have to pester them directly.</p>
+<div id="recipe">
+<h2>Recipe for pickling a web site</h2>
+<p>The original site was a hand-rolled <a href="http://en.wikipedia.org/wiki/LAMP_%28software_bundle%29">LAMP</a> implementation, but it was designed from the start to be amenable to a static copy.  To pickle it, I started by doing a recursive slurp of the live site using <a href="http://en.wikipedia.org/wiki/Wget">wget</a> (with the <code>-m</code> option) &#8212; that generated permanent, static HTML copies of the dynamic, database-driven pages on the site.  At that point, I had an almost, but not <em>quite</em> perfect static copy of the site, because there were two things that wget missed:</p>
+<ol>
+<li>Images referred to only in CSS stylesheets (such as the banner).</li>
+<li>CSS stylesheets referred to by other CSS stylesheets.</li>
+</ol>
+<p>It took only a few minutes to add all of that by hand, and the site was ready to go.</p>
+</div>
+<div id="reasons">
+<h2>Why it worked</h2>
+<p>This will be old news to a lot of people reading, but a few simple advance steps (during site design) made later static preservation easy.  Here&#8217;s what I did:</p>
+<ul>
+<li>Every page has its own URL, period, end of discussion.  No AJAX, no POST.</li>
+<li>Every page (or at least, every page that we want to archive) is reachable, directly or indirectly, from the home page.</li>
+<li>Script names are not shown to the public, so there are no URLs ending in &#8220;php&#8221; (hint: exposed script extensions like &#8220;php&#8221;, &#8220;asp&#8221;, or &#8220;jsp&#8221; are signs of gross incompetence in web design).
+<li>
+<li>No web pages rely on exposed GET request parameters: for example, the URLs looked like <code>/programme/presentations/123.html</code>, not <code>/programme/presentation?code=123</code>, or even worse, <code>/show-presentation.php?code=123</code>.</li>
+</ul>
+<p>And that&#8217;s it.  Of course, if the site had included live forms, I would have had to remove those as well (and any links to them), but that wouldn&#8217;t have been much extra work.</p>
+<p>On a final note, while the live site was hosted on an Apache server (the &#8220;A&#8221; in &#8220;LAMP&#8221;), the pickled site is hosted on a Microsoft IIS server.  It made no difference at all &#8212; that&#8217;s the way Web standards are supposed to work.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/conferences/index.html" rel="tag">conferences</a>, <a href="../../tag/tips/index.html" rel="tag">tips</a>, <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/19/xml-2006-pickled-and-preserved/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-159 -->
+
+		
+	
+
+	
+			<div id="post-158" class="post-158 post type-post status-publish format-standard hentry tag-conferences">
+			<h2 class="entry-title"><a href="../../2007/01/11/jon-bosaks-xml-2006-keynote-now-online/index.html" rel="bookmark">Jon Bosak&#039;s XML 2006 keynote now&nbsp;online</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/11/jon-bosaks-xml-2006-keynote-now-online/index.html" title="2:14 pm" rel="bookmark"><span class="entry-date">January 11, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>I&#8217;m happy to announce that <a href="http://2006.xmlconference.org/proceedings/162/presentation.html">Jon Bosak&#8217;s closing keynote</a> from the <a href="http://2006.xmlconference.org/">XML 2006 conference</a> is now online.  We don&#8217;t require keynote speakers to contribute text to the proceedings, but we received a large number of requests for Jon&#8217;s talk and he kindly obliged.</p>
+<p>In case anyone reading this doesn&#8217;t know, Jon chaired the original W3C group that developed XML.  In his closing, post-dinner keynote, Jon gives a playful account of the controversies, strange behaviour, and general atmosphere leading up to the first public XML draft released in 1996.  He then goes on to contrast the pioneer attitude (my phrase) of the implementors at the time with the vendor-dependence of most XML users today.  It&#8217;s well worth a read, if you weren&#8217;t able to be there to listen &#8212; just remember to picture Jon saying everything with a slight smile at the edges of his mouth.</p>
+<p>By the way, most of the other conference presentations also have slides and/or text available now.  See the <a href="http://2006.xmlconference.org/programme/">programme</a> for links to papers or slides in the proceedings.  And if you&#8217;re one of the few delinquent authors who has not yet sent in your proceedings, please get them to me as soon as possible.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/conferences/index.html" rel="tag">conferences</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><span>Comments Off<span class="screen-reader-text"> on Jon Bosak&#039;s XML 2006 keynote now&nbsp;online</span></span></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-158 -->
+
+		
+	
+
+	
+			<div id="post-157" class="post-157 post type-post status-publish format-standard hentry tag-business tag-web">
+			<h2 class="entry-title"><a href="../../2007/01/09/whos-searching-for-xml/index.html" rel="bookmark">Who&#039;s searching for &quot;XML&quot;?</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/09/whos-searching-for-xml/index.html" title="1:38 pm" rel="bookmark"><span class="entry-date">January 9, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Here are the top ten locations as of January 9 2007, according to <a href="http://google.com/trends?q=xml&amp;ctab=0&amp;geo=all&amp;date=all">Google trends</a>:</p>
+<ol>
+<li>Pune, India</li>
+<li>Bangalore, India</li>
+<li>Hyderabad, India</li>
+<li>Chennai, India</li>
+<li>Mumbai, India</li>
+<li>Singapore, Singapore</li>
+<li>Delhi, India</li>
+<li>Tokyo, Japan</li>
+<li>Chiyoda, Japan</li>
+<li>Hong Kong, Hong Kong</li>
+</ol>
+<p>Note that the top cities are all Asian.  A <a href="http://google.com/trends?q=j2ee&amp;ctab=0&amp;geo=all&amp;date=all">search for &#8220;J2EE&#8221;</a> returns almost exactly the same list.  Now, compare the list for a representative new, trendy technology, <a href="http://google.com/trends?q=ruby+on+rails&amp;ctab=0&amp;geo=all&amp;date=all">Ruby on Rails</a>:</p>
+<ol>
+<li>San Francisco, CA, USA</li>
+<li>Austin, TX, USA</li>
+<li>Pleasanton, CA, USA</li>
+<li>Seattle, WA, USA</li>
+<li>Salt Lake City, UT, USA</li>
+<li>Portland, OR, USA</li>
+<li>Vancouver, Canada</li>
+<li>Denver, CO, USA</li>
+<li>Oslo, Norway</li>
+<li>Auckland, New Zealand</li>
+</ol>
+<p>This time, it&#8217;s 80% North American and 0% Asian, and more interestingly, all of those cities are <em>west</em> of the Mississippi.  The easiest interpretation of this very small sample is that the Asian companies concentrate on established technologies that they can be paid for using, while the North American west coast companies are disproportionately interested in new, unproven technologies.  What about a new technology that&#8217;s designed to work with an older one?  Could we expect a mix of Asian and North American west coast cities?  Here are the <a href="http://google.com/trends?q=xquery&amp;ctab=0&amp;geo=all&amp;date=all">top cities searching for &#8220;XQuery&#8221;</a>:</p>
+<ol>
+<li>San Jose, CA, USA</li>
+<li>Bangalore, India</li>
+<li>Singapore, Singapore</li>
+<li>Chennai, India</li>
+<li>San Francisco, CA, USA</li>
+<li>Mumbai, India</li>
+<li>Pleasanton, CA, USA</li>
+<li>San Diego, CA, USA</li>
+<li>Washington, DC, USA</li>
+<li>Hong Kong, Hong Kong</li>
+</ol>
+<p>The implication of this very unscientific survey is that you can determine the relative maturity of a technology by looking at the weighting of search origins between western North America and eastern Asia.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/business/index.html" rel="tag">business</a>, <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/09/whos-searching-for-xml/index.html#comments">3 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-157 -->
+
+		
+	
+
+	
+			<div id="post-156" class="post-156 post type-post status-publish format-standard hentry tag-conferences">
+			<h2 class="entry-title"><a href="../../2007/01/09/sneak-peek-at-xml-2007/index.html" rel="bookmark">Sneak peek at XML&nbsp;2007</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/09/sneak-peek-at-xml-2007/index.html" title="10:48 am" rel="bookmark"><span class="entry-date">January 9, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>With <a href="http://2006.xmlconference.org">XML 2006</a> barely over, we&#8217;re already deep into planning XML 2007.  Here&#8217;s your first peek at what we have planned.</p>
+<div id="venue">
+<h2>Time and place</h2>
+<p>XML 2007 is confirmed for <strong>Monday 3 December to Wednesday 5 December 2007</strong>.  We&#8217;ll be meeting in Boston again, but at a different hotel, the <a href="http://marriott.com/property/propertypage/BOSCO">Boston Marriott Copley Place</a> (located at the opposite end of the Prudential Centre from the 2006 hotel).</p>
+<p>A lot of people asked about moving the conference to early November.  I think that&#8217;s an excellent idea, but unfortunately, we have to book the hotel over a year in advance, so we cannot make that change until 2008.</p>
+</div>
+<div id="program">
+<h2>Program</h2>
+<p>There will be a few significant program changes for 2007.  First, there will be <strong>no tutorial day</strong> before XML 2007 begins.  Attendance for the tutorial day has been declining for several years, and with the obvious lack of interest from our attendees, it no longer makes sense for IDEAlliance to offer it.  However, we will try to incorporate more beginner-level and tutorial-style presentations into the main program.</p>
+<p>The vendor pecha-kucha went very well in 2006, but for 2007, we&#8217;re considering replacing it with a <strong>standards pecha-kucha</strong>, either in the evening or during one of the days.  Each standards committee will have 20 slides (at 20 seconds each) to give us a quick update on what they&#8217;ve been doing over 2007 and what to expect in 2008 &#8212; that will make it possible for attendees to learn a bit about a lot of standards in a relatively short time.</p>
+<p>The publishing and web tracks at XML 2006 were extremely well attended (often overflowing out of the space), and the enterprise track put up a more modest but still respectable showing.  However, with only a couple of exceptions, the hands-on track did not attract the same number of people, and we&#8217;ve decided to discontinue it in 2007.  While we haven&#8217;t made a final decision, we may replace it with a <strong>vendor track</strong>. I personally don&#8217;t object to a vendor track as long as it&#8217;s well labeled &#8212; slipping vendor presentations into the main program is analogous to letting advertisers buy search-engine placement, while having a separate vendor track is more analogous to Google text ads, since it&#8217;s clearly distinct.  In any case, it turns out that there are lots of people who <em>do</em> want to hear product-specific information and even sales pitches.</p>
+<p>We will end the formal program on Wednesday 5 December with a closing keynote around noon.  The afternoon will be available for <strong>user-organized activities</strong>, such as BOFs, committee meetings, or even pub crawls and karaoke &#8212; we&#8217;ll provide an online forum to help you organize these activities well in advance, and we&#8217;ll publicize them on the conference web site.  In the past, these activities have been confined to evenings, when people are already tired; moving them to the afternoon should make it possible for more people to participate.</p>
+</div>
+<div id="speakers">
+<h2>Speakers</h2>
+<p>XML 2007 will <strong>not have a late-breaking call for papers</strong>; instead, we&#8217;ll open the regular call for papers early (probably at <a href="http://2007.xtech.org/">XTech 2007</a> in Paris), and will keep it open to the end of August or even into September.  As with XML 2006, I&#8217;m hoping for a mix of veteran and rookie speakers at the conference &#8212; I especially like it when we can bring people in from other fields.</p>
+<p>Also, by popular request, we&#8217;re looking at providing <strong>individual evaluation forms for each speaker</strong>, so that attendees can help us identify the best and most entertaining among you.  We&#8217;ll also go back to asking for <strong>proceedings <em>before</em> the conference</strong>, since that was overwhelmingly what people want; however, we will continue to accept papers in PDF or XHTML format so that speakers do not have to try to set up their own XML mini-publishing systems.</p>
+</div>
+<div id="comments">
+<h2>Comments?</h2>
+<p>I was very happy with how XML 2006 turned out, and I&#8217;m looking forward to an even better conference in 2007.  Please let me know what you think about these changes &#8212; and if you have any new suggestions &#8212; by leaving a comment here.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/conferences/index.html" rel="tag">conferences</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/09/sneak-peek-at-xml-2007/index.html#comments">3 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-156 -->
+
+		
+	
+
+	
+			<div id="post-155" class="post-155 post type-post status-publish format-standard hentry tag-news">
+			<h2 class="entry-title"><a href="../../2007/01/09/reiserfs/index.html" rel="bookmark">ReiserFS</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/09/reiserfs/index.html" title="7:44 am" rel="bookmark"><span class="entry-date">January 9, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>A number of years ago I was working on the scenery system for the open source <a href="http://www.flightgear.org/">FlightGear</a> flight simulator.  Due to the nature of geodata and the scenery building system, I ended up with tens of thousands of tiny files on my hard drive, many only a few bytes long, and I was constantly running out of disk space.</p>
+<p>Then I read about an alternative filesystem for Linux called <a href="http://en.wikipedia.org/wiki/ReiserFS">ReiserFS</a>, part of a new generation of <a href="http://en.wikipedia.org/wiki/Journaling_file_system">journaling filesystems</a>.  Unlike the others, however, ReiserFS had a special innovation: it allowed multiple very small files to share the same block, so that a 5-byte file would not automatically take up 512 bytes (or whatever your block size was).  I switched over, and bingo! There was suddenly a huge amount of free space on my previously-full hard drive, and I noticed no performance problems (aside from the occasional tiny zombie file that I couldn&#8217;t delete).</p>
+<p>I&#8217;ve been running Reiser ever since, but the filesystem has fallen on hard times.  On 14 September 2006 (via <a href="http://kontrawize.blogs.com/kontrawize/2007/01/ext3_recommende.html">Tony Coates</a>), Jeff Mahoney <a href="http://lists.opensuse.org/opensuse-factory/2006-09/msg00542.html">announced that the SuSE Linux distribution would no longer use ReiserFS as its default</a>. Mahoney is also one of the principal ReiserFS developers, and he wrote that ReiserFS3 does not scale, that it has a small and shrinking developer community inadequate to maintain it, and that ReiserFS4 is &#8220;an interesting research file system, but that&#8217;s about as far as it goes.&#8221;  Then, on 10 October 2006 <a href="http://en.wikipedia.org/wiki/Hans_Reiser">Hans Reiser</a>, the principal maintainer, was arrested and charged with the murder of his estranged wife <a href="http://www.ninareiser.com/">Nina</a>.</p>
+<p>SuSE was the only Linux distribution that used Reiser as its default filesystem.  This <a href="http://news.com.com/Novell+makes+file-storage+software+shift/2100-1016_3-6125509.html">c|net story</a> links the SuSE decision with the murder charges, but it&#8217;s worth noting that Mahoney&#8217;s message predates the charges by almost a month.  Whatever the cause, however, Novell (SuSE&#8217;s owner) had contributed significant resources towards the maintenance of ReiserFS.  It no longer looks like ReiserFS has any future at all, and in its current state, it has performance and scalability problems that prevent its use in high-demand environments.  ReiserFS was a big help to me when I needed it a few years back, but the next time I install Ubuntu, I&#8217;ll use the default <a href="http://en.wikipedia.org/wiki/Ext3">ext3</a> filesystem instead.  Hard disks &#8212; even for notebook computers &#8212; are a lot bigger and cheaper now, anyway.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/news/index.html" rel="tag">news</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/09/reiserfs/index.html#comments">6 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-155 -->
+
+		
+	
+
+	
+			<div id="post-154" class="post-154 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2007/01/04/in-praise-of-architecture-astronauts/index.html" rel="bookmark">In praise of architecture&nbsp;astronauts</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2007/01/04/in-praise-of-architecture-astronauts/index.html" title="10:17 am" rel="bookmark"><span class="entry-date">January 4, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Six years ago, Joel Spolsky wrote a piece on <a href="http://www.joelonsoftware.com/articles/fog0000000018.html">Architecture Astronauts</a>, people who get so obsessed with the big picture that they miss the important little details that actually make things work.  More recently, Dare Obasanjo pointed to Spolsky&#8217;s piece in his posting <a href="http://www.25hoursaday.com/weblog/PermaLink.aspx?guid=d639d908-7fbc-40cd-8e36-e6d48c07f659">XML Has Too Many Architecture Astronauts</a>.</p>
+<p>I&#8217;d like to start by agreeing with Dare: <a href="http://en.wikipedia.org/wiki/XML">XML</a> <em>does</em> have too many architecture astronauts, and almost everything that&#8217;s bad, ugly, or simply scary about the huge number of standards built around XML (WS-* springs immediately to mind, but it&#8217;s not alone) comes from gross overgeneralization.  That said, architecture astronauts do have their place, and we ignore them at our peril.</p>
+<div id="napster">
+<h2>Case 1: Napster</h2>
+<p>Let&#8217;s start by turning Spolsky&#8217;s main example (which Dare cites) on its head.  Here are two different perspectives on <a href="http://en.wikipedia.org/wiki/Napster">Napster</a> circa 2001:</p>
+<blockquote>
+<p><strong>Architecture pedestrian:</strong> Napster lets people find and download songs.</p>
+<p><strong>Architecture astronaut:</strong> Peer-to-peer networks let people find and download songs.  Napster is (was) a peer-to-peer network.</p>
+</blockquote>
+<p>Spolsky writes about how <em>architecture astronaut</em> perspective helped to fuel a mini-P2P bubble at the time, with investors pouring wasted money into P2P-everything, when Napster&#8217;s success was due not to the fact that it was P2P but to the fact that it let people get songs easily.  However, consider what was happening at the same time in the music industry.  Rightly or wrongly, they wanted to stop people from sharing songs.  The <em>architecture pedestrian</em> perspective (my term, not Spolsky&#8217;s) told them that Napster lets people find and download songs, so the industry spent millions of dollars in legal fees, PR, etc. shutting down Napster.  The result?  People downloaded even more music.  After all, as the astronauts said, it was P2P networks that let people share music, not Napster in particular.  Since then, the music industry has been fighting the equivalent of an insurgency, putting down one uprising after another with no end in sight.</p>
+</div>
+<div id="netscape">
+<h2>Case #2: The Netscape IPO</h2>
+<p>My second example took place over 11 years ago, kicking of the much larger dot.com bubble (the P2P mini-bubble was just a tiny part of its tail).  It was around 1995 that most non-techies noticed the web, mostly through the lens of the <a href="http://en.wikipedia.org/wiki/Netscape">Netscape</a> browser.  Again, the architecture pedestrian and the architecture astronaut looked at this differently:</p>
+<blockquote>
+<p><strong>Architecture pedestrian:</strong> Netscape lets people see text and pictures online.</p>
+<p><strong>Architecture astronaut:</strong> The web allows people to put text and pictures online. Netscape is a web browser.</p>
+</blockquote>
+<p>This time, the investors listened to the architecture pedestrian rather than the architecture astronaut: Netscape was set to open at $14/share, doubled to $28/share, and climbed to $75/share on the first day, and eventually reached a peak market cap of $8 billion. The astronauts knew all along, however, that while people (at the time) thought of the web in terms of the Netscape browser, the web <em>wasn&#8217;t</em> Netscape.  If Internet Explorer hadn&#8217;t knocked Netscape off its perch (resulting in layoffs as early as January 1998), some other browser soon would have.</p>
+</div>
+<div id="xml">
+<h2>Case #3: XML</h2>
+<p>So how does this all apply to XML?  I think that there are two ways that architecture astronauts can approach XML, one good and one bad.  The bad one is in line with Spolsky&#8217;s original piece, where people miss what made XML popular (relative simplicity, no need to create DTDS, etc.) and believe that if a bit of standardization is good, a lot must be even better.  The good one is to step back and point out that most of the advantages that appear to come from XML actually come from <em>generic tree markup</em>, and that holy wars between XML, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>, etc. are really beside the point.  In various situations, one syntax may have an advantage due to software support &#8212; for example, web browsers have built-in support for parsing XML or styling it using CSS, and they can convert JSON directly to JavaScript data structures using the <var>eval()</var> function &#8212; but when you look at the whole world of generic markup, those are small blips on a very large screen, and all of the markup languages <a href="http://www.megginson.com/blogs/quoderat/2007/01/03/all-markup-ends-up-looking-like-xml/">more-or-less look the same</a>.</p>
+</div>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2007/01/04/in-praise-of-architecture-astronauts/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-154 -->
+
+		
+	
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="../15/index.html" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+					<div class="nav-next"><a href="../13/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="../../index.html">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="nav_menu-4" class="widget-container widget_nav_menu"><h3 class="widget-title">Featured articles</h3><div class="menu-featured-posts-container"><ul id="menu-featured-posts" class="menu"><li id="menu-item-328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="../../blogs/quoderat/2007/03/28/open-data-matters-more-than-open-source/index.html" title="Do you care if a web site runs on Open Source software, if it still locks up your information?">Open Data or Open Source?</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-323"><a href="../../2010/08/08/evil-or-misunderstood/index.html" title="Does net neutrality apply as much to content types as to providers?">Net neutrality and Google</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-322"><a href="../../2007/02/15/rest-the-quick-pitch/index.html" title="What actually matters for building RESTful web apps.">REST: the quick pitch</a></li>
+<li id="menu-item-326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-326"><a href="../../2005/08/08/patents-and-screwdrivers/index.html" title="Patents sometimes hurt their owners the most.">Patents and screwdrivers</a></li>
+<li id="menu-item-334" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-334"><a href="../../2007/01/03/all-markup-ends-up-looking-like-xml/index.html" title="When people complain about XML&#8217;s complexity, they&#8217;re often really complaining about the data&#8217;s complexity.">All markup ends up looking like XML</a></li>
+</ul></div></li><li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">See also &#8230;</h3><div class="menu-my-sites-container"><ul id="menu-my-sites" class="menu"><li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="http://www.megginson.com/">Megginson Technologies Ltd.</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="http://www.ourairports.com/">OurAirports airport directory</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="http://lahso.megginson.com/">Land and Hold Short (flying blog)</a></li>
+</ul></div></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../index.html" title="Quoderat" rel="home">
+					Quoderat				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+		<script type="text/javascript">
+		var infiniteScroll = {"settings":{"id":"content","ajaxurl":"https:\/\/quoderat.megginson.com\/?infinity=scrolling","type":"scroll","wrapper":true,"wrapper_class":"infinite-wrap","footer":"wrapper","click_handle":"1","text":"Older posts","totop":"Scroll back to top","currentday":"04.01.07","order":"DESC","scripts":[],"styles":[],"google_analytics":false,"offset":14,"history":{"host":"quoderat.megginson.com","path":"\/page\/%d\/","use_trailing_slashes":true,"parameters":""},"query_args":{"paged":14,"error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"lazy_load_term_meta":false,"posts_per_page":10,"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"update_post_meta_cache":true,"post_type":"","nopaging":false,"comments_per_page":"50","no_found_rows":false,"order":"DESC"},"query_before":"2025-01-10 17:45:51","last_post_date":"2007-01-04 10:17:35","body_class":"infinite-scroll neverending","loading_text":"Loading new page","stats":"blog=14988159&v=wpcom&tz=-5&user_id=0&subd=quoderatech&x_pagetype=infinite"}};
+		</script>
+		<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+		<div id="infinite-footer">
+			<div class="container">
+				<div class="blog-info">
+					<a id="infinity-blog-title" href="../../index.html" rel="home">
+						Quoderat					</a>
+				</div>
+				<div class="blog-credits">
+					<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a> 				</div>
+			</div>
+		</div><!-- #infinite-footer -->
+			<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14988159" />
+										<input type="hidden" name="source" value="https://quoderat.megginson.com/page/14/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="462a0c7898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2007%252F02%252F15%252Frest-the-quick-pitch%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://quoderatech.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fquoderatech.wordpress.com%2Fpage%2F14%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2007%252F02%252F15%252Frest-the-quick-pitch%252F">Log in</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://quoderat.megginson.com" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/feeds/6985636">
+											View site in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading">&nbsp;</span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div
+				class="jp-carousel-wrap swiper-container jp-carousel-swiper-container jp-carousel-transitions"
+				itemscope
+				itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"/>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"/>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner">&nbsp;</span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<form id="jp-carousel-comment-form">
+												<label for="jp-carousel-comment-form-comment-field" class="screen-reader-text">Write a Comment...</label>
+												<textarea
+													name="comment"
+													class="jp-carousel-comment-form-field jp-carousel-comment-form-textarea"
+													id="jp-carousel-comment-form-comment-field"
+													placeholder="Write a Comment..."
+												></textarea>
+												<div id="jp-carousel-comment-form-submit-and-info-wrapper">
+													<div id="jp-carousel-comment-form-commenting-as">
+																													<fieldset>
+																<label for="jp-carousel-comment-form-email-field">Email (Required)</label>
+																<input type="text" name="email" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-email-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-author-field">Name (Required)</label>
+																<input type="text" name="author" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-author-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-url-field">Website</label>
+																<input type="text" name="url" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-url-field" />
+															</fieldset>
+																											</div>
+													<input
+														type="submit"
+														name="submit"
+														class="jp-carousel-comment-form-button"
+														id="jp-carousel-comment-form-button-submit"
+														value="Post Comment" />
+												</div>
+											</form>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" href="index.html#" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"/>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-2' href='https://s2.wp.com/_static/??-eJydzEEKwyAQheEL1Q5JocFFyFmsDkEzjuI4hNy+FJptFln+j8cHezW+cEfukNVU0jWyQMJend/+DaIMuQQlFPCuFRUkkD1WbOajHAifXuQB97Hzcw43vR4Jg1kdEbbjqn7+kufhbUc7vYZxSl9CS2RI&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack-carousel-js-extra">
+/* <![CDATA[ */
+var jetpackSwiperLibraryPath = {"url":"https:\/\/s2.wp.com\/wp-content\/mu-plugins\/jetpack-plugin\/sun\/_inc\/build\/carousel\/swiper-bundle.min.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"21125ed4ee","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","image_label":"Open image in full-screen.","download_original":"View full size <span class=\"photo-size\">{0}<span class=\"photo-size-times\">\u00d7<\/span>{1}<\/span>","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"https:\/\/quoderatech.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Fquoderat.megginson.com%2F2007%2F01%2F04%2Fin-praise-of-architecture-astronauts%2F","blog_id":"14988159","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=14988159&v=wpcom&tz=-5&user_id=0&subd=quoderatech","is_public":"1"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s0.wp.com/_static/??-eJylj80KwjAQhF/I7VJKFQ/io0iaxrJxswn5ofTtzcGIeFDQ4zfMzM7iGkB7yUYy2oTOT8QGSjJRLVUDkqvvbNrhi88VCFwWkoTW5KD07cGYiuCFRONUiGesYRLKBpKOnrnx1jmSn0u1ir7u46etCX+15vr2DItiNnH7RF+utDGwBu3dG9bc2Z36wzAc+/04jPYOVtqPQQ=='></script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<script type="text/javascript">
+			(function() {
+				var extend = function(out) {
+					out = out || {};
+
+					for (var i = 1; i < arguments.length; i++) {
+						if (!arguments[i])
+						continue;
+
+						for (var key in arguments[i]) {
+						if (arguments[i].hasOwnProperty(key))
+							out[key] = arguments[i][key];
+						}
+					}
+
+					return out;
+				};
+				extend( window.infiniteScroll.settings.scripts, ["jetpack-mu-wpcom-settings","rlt-proxy","wpcom-actionbar-placeholder","grofiles-cards","wpgroho","mobile-useragent-info","the-neverending-homepage","jetpack-carousel","tiled-gallery","carousel-wpcom"] );
+				extend( window.infiniteScroll.settings.styles, ["the-neverending-homepage","wp-block-library","wp-block-library-theme","jetpack-layout-grid","jetpack-ratings","mediaelement","wp-mediaelement","coblocks-frontend","wpcom-core-compat-playlist-styles","wpcom-bbpress2-staff-css","twentyten-block-style","twentyten-wpcom-style","reblogging","geo-location-flair","infinity-twentyten","h4-global","wp-emoji-styles","videopress-video-style","jetpack-sharing-buttons-style","classic-theme-styles","global-styles","jetpack-global-styles-frontend-style","jetpack-carousel-swiper-css","jetpack-carousel","tiled-gallery","core-block-supports-duotone"] );
+			})();
+		</script>
+				<span id="infinite-aria" aria-live="polite"></span>
+		<script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14988159','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14988159','v':'wpcom','tz':'-5','user_id':'0','subd':'quoderatech'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1mNzc2NTVTamdsRWFxcEV3XUtMXVR5aWlmMVNIcUxBaFstUWRrZVpWQ2tORExSfEpUVm05SlpEZzZWOEtlbW5nZHV0dkhDNjhwP35JbkdHLyZqSUh8WkZWbVl3Qll2LkguSkRJZGEtZV9DRDIwUGZ5XTdFRkNjSkxHdDMuQ0lOUmE2JTg3PXVRcFFHYWQsS111d3EvSnF0ZS1ra1VHW0NDTEJmS09kQl9aZ18tRnlsdF9CMHNlMGc/RFRWZ29HMXorOFBXPzBzLTNRLEw/W18vW01dVnxnLHJjR3Q4bXw/X3FbeUdFSlotP0pCQ3hoJjUvZG9Sb0llWE1ELTU='}]);
+_stq.push([ 'clickTrackerInit', '14988159', '0' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

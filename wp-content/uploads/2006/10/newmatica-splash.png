@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>Blogs temporarily down for repair</title>
+<style type="text/css">
+body { 
+  font-family: Helvetica, Arial, sansserif;
+  font-size: 14pt;
+}
+h1 {
+  font-weight: normal;
+  font-size: 200%;
+}
+</style>
+</head>
+<body>
+<img src="http://www.ourairports.com/images/sorry.jpg" align="right" />
+
+<h1>Blogs temporarily down for repair</h1>
+
+<p>The <cite>Quoderat</cite> and <cite>Land and Hold Short</cite>
+blogs are temporarily down for repair.  Please accept my apologies for
+any inconvenience.</p>
+
+<p>Someone was trying to attack my database through WordPress,
+resulting in loss of service for several web sites as my server slowed
+down with load factors sometimes over 100.</p>
+
+<p>The blogs should be back online within a few days (or weeks), once
+I've sorted out the problem, cleaned the database tables, and applied
+security upgrades.</p>
+
+<p>In the meantime, if you're an aviation fan, why not pop
+by <a href="http://www.ourairports.com/">OurAirports</a>?</p>
+
+<hr />
+<address>David Megginson, 5 June 2010</address>
+</body>
+</html>

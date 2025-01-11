@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: REST design question #2: listing and discovering resources	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 22 Feb 2005 23:14:29 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Bo		</title>
+		<link>https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/#comment-93</link>
+
+		<dc:creator><![CDATA[Bo]]></dc:creator>
+		<pubDate>Tue, 22 Feb 2005 23:14:29 +0000</pubDate>
+		<guid isPermaLink="false">/?p=21#comment-93</guid>
+
+					<description><![CDATA[No, &#039;next-page&#039; is an ugly design in my opinion. Logically, the /airports is a resource that represents a collection of other resources. You should query this collection using query strings. GET /airports should, in my opinion, return information about the COLLECTION of airports eg the number of airports contained, the name of the first airport, the name of the last airport, etc. As for the general question of returning too many results for a query I don&#039;t think it&#039;s a problem. You don&#039;t need paging because a computer doesn&#039;t need to scroll through thousands of results. Another solution I&#039;ve toyed with is to make the query itself a resource. With this mechanism, GET /airports redirects to a &#039;/queries/123/&#039; resource that contains &#039;page&#039; links to each &#039;page&#039; of the query. But this kind of messes with the notion that GET should return a representation of a resource and not create/update/delete stuff.]]></description>
+			<content:encoded><![CDATA[<p>No, &#8216;next-page&#8217; is an ugly design in my opinion. Logically, the /airports is a resource that represents a collection of other resources. You should query this collection using query strings. GET /airports should, in my opinion, return information about the COLLECTION of airports eg the number of airports contained, the name of the first airport, the name of the last airport, etc. As for the general question of returning too many results for a query I don&#8217;t think it&#8217;s a problem. You don&#8217;t need paging because a computer doesn&#8217;t need to scroll through thousands of results. Another solution I&#8217;ve toyed with is to make the query itself a resource. With this mechanism, GET /airports redirects to a &#8216;/queries/123/&#8217; resource that contains &#8216;page&#8217; links to each &#8216;page&#8217; of the query. But this kind of messes with the notion that GET should return a representation of a resource and not create/update/delete stuff.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: AsynchronousBlog		</title>
+		<link>https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/#comment-92</link>
+
+		<dc:creator><![CDATA[AsynchronousBlog]]></dc:creator>
+		<pubDate>Sat, 19 Feb 2005 23:24:16 +0000</pubDate>
+		<guid isPermaLink="false">/?p=21#comment-92</guid>
+
+					<description><![CDATA[&lt;strong&gt;REST Design questions 2 and 3&lt;/strong&gt;
+Dave Megginson continues with his REST design questions. Herein, I respond: Question #2 ... Yup, I&#039;ve used query-paramaters in the way you describe to paramaterize a large resource space. I don&#039;t consider it particular inelegant or ugly, but maybe th...]]></description>
+			<content:encoded><![CDATA[<p><strong>REST Design questions 2 and 3</strong><br />
+Dave Megginson continues with his REST design questions. Herein, I respond: Question #2 &#8230; Yup, I&#8217;ve used query-paramaters in the way you describe to paramaterize a large resource space. I don&#8217;t consider it particular inelegant or ugly, but maybe th&#8230;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mike Gratton		</title>
+		<link>https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/#comment-90</link>
+
+		<dc:creator><![CDATA[Mike Gratton]]></dc:creator>
+		<pubDate>Fri, 18 Feb 2005 03:25:18 +0000</pubDate>
+		<guid isPermaLink="false">/?p=21#comment-90</guid>
+
+					<description><![CDATA[Isn&#039;t this sort of thing what extended XLinks, rather than basic ones, are for? I need to re-read the XLink spec and think about it some more, but it seems like you should be able to use extended XLinks to come up with reasonable XML document that acts as a &quot;cursor&quot; for accessing sub-/child-resources.]]></description>
+			<content:encoded><![CDATA[<p>Isn&#8217;t this sort of thing what extended XLinks, rather than basic ones, are for? I need to re-read the XLink spec and think about it some more, but it seems like you should be able to use extended XLinks to come up with reasonable XML document that acts as a &#8220;cursor&#8221; for accessing sub-/child-resources.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; REST design question #3: meaning of a link		</title>
+		<link>https://quoderat.megginson.com/2005/02/16/rest-design-question-listings/#comment-91</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; REST design question #3: meaning of a link]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=21#comment-91</guid>
+
+					<description><![CDATA[[...] information after you have downloaded an XML file; the second design question asked about &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/16/rest-design-question-listings/&quot; rel=&quot;nofollow&quot;&gt;discovering resources and dealing with long lists of data&#060; [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] information after you have downloaded an XML file; the second design question asked about <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/16/rest-design-question-listings/" rel="nofollow">discovering resources and dealing with long lists of data&lt; [&#8230;]</a></p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

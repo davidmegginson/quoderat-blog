@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: ReiserFS	</title>
+	<atom:link href="https://quoderat.megginson.com/2007/01/09/reiserfs/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2007/01/09/reiserfs/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Mon, 05 Feb 2007 16:38:05 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Norman Walsh		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-618</link>
+
+		<dc:creator><![CDATA[Norman Walsh]]></dc:creator>
+		<pubDate>Mon, 05 Feb 2007 16:38:05 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-618</guid>
+
+					<description><![CDATA[I wonder which we&#039;ll get first, a port of ZFS or a Solaris-based distribution that &quot;just works&quot; as well as Ubuntu. As soon as suspend/resume works reliably on my laptop, I&#039;ll be all over it.
+
+(Despite the fact that I ran Linux for years on a laptop where suspend/resume didn&#039;t work, now that I&#039;ve had it working for a few years, the prospect of living without it again is just too painful.)]]></description>
+			<content:encoded><![CDATA[<p>I wonder which we&#8217;ll get first, a port of ZFS or a Solaris-based distribution that &#8220;just works&#8221; as well as Ubuntu. As soon as suspend/resume works reliably on my laptop, I&#8217;ll be all over it.</p>
+<p>(Despite the fact that I ran Linux for years on a laptop where suspend/resume didn&#8217;t work, now that I&#8217;ve had it working for a few years, the prospect of living without it again is just too painful.)</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-617</link>
+
+		<dc:creator><![CDATA[John]]></dc:creator>
+		<pubDate>Thu, 25 Jan 2007 21:15:58 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-617</guid>
+
+					<description><![CDATA[Aristotle: wait a few years, switch to ZFS, and abandon the CPU usage hang-up :)]]></description>
+			<content:encoded><![CDATA[<p>Aristotle: wait a few years, switch to ZFS, and abandon the CPU usage hang-up 🙂</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Aristotle Pagaltzis		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-616</link>
+
+		<dc:creator><![CDATA[Aristotle Pagaltzis]]></dc:creator>
+		<pubDate>Tue, 09 Jan 2007 21:56:22 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-616</guid>
+
+					<description><![CDATA[ReiserFS achieves its aims, roughly spoken, through tricky data structures that minimise redundancy by leaning heavily on the CPU.
+
+That comprises its strength; but it’s also a huge weakness. Minimal redundancy makes metadata corruption hard to detect and likely to be spectacularly disastrous. The filesystem is designed to be compact and &lt;em&gt;very&lt;/em&gt; fast, but it’s brittle and incurs a heavy CPU tax for the speed you get.
+
+That’s the opposite set of tradeoffs than I’d generally prefer in a filesystem: I’d like it resilient and easy on the CPU. The perfect choice would be the nigh unbreakable ext2, of course –  if only fsck didn’t take forever and 3 days to finish on modern harddisks. So I switched to ext3 partly out of laziness, and partly because at the time, none of the other alternatives to ReiserFS were any good. I’ve heard quite a few good words about XFS and some about JFS bt now, but I’m not sure how well they’re shaken out so I’m languishing on the safe default. As an aside, I wish there was a good modern filesystem that can be read and written by both Linux and FreeBSD…]]></description>
+			<content:encoded><![CDATA[<p>ReiserFS achieves its aims, roughly spoken, through tricky data structures that minimise redundancy by leaning heavily on the CPU.</p>
+<p>That comprises its strength; but it’s also a huge weakness. Minimal redundancy makes metadata corruption hard to detect and likely to be spectacularly disastrous. The filesystem is designed to be compact and <em>very</em> fast, but it’s brittle and incurs a heavy CPU tax for the speed you get.</p>
+<p>That’s the opposite set of tradeoffs than I’d generally prefer in a filesystem: I’d like it resilient and easy on the CPU. The perfect choice would be the nigh unbreakable ext2, of course –  if only fsck didn’t take forever and 3 days to finish on modern harddisks. So I switched to ext3 partly out of laziness, and partly because at the time, none of the other alternatives to ReiserFS were any good. I’ve heard quite a few good words about XFS and some about JFS bt now, but I’m not sure how well they’re shaken out so I’m languishing on the safe default. As an aside, I wish there was a good modern filesystem that can be read and written by both Linux and FreeBSD…</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-615</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Tue, 09 Jan 2007 18:03:20 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-615</guid>
+
+					<description><![CDATA[If only.  Alas, Reiser knows far more about reiserfs than Cowan ever will.]]></description>
+			<content:encoded><![CDATA[<p>If only.  Alas, Reiser knows far more about reiserfs than Cowan ever will.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-614</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Tue, 09 Jan 2007 16:47:38 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-614</guid>
+
+					<description><![CDATA[I get that impression as well, but if that were the only problem with ReiserFS, then we could simply &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/2005/12/29/forkability/&quot; rel=&quot;nofollow&quot;&gt;fork it&lt;/a&gt; into &lt;cite&gt;CowanFS&lt;/cite&gt; and continue.]]></description>
+			<content:encoded><![CDATA[<p>I get that impression as well, but if that were the only problem with ReiserFS, then we could simply <a href="http://www.megginson.com/blogs/quoderat/2005/12/29/forkability/" rel="nofollow">fork it</a> into <cite>CowanFS</cite> and continue.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2007/01/09/reiserfs/#comment-613</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Tue, 09 Jan 2007 14:09:40 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/09/reiserfs/#comment-613</guid>
+
+					<description><![CDATA[The problem with reiserfs, however clever it is (and it is clever, and version 5 would have been amazingly so, as unlikely as we are to see it now), is that Hans Reiser thinks it&#039;s &lt;i&gt;his&lt;/i&gt; filesystem.  (Insert explanation of intrinsic vs. extrinsic possession here.)]]></description>
+			<content:encoded><![CDATA[<p>The problem with reiserfs, however clever it is (and it is clever, and version 5 would have been amazingly so, as unlikely as we are to see it now), is that Hans Reiser thinks it&#8217;s <i>his</i> filesystem.  (Insert explanation of intrinsic vs. extrinsic possession here.)</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

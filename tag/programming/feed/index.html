@@ -1,0 +1,1115 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>programming &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/tag/programming/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 25 Sep 2010 23:30:09 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>programming &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>SQL and simple polymorphism</title>
+		<link>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/</link>
+					<comments>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 25 Sep 2010 22:36:23 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[databases]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=403</guid>
+
+					<description><![CDATA[SQL is about tables and sets. Object-oriented programing is about types, subtypes, and polymorphism. There are nasty, nasty frameworks available to try to move between the two worlds (say, by serializing and deserializing Java objects) &#8212; this posting, however, is &#8230; <a href="https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><a href="http://en.wikipedia.org/wiki/SQL">SQL</a> is about tables and sets.  Object-oriented programing is about types, subtypes, and <a href="http://en.wikipedia.org/wiki/Type_polymorphism">polymorphism</a>. There are nasty, nasty frameworks available to try to move between the two worlds (say, by serializing and deserializing Java objects) &mdash; this posting, however, is not about those.  Instead, it&#8217;s about how to make SQL support the basic benefits of polymorphism in what we might call a SQL-y way, independent of any programming language.</p>
+<h3 id="similar">Similar entities</h3>
+<p>Imagine that you want to deal with a set of geographical entities, similar to what I handle in <a href="http://www.ourairports.com/">OurAirports</a>:</p>
+<ul>
+<li>cities</li>
+<li>airports</li>
+<li>navigation transmitters</li>
+<li>points of interest (e.g. buildings, etc.)</li>
+</ul>
+<p>The normal object-oriented approach would be to create a base class such as &#8220;Location&#8221; with all the properties these have in common (unique id, latitude, longitude, elevation, name, description, etc.) and then create subclasses adding additional information for each one (such as frequencies for the navigation transmitters, or identifiers for the airport).  The <del>normal</del> <ins>naive</ins> SQL approach, on the other hand, is to repeat the information in four separate tables.</p>
+<h3 id="base">The base table</h3>
+<p>SQL can, however, handle polymorphism in a fairly elegant way &mdash; I think database people call these &#8220;disjoint subtypes&#8221;, but feel free to ignore that term.  Instead of a base class, we create a base table (I&#8217;m using the MySQL dialect, but most SQLs should have similar capabilities):</p>
+<pre>
+create table Locations (
+  id bigint primary key auto_increment,
+  type enum ('airport', 'city', 'poi', 'navaid') not null,
+  latitude_deg double not null,
+  longitude_deg double not null,
+  elevation_m int not null,
+  title varchar(128) not null,
+  description text not null,
+  # add indices as needed
+);
+</pre>
+<p>(A purer implementation would use a separate <var>LocationTypes</var> table for flexibility, rather than the enum value &mdash; I&#8217;ll probably do that in OurAirports, but it would make these examples a bit more verbose.)</p>
+<h3 id="subtype">The subtype tables</h3>
+<p>Next, create a table for each of your subtypes, where the primary key is also a foreign key pointing to the Locations table:</p>
+<pre>
+create table Airports (
+  id bigint primary key,
+  iati_code char(3),
+  icao_code char(4),
+  local_code varchar(4),
+  # etc.
+  foreign key id references Locations(id)
+);
+</pre>
+<p>Using the same id for the base and derived table ensures that each entity has an id that is unique across all subtables, and simplifies SQL statements for accessing and modifying the tables.</p>
+<h3 id="polymorphism">Polymorphism</h3>
+<p>Now, when you want to deal with locations in general, regardless of subtype, simply query the Locations table:</p>
+<pre>
+select L.* from Locations L where latitude_deg &gt; 60;
+</pre>
+<p>You can update base information without even knowing the subtype:</p>
+<pre>
+update Locations set latitude_deg=45.5 where id=111;
+</pre>
+<p>When you want to deal with a specific kind of location, do a simple join:</p>
+<pre>
+select L.*, A.* from Locations L 
+join Airports A on L.id=A.id
+where A.latitude_deg &gt; 60;
+</pre>
+<h3 id="views">Views</h3>
+<p>To make this even easier, define a view containing the join:</p>
+<pre>
+drop view if exists AirportsView;
+create view AirportsView as
+select * from Locations L 
+join Airports A on L.id=A.id;
+</pre>
+<p>Now you can simply query AirportsView as if it were a single table:</p>
+<pre>
+select * from AirportsView where latitude_deg&gt;60;
+</pre>
+<h3 id="crud">Inserting and deleting</h3>
+<p>Inserting is slightly more complex, because it involves two steps: first, create the base entry, then link to it from the derived entry:</p>
+<pre>
+insert into Locations 
+ (latitude_deg, longitude_deg, elevation_m, name) 
+values
+ (45.5, -75.5, 100, 'Sample Airport');
+
+insert into Airports (id, iata_code) values
+(last_insert_id(), 'AAA');
+</pre>
+<p>Stored procedures and/or triggers can automate this fairly nicely, if you don&#8217;t want to have to embed too much database logic in application code.  Deletion similarly requires two steps:</p>
+<pre>
+delete from Airports where id=111;
+
+delete from Locations where id=111;
+</pre>
+<p>A simple post-deletion trigger for Airports, though, could automate this and avoid the risk of mistakes in source code.</p>
+<h3 id="ourairports">Eating the dogfood</h3>
+<p>Unfortunately, I didn&#8217;t design OurAirports this way from the start, so I have a bit of refactoring to do.  When I&#8217;m finished, however, I expect mapping to be much simpler, since I will no longer have to execute 5 or 6 separate queries to find all the icons to display on a map.  If anyone has any better ideas, please let me know; otherwise, stay tuned.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/feed/</wfw:commentRss>
+			<slash:comments>8</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>RIP Java, 1995-2010</title>
+		<link>https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/</link>
+					<comments>https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 13 Aug 2010 20:54:37 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[news]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[rights]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=381</guid>
+
+					<description><![CDATA[Java is dead. A lot of developers have thought they were too hip for Java, but I still liked it. I implemented SAX in Java first of all, and have developed software in Java and encouraged my enterprise customers to &#8230; <a href="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><a href="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg"><img data-attachment-id="383" data-permalink="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/java/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg" data-orig-size="212,194" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Java" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=212" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=212" src="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=640" alt="" title="Java"   class="alignleft size-full wp-image-383" srcset="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg 212w, https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=150&amp;h=137 150w" sizes="(max-width: 212px) 100vw, 212px" /></a></p>
+<p>Java is dead.</p>
+<p>A lot of developers have thought they were too hip for Java, but I still liked it.  I implemented <a href="http://en.wikipedia.org/wiki/Simple_API_for_XML">SAX</a> in Java first of all, and have developed software in Java and encouraged my enterprise customers to use it for many years, sometimes in 9-figure projects at Fortune-500 companies &mdash; it&#8217;s a great, mature platform, with a lot of tools for managing large projects and development teams, and it has unit-testing and IDE support that is second to none.</p>
+<p>But now, Oracle (which recently bought Sun) has <a href="http://www.informationweek.com/news/software/open_source/showArticle.jhtml?articleID=226700231&amp;cid=RSSfeed_IWK_All">decided to sue Google for using Java in Android</a>, even though (a) Sun long ago open sourced Java, and (b) Google built its own VM anyway.  I very much hope that Oracle will suffer the same humiliating, crushing, well-deserved defeat that <a href="http://en.wikipedia.org/wiki/SCO-Linux_controversies">the SCO group suffered</a> when it went after Linux with its own bogus law suits, but it will take years for that to happen.  The Android and Blackberry mobile operating systems will be fine, and Java (of a sort) will live on there (though I still <a href="https://quoderat.megginson.com/2010/01/10/one-app-store-to-rule-them-all/">recommend web apps instead of phone apps</a>), but the days of Java and Eclipse in the enterprise are finished.</p>
+<p>In the meantime, there are lots of open alternatives to Java, and the litigation risks of using Java have suddenly become far too high.  In my consulting work, I&#8217;ll reluctantly have to advise customers not to use Java for any new projects, and to consider migrating older projects to a different platform.  If you&#8217;re a big company or government, you just can&#8217;t afford the risk that Oracle will come after you, too.</p>
+<p>I&#8217;m sorry the end was so sudden and messy, but still, it was a great 15 years.  Thanks to James Gosling and all the other people in the Java community for the memories and opportunities.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/feed/</wfw:commentRss>
+			<slash:comments>19</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg" medium="image">
+			<media:title type="html">Java</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Mixing GPL and non-GPL: a different perspective</title>
+		<link>https://quoderat.megginson.com/2009/06/16/mixing-gpl-and-non-gpl-a-different-perspective/</link>
+					<comments>https://quoderat.megginson.com/2009/06/16/mixing-gpl-and-non-gpl-a-different-perspective/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 16 Jun 2009 20:49:17 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[rights]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=248</guid>
+
+					<description><![CDATA[Dual-licensing is a popular Open Source business model, especially using the (very restrictive) Gnu General Public License (GPL). Popular opinion, as reflected (for example) in the comments on this blog posting, says that it&#8217;s either forbidden or highly questionable to &#8230; <a href="https://quoderat.megginson.com/2009/06/16/mixing-gpl-and-non-gpl-a-different-perspective/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><img src="https://i0.wp.com/www.gnu.org/graphics/gnu-head-sm.jpg" alt="Gnu logo" align="right" /></p>
+<p>Dual-licensing is a popular Open Source business model, especially using the (very restrictive) Gnu <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">General Public License</a> (GPL).  Popular opinion, as reflected (for example) in the comments on <a href="http://blogs.the451group.com/opensource/2009/05/21/are-closed-source-mysql-storage-engines-compatible-with-mariadb/">this blog posting</a>, says that it&#8217;s either forbidden or highly questionable to do things like linking non-GPL things with GPL things, so enterprises will have to buy a dual-licensed version (instead of using the free GPL version of the software) to take advantage of closed-source enterprise components.</p>
+<div id="mariadb">
+<h3>The case of MariaDB</h3>
+<p>I wonder if popular opinion might be wrong.</p>
+<p>Consider the GPL software package mentioned in the blog posting linked above: <a href="http://askmonty.org/wiki/index.php/MariaDB">MariaDB</a>, a fork of the Open Source <a href="http://www.mysql.com/">MySQL</a> database manager.  Because the maintainers of MariaDB don&#8217;t own most of the copyrights on the code, they cannot dual-license it; as a result, some people believe that the GPL forbids using closed-source MySQL storage engines such as <a href="http://www.scaledb.com/">ScaleDB</a> with MariaDB.</p>
+<p><!-- mariadb --></p>
+</div>
+<div id="distribution">
+<h3>Distribution, not use</h3>
+<p>Unlike closed-source licenses, however, the GPL exists primarily to control how people <em>distribute</em> software packages, not how people <em>use</em> them.  Section 0 of the GPL makes this fairly clear:</p>
+<blockquote><p>Section 0: &#8220;Activities other than copying, distribution and modification are not covered by this License; they are outside its scope. The act of running the Program is not restricted&#8230;&#8221;</p></blockquote>
+<p>The non-normative FAQ for this version of the GPL goes even further, allowing private modification of a package outside the scope of the GPL as well:</p>
+<blockquote><p><strong>A company is running a modified version of a GPL&#8217;ed program on a web site. Does the GPL say they must release their modified sources?</strong></p>
+<p>The GPL permits anyone to make a modified version and use it without ever distributing it to others. What this company is doing is a special case of that. Therefore, the company does not have to release the modified sources&#8230;</p></blockquote>
+<p><!-- distribution --></p>
+</div>
+<div id="personal">
+<h3>Non-GPL plugins and personal use</h3>
+<p>So, with that in mind, let&#8217;s start with the personal-use case.  I have an unmodified GPL-licensed copy of MariaDB and a properly-licensed copy of ScaleDB.  I do not need to modify anything in the MariaDB distribution to use ScaleDB — I just have to drop ScaleDB into the appropriate directory and edit my personal config files to tell MariaDB to use it.  Since I&#8217;m just running MariaDB, not modifying it, am I even bound to accept the terms of the GPL?  It doesn&#8217;t look like I am.</p>
+<p><!-- personal use --></p>
+</div>
+<div id="aggregation">
+<h3>Non-GPL plugins and aggregation</h3>
+<p>Now, let&#8217;s take this a step further. What if distribute a DVD-ROM that happens to have both MariaDB and ScaleDB on it?  I comply with the GPL for MariaDB (e.g. include a copy of the GPL and the MariaDB source code), and have permission from the copyright holder to include ScaleDB.  There are no modifications to MariaDB at all, even in the configuation files: just two separate packages that happen to be stored in different directories on the same DVD-ROM.  Am I in violation of the GPL now?</p>
+<p>And what if I decide to add a script to automate configuring MariaDB to use ScaleDB as a third, independent software package?  The script is an entirely separate piece of software, and includes no GPL code at all.  I still don&#8217;t modify MariaDB or bundle ScaleDB with it in the same package, but I provide a tool that someone can use to do so (they could also use the tool if they obtained both packages from other sources).  Now is there a GPL violation?</p>
+<p>So I end up with a redistributable DVD-ROM that allows a user to install a GPL program with a closed-source, plug-in storage engine for private use, and I don&#8217;t think I&#8217;ve violated the GPL or even wandered into any grey areas.  What does everyone else think?</p>
+<p><!-- aggregation --></p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2009/06/16/mixing-gpl-and-non-gpl-a-different-perspective/feed/</wfw:commentRss>
+			<slash:comments>12</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://www.gnu.org/graphics/gnu-head-sm.jpg" medium="image">
+			<media:title type="html">Gnu logo</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Detecting overzoom in Google Maps</title>
+		<link>https://quoderat.megginson.com/2008/07/27/detecting-overzoom-in-google-maps/</link>
+					<comments>https://quoderat.megginson.com/2008/07/27/detecting-overzoom-in-google-maps/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 27 Jul 2008 21:14:45 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=222</guid>
+
+					<description><![CDATA[[Warning: as of 1 October 2008, Google is using an over-simplistic bot detection algorithm, and something as simple as zooming out at regular intervals can trigger it and temporarily block access to Google resources. I recommend waiting until they fix &#8230; <a href="https://quoderat.megginson.com/2008/07/27/detecting-overzoom-in-google-maps/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote><p><em>[Warning: as of 1 October 2008, Google is using an over-simplistic bot detection algorithm, and something as simple as zooming out at regular intervals can trigger it and temporarily block access to Google resources.  I recommend waiting until they fix their algorithms to use this technique.]</em></p></blockquote>
+<p>Here&#8217;s a link to a web page showing how to <a href="http://esa.ilmari.googlepages.com/sorry.htm">detect overzoom</a> with the Google Maps API.</p>
+<p>Overzoom is a big issue for my site <a href="http://www.ourairports.com/">OurAirports</a>, which shows a close-up satellite view on each airport&#8217;s page (e.g. the former <a href="http://www.ourairports.com/airports/KCGX/">Meigs Field</a>).  Unfortunately, there&#8217;s no documented way to use the Google Maps API to check if a satellite view is overzoomed (instead of a satellite picture, it&#8217;s showing the &#8220;We are sorry, but we don&#8217;t have imagery at this zoom level for this region&#8230;&#8221; message).  That can be confusing for someone who isn&#8217;t a regular Google Maps user and hasn&#8217;t actually touched the zoom controls on the map.</p>
+<div id="hack">
+<h2>The hack</h2>
+<p>The page above came up with the clever solution of counting paragraphs in the map container.  If there is a &#8220;sorry&#8221; message, there will be HTML <code>p</code> elements inside the map container.  Here&#8217;s a simple JavaScript function that checks to see if the map is overzoomed, and zooms out one level if it is:</p>
+<pre>function check_zoom (map)
+{
+    var zoom = map.getZoom();
+    var count = map.getContainer().getElementsByTagName('p').length;
+
+    if (zoom &gt; 1 &amp;&amp; count &gt; 0) {
+        map.setZoom(zoom - 1);
+    }
+}</pre>
+<p>Note that it doesn&#8217;t iterate — it just does one check and exits.  The easiest way to use this is just to have it run every two seconds or so.  If your map is available in a variable named <var>map</var>, this will do the trick:</p>
+<pre>setInterval("check_zoom(map)", 2000);</pre>
+</div>
+<div id="examples">
+<h2>Examples</h2>
+<p>To see how it works, check out <a href="http://www.ourairports.com/airports/EFVU/">Vuotso Airport</a> in Finland.  Google Maps doesn&#8217;t have very good satellite coverage for Lapland in the far north, but OurAirports now detects that after a couple of seconds and zooms out one step.  For a more extreme example, look at <a href="http://www.ourairports.com/airports/CYLT/">Alert Airport</a>, the world&#8217;s northernmost permanent airport, in Nunavut, Canada — the code has to zoom out several times until you can see anything in the satellite view.</p>
+</div>
+<div id="caveats">
+<h2>Caveats</h2>
+<p>The more elegant solution would be to detect when the map is finished loading after every event that can affect it, but that sounds like too much work to save a couple of milliseconds here and there.</p>
+<p>Note that Google can break this at any time simply by adding or removing <var>p</var> elements — it would be much better to have an official, reliable way to detect when a satellite view is overzoomed.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2008/07/27/detecting-overzoom-in-google-maps/feed/</wfw:commentRss>
+			<slash:comments>3</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>LAMP stack stability</title>
+		<link>https://quoderat.megginson.com/2008/01/10/lamp-stack-stability/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 10 Jan 2008 18:53:43 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2008/01/10/lamp-stack-stability/</guid>
+
+					<description><![CDATA[I&#8217;m using a single dedicated server to host ourairports.com, megginson.com, and a couple of minor domains. OurAirports is a database-heavy application using (currently) a MySQL v.5 database hosted on the same server. I&#8217;ll offload the database to a separate server &#8230; <a href="https://quoderat.megginson.com/2008/01/10/lamp-stack-stability/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I&#8217;m using a single dedicated server to host <a href="http://www.ourairports.com/">ourairports.com</a>, <a href="http://www.megginson.com/">megginson.com</a>, and a couple of minor domains.  OurAirports is a database-heavy application using (currently) a MySQL v.5 database hosted on the same server.  I&#8217;ll offload the database to a separate server if traffic keeps increasing, but as long as I&#8217;m getting compliments from tech people for my fast response times (mainly thanks to MySQL&#8217;s built-in <a href="http://dev.mysql.com/doc/refman/5.0/en/query-cache.html">query caching</a>), there&#8217;s no point paying for extra hardware.</p>
+<h3>Uptime</h3>
+<p>My ISP set up the server for me last summer with a bare-bones Ubuntu distro, then I installed the extra packages I needed using aptitude over ssh.  Since then, I&#8217;ve done many Ubuntu in-place upgrades, rolled out hundreds of changes and upgrades to the web apps and dozens to the database schema (some very significant), and upgraded WordPress n-teen times.  Check this out:</p>
+<pre>$ <a href="http://en.wikipedia.org/wiki/Uptime">uptime</a>
+ 13:08:31 up 175 days, 10:02,  1 user,  load average: 0.23, 0.06, 0.02</pre>
+<p>That&#8217;s right — since my ISP first set up the server with a basic Ubuntu system, I&#8217;ve <em>never</em> had to restart it.  In fact, if <a href="http://en.wikipedia.org/wiki/Apache_HTTP_Server">Apache</a> and mod_php (<a href="http://en.wikipedia.org/wiki/PHP">PHP5</a>) had &#8216;uptime&#8217; commands, they&#8217;d show almost the same amount of time, since I restarted them only to make configuration changes in the first few days of setting up the server (unless apt stopped them to install a newer version during one of my upgrades).  I&#8217;ve restarted MySQL more recently, but again, only to experiment with configuration changes (especially for fulltext).</p>
+<h3>-1 for being cool, +10 for having a life</h3>
+<p>Using reliable old technologies like Linux, Apache, MySQL, and PHP doesn&#8217;t win any cool points, but it certainly makes maintaining a web server and its applications easy.  I can go on vacation, for example, without worrying about being able to get online to fix or restart my server every couple of days.  I don&#8217;t have to stay up until 3:00 am on Sunday night so that I can take the server offline to roll out new software versions or bug fixes (<a href="http://en.wikipedia.org/wiki/Aptitude_(program)">aptitude</a> installs any security fixes in place).  I spend lots of time with my family.  I go to my kids&#8217; school concerts.  I learned banjo and mandolin (why not, since I have the free time?).</p>
+<h3>It&#8217;s the developer, not the language</h3>
+<p>And yes, my PHP web app <em>is</em> easy to maintain and extend, because I designed it to be that way (I can often implement, test and roll out new features in a matter of minutes, even when they require database schema changes) — it&#8217;s the developer, not the programming language, that determines the quality and maintainability of an app.  A lot of newbies use PHP, so there&#8217;s a lot of bad PHP out there, but the same can be said for any language, <a href="http://www.zedshaw.com/rants/rails_is_a_ghetto.html">even Ruby</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Amazon SimpleDB (not very Codd-y)</title>
+		<link>https://quoderat.megginson.com/2007/12/14/amazon-simpledb-not-very-codd-y/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 14 Dec 2007 16:35:11 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[news]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/12/14/amazon-simpledb-not-very-codd-y/</guid>
+
+					<description><![CDATA[This might be of interest: Amazon SimpleDB Amazon&#8217;s announcement Dear AWS Developers, This is a short note to let a subset of our most active developers know about an upcoming limited beta of our newest web service: Amazon SimpleDB, which &#8230; <a href="https://quoderat.megginson.com/2007/12/14/amazon-simpledb-not-very-codd-y/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>This might be of interest:</p>
+<p><a href="http://www.amazon.com/gp/redirect.html/ref=aws_smpldb_txtDp?location=http%3A//aws.amazon.com/simpledb&amp;token=884CBD83286A3F3592BD77F9E0AD29091A93E245">Amazon SimpleDB</a></p>
+<div id="announcement">
+<h3>Amazon&#8217;s announcement</h3>
+<blockquote><p>
+Dear AWS Developers,</p>
+<p>This is a short note to let a subset of our most active developers know about an upcoming limited beta of our newest web service: Amazon SimpleDB, which is a web service for running queries on structured data in real time. This service works in close conjunction with Amazon Simple Storage Service (Amazon S3) and Amazon Elastic Compute Cloud (Amazon EC2), collectively providing the ability to store, process and query data sets in the cloud.</p>
+<p>Traditionally, this type of functionality has been accomplished with a clustered relational database that requires a sizable upfront investment, brings more complexity than is typically needed, and often requires a DBA to maintain and administer. In contrast, Amazon SimpleDB is easy to use and provides the core functionality of a database &#8211; real-time lookup and simple querying of structured data &#8211; without the operational complexity.</p>
+<p>Were excited about this upcoming service and wanted to let you know about it as soon as possible. We anticipate beginning the limited beta in the next few weeks. In the meantime, you can read more about the service, and sign up to be notified when the limited beta program opens and a spot becomes available for you.  To do so, simply click the &#8220;Sign Up For This Web Service&#8221; button on the web site below and we will record your contact information.
+</p></blockquote>
+</div>
+<div id="excited">
+<h3>Not much there, though</h3>
+<p>It&#8217;s not SQL, or even SQL-like, though, supporting only the operators &#8220;=, !=,  =, STARTS-WITH,  AND, OR, NOT, INTERSECTION AND UNION&#8221;.  I&#8217;m no relational expert, but I don&#8217;t think <a href="http://en.wikipedia.org/wiki/Codd%27s_12_rules">Codd</a> would have been impressed.  A distributed database is one of the big missing pieces from Amazon&#8217;s services, but I&#8217;m not sure if this will be it.</p>
+</div>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>First looks at OpenSocial: part 4 (content for persistence data)</title>
+		<link>https://quoderat.megginson.com/2007/11/08/first-looks-at-opensocial-part-4-content-for-persistence-data/</link>
+					<comments>https://quoderat.megginson.com/2007/11/08/first-looks-at-opensocial-part-4-content-for-persistence-data/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 08 Nov 2007 21:24:25 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/11/08/first-looks-at-opensocial-part-4-content-for-persistence-data/</guid>
+
+					<description><![CDATA[Earlier postings: First looks at OpenSocial: part 1 (URLs) First looks at OpenSocial: part 2 (content for members and friends) First looks at OpenSocial: part 3 (content for activities) I didn&#8217;t have time to look at the OpenSocial API yesterday, &#8230; <a href="https://quoderat.megginson.com/2007/11/08/first-looks-at-opensocial-part-4-content-for-persistence-data/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote style="font-style:italic;font-size:90%;">
+<p>Earlier postings:</p>
+<ul>
+<li><a href="http://www.megginson.com/blogs/quoderat/2007/11/03/first-looks-at-opensocial-part-1-urls/">First looks at OpenSocial: part 1 (URLs)</a></li>
+<li><a href="http://www.megginson.com/blogs/quoderat/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/">First looks at OpenSocial: part 2 (content for members and friends)</a></li>
+<li><a href="http://www.megginson.com/blogs/quoderat/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/">First looks at OpenSocial: part 3 (content for activities)</a></li>
+</ul>
+</blockquote>
+<p>I didn&#8217;t have time to look at the <a href="http://en.wikipedia.org/wiki/OpenSocial">OpenSocial</a> API yesterday, so I&#8217;m continuing today looking at the data format for the last major area, <a href="http://code.google.com/apis/opensocial/docs/gdata/persistence/developers_guide_protocol.html">persistence data</a>.</p>
+<div id="vision">
+<h3>A vision thing?</h3>
+<p>My first impression of the persistence data API is that it doesn&#8217;t belong in v.1 of OpenSocial &mdash; unlike the member/friends and activities APIs, it doesn&#8217;t seem to be solving a core problem for social-site app writers (I have no way to get at a friends list except through the site&#8217;s API, but I can store my own data, thanks).  I can see only two reasons that it&#8217;s here, neither of them very admirable:</p>
+<ol>
+<li>Because someone has a vision of a world where people can write social apps that run entirely on the client side with HTML/CSS/JavaScript, using only resources provided by the social site itself.</li>
+<li>Because the GData group in Google co-opted the designers to promote GData in the spec, the same way that the Blu-Ray group in Sony co-opted the PS3 to advance their agenda.</li>
+</ol>
+<p>I&#8217;ll give Google the benefit of a doubt and assume that it&#8217;s a vision thing, but that&#8217;s still very unhealthy &mdash; specs should solve the real problems of the present, not the speculative problems of the future, especially bare-bones v.1 specs like this.</p>
+</div>
+<div id="format">
+<h3>The format</h3>
+<p>Now that that&#8217;s out of my system, let&#8217;s take a look at what you get back from a URL like <a href="http://">http://</a>{DOMAIN}/feeds/apps/{appId}/persistence/global (and its many variants).  From the spec, here&#8217;s what you get when you request a single piece of information from the API:</p>
+<pre>
+&lt;entry xmlns='http://www.w3.org/2005/Atom'&gt;
+&lt;title type="text"&gt;somekey&lt;/title&gt;
+&lt;content type="text"&gt;somevalue&lt;/content&gt;
+&lt;/entry&gt;
+</pre>
+<p>Or, in non-XML terms,</p>
+<pre>
+$globals{'somekey'} = 'somevalue'
+</pre>
+<p>That comes from a URL like <a href="http://">http://</a>{DOMAIN}/feeds/apps/{appId}/persistence/global/<em>somekey</em> which requests a single value.  Using the first URL mentioned gets you a <strong>feed</strong> of name=value pairs, sort-of like an associative array:</p>
+<pre>
+&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;feed xmlns='http://www.w3.org/2005/Atom'&gt;
+&lt;id&gt;http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global&lt;/id&gt;
+&lt;updated&gt;2007-10-30T20:53:20.086Z&lt;/updated&gt;
+&lt;title&gt;Persistence&lt;/title&gt;
+&lt;link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+  href='http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global'/&gt;
+&lt;link rel='http://schemas.google.com/g/2005#post' type='application/atom+xml'
+  href='http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global'/&gt;
+&lt;link rel='self' type='application/atom+xml'
+  href='http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global'/&gt;
+&lt;generator version='1.0' uri='/feeds'&gt;Orkut&lt;/generator&gt;
+&lt;entry&gt;
+  &lt;id&gt;http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global/somekey&lt;/id&gt;
+  &lt;title&gt;somekey&lt;/title&gt;
+  &lt;content&gt;somevalue&lt;/content&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global/somekey'/&gt;
+  &lt;link rel='edit' type='application/atom+xml'
+    href='http://sandbox.orkut.com:80/feeds/apps/02864641990088926753/persistence/global/somekey'/&gt;
+&lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<p>There&#8217;s only one entry in the spec&#8217;s example, but there could be a lot more.  Basically, this is the equivalent of something like</p>
+<pre>
+$globals = { 'somekey' =&gt; 'somevalue' }
+</pre>
+<p>The comparison isn&#8217;t quite fair, because there are also some links explaining what you can do to modify this information, etc., but it still seems like a lot of markup for not much value (pun intended).  I wonder if this would be a good place to use JSON instead of Atom+XML?  After all, the serious apps will be doing their own data storage anyway, and the client-only apps will probably use a JavaScript API that hides the Atom from the developer.</p>
+</div>
+<div id="scope">
+<h3>Scope</h3>
+<p>As hinted at, at least, in my URL posting, there are several different data scopes:</p>
+<ul>
+<li>All (global) data for this application on this social site (equivalent of static global variables?).</li>
+<li>Data for this instance of the application only (equivalent of local or object variables?).</li>
+<li>Data for this user in this application (i.e. your own profile info about the user, available every time your app runs).</li>
+<li>Data for this user&#8217;s friends in this application (i.e. your own profile info about the friends, available every time your app runs).</li>
+</ul>
+<p>It seems like a reasonable division of scope, especially since the app can&#8217;t get anything out that it didn&#8217;t put in.</p>
+</div>
+<div id="final">
+<h3>Final thought (for now)</h3>
+<p>I do believe that, eventually, many web apps will be about to outsource storage as a service instead of having to maintain their own databases and database clusters &mdash; in fact, Amazon&#8217;s S3 and its competitors already provide precisely this service, though they might not be optimized for a lot of name=value look ups.  I&#8217;m surprised though, that this could be considered a key feature of a social app spec, when so much else was left out.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/11/08/first-looks-at-opensocial-part-4-content-for-persistence-data/feed/</wfw:commentRss>
+			<slash:comments>5</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>First looks at OpenSocial: part 3 (content for activities)</title>
+		<link>https://quoderat.megginson.com/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/</link>
+					<comments>https://quoderat.megginson.com/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 06 Nov 2007 14:19:04 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/</guid>
+
+					<description><![CDATA[Earlier postings: First looks at OpenSocial: part 1 (URLs) First looks at OpenSocial: part 2 (content for members and friends) This is the third part of a series where I&#8217;m working through the OpenSocial specs as I write &#8212; that &#8230; <a href="https://quoderat.megginson.com/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote style="font-style:italic;font-size:90%;">
+<p>Earlier postings:</p>
+<ul>
+<li><a href="http://www.megginson.com/blogs/quoderat/2007/11/03/first-looks-at-opensocial-part-1-urls/">First looks at OpenSocial: part 1 (URLs)</a></li>
+<li><a href="http://www.megginson.com/blogs/quoderat/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/">First looks at OpenSocial: part 2 (content for members and friends)</a></li>
+</ul>
+</blockquote>
+<p>This is the third part of a series where I&#8217;m working through the <a href="http://en.wikipedia.org/wiki/OpenSocial">OpenSocial</a> specs <em>as I write</em> &mdash; that means that I haven&#8217;t preread and predigested this stuff, but am creating a record of how I approach a new set of specifications and try to understand them.  First, I looked at the basic URLs for data access, since they provide the best high-level description of the OpenSocial capabilities (read-only info on members and their friends, read/write info on a member&#8217;s activity notifications, and a simple data-storage API).  Next, I looked at the data format for the most important content, the member profile and friends lists.  This time, I&#8217;ll look at the format for activity notifications, which is also based on the <a href="http://en.wikipedia.org/wiki/Atom_%28standard%29">Atom syndication format</a>.</p>
+<div id="activities">
+<h3>Activities</h3>
+<p>To get a list of a member&#8217;s recent activities (<em>uploaded a photo</em>, <em>poked a friend</em>, <em>got a new job</em>, or stuff like that, I guess) an OpenSocial application uses the URL pattern <a href="http://">http://</a>{DOMAIN}/activities/feeds/activities/user/{userId} according to the specs, though I suspect that might be intended to be <a href="http://">http://</a>{DOMAIN}/feeds/activities/user/{userId} for consistency with the other data-access URLs &mdash; it&#8217;s hard to be certain.  The host should return an Atom feed of activities, like this template example lifted from the spec:</p>
+<pre>
+&lt;atom:feed xmlns:atom='http://www.w3.org/2005/Atom'
+    xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
+    xmlns:gact='http://schemas.google.com/activities/2007'&gt;
+  &lt;atom:id&gt;http://www.google.com/activities/feeds/activities/user/userID/source/sourceID&lt;/atom:id&gt;
+  &lt;atom:updated&gt;1970-01-01T00:00:00.000Z&lt;/atom:updated&gt;
+  &lt;atom:category scheme='http://schemas.google.com/g/2005#kind'
+    term='http://schemas.google.com/activities/2007#activity'/&gt;
+  &lt;atom:title&gt;Feed title&lt;/atom:title&gt;
+  &lt;atom:link rel='alternate' type='text/html' href='http://sourceID.com/123'/&gt;
+  &lt;atom:link rel='http://schemas.google.com/g/2005#feed'
+    type='application/atom+xml'
+    href='http://www.google.com/activities/feeds/activities/user/userID/source/sourceID'/&gt;
+  &lt;atom:link rel='http://schemas.google.com/g/2005#post'
+    type='application/atom+xml'
+    href='http://www.google.com/activities/feeds/activities/user/userID/source/sourceID'/&gt;
+  &lt;atom:link rel='self' type='application/atom+xml'
+    href='http://www.google.com/activities/feeds/activities/user/userID/source/sourceID'/&gt;
+  &lt;atom:author&gt;
+    &lt;atom:name&gt;unknown&lt;/atom:name&gt;
+  &lt;/atom:author&gt;
+  &lt;openSearch:totalResults&gt;1&lt;/openSearch:totalResults&gt;
+  &lt;openSearch:startIndex&gt;1&lt;/openSearch:startIndex&gt;
+  &lt;openSearch:itemsPerPage&gt;25&lt;/openSearch:itemsPerPage&gt;
+  &lt;atom:entry&gt;
+    &lt;atom:id&gt;http://www.google.com/activities/feeds/activities/user/userID/source/sourceID/a1&lt;/atom:id&gt;
+    &lt;atom:updated&gt;2007-10-27T19:41:51.574Z&lt;/atom:updated&gt;
+    &lt;atom:category scheme='http://schemas.google.com/g/2005#kind'
+      term='http://schemas.google.com/activities/2007#activity'/&gt;
+    &lt;atom:title&gt;Activity title&lt;/atom:title&gt;
+    &lt;atom:link rel='self' type='application/atom+xml'
+      href='http://www.google.com/activities/feeds/activities/user/userID/source/sourceID/a1'/&gt;
+    &lt;atom:link rel='edit' type='application/atom+xml'
+      href='http://www.google.com/activities/feeds/activities/user/userID/source/sourceID/a1'/&gt;
+    &lt;gact:received&gt;2007-10-27T19:41:51.478Z&lt;/gact:received&gt;
+  &lt;/atom:entry&gt;
+&lt;/atom:feed&gt;
+</pre>
+<p>There&#8217;s a lot of front-matter in this, so it&#8217;s hard to realize at first glance that it lists only a single activity (in the <var>atom:entry</var> element near the bottom).  The entry itself uses mostly standard Atom elements, except for one extension element from the Google activities namespace, giving the date that the notification was received (received date is also important in the news industry, so maybe this is something Atom needs to add to its core).  Other than that, the activity itself is easy enough to understand: it has a unique id, a couple of dates, a title (which seems also to serve as the sole description), and web links for viewing and editing.</p>
+<p>Unlike the member and friends info, which was read-only, OpenSocial allows apps to post new activities and edit or delete existing ones, but only in what is called a &#8220;source-level feed&#8221; &mdash; that&#8217;s a list of a user&#8217;s activities limited to a single source (which, I assume, is the application), using the URL pattern <a href="http://">http://</a>{DOMAIN}/activities/feeds/activities/user/{userId}/source/{sourceId} (which, again, may be a typo with an extra &#8220;activities&#8221; path element at the beginning).  In other words, an application can read activities from any source, but it can mess around only with the ones it created.  I&#8217;m not sure yet how the application knows its source id, or how the host verifies the app&#8217;s identity, but I&#8217;ll be looking at those issues in a later posting.</p>
+<p>For members and friends, I noted that the spec&#8217;s example included the <a href="http://en.wikipedia.org/wiki/OpenSearch">OpenSearch</a> namespace but didn&#8217;t use it.  This time, the namespace is used for the <var>totalResults</var>, <var>startIndex</var>, and <var>itemsPerPage</var> elements.  These suggest that it&#8217;s possible to page through long lists of activities, though I could find no mention of that in the spec.  Again, I don&#8217;t know much about Atom, but I think that Atom-blessed way to handle paging would involve using &#8220;first&#8221;, &#8220;next&#8221;, and &#8220;last&#8221; links.</p>
+</div>
+<div id="learning">
+<h3>Still learning</h3>
+<p>I&#8217;m not deeply into social networking myself &mdash; with my adolescent children using Facebook, my joining that site would be like showing up in a leather jacket at their highschool dance, and 99% of the time I spend on the more grown-up sites like Plaxo, LinkedIn, and Dopplr is used approving connection requests.  As a result, I wasn&#8217;t aware of how important activity notifications were for a social-networking site.</p>
+<p>Whatever happens with OpenSocial, I have found it to be a good architectural introduction to social networking in 2007, though I suspect that the next thing I&#8217;m going to look at &mdash; the persistence data API &mdash; has more to do with Google&#8217;s business requirements than with social networking itself.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/11/06/first-looks-at-opensocial-part-3-content-for-activities/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>First looks at OpenSocial: part 2 (content for members and friends)</title>
+		<link>https://quoderat.megginson.com/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/</link>
+					<comments>https://quoderat.megginson.com/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 05 Nov 2007 14:51:56 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/</guid>
+
+					<description><![CDATA[See also First looks at OpenSocial: part 1 (URLs) This is the second part of a series of postings describing how I&#8217;m trying to understand the technical specs for the new Google-led OpenSocial initiative. In the first part, I cut &#8230; <a href="https://quoderat.megginson.com/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote>
+<p><em>See also <a href="http://www.megginson.com/blogs/quoderat/2007/11/03/first-looks-at-opensocial-part-1-urls/">First looks at OpenSocial: part 1 (URLs)</a></em></p>
+</blockquote>
+<p>This is the second part of a series of postings describing how I&#8217;m trying to understand the technical specs for the new Google-led <a href="http://code.google.com/apis/opensocial/">OpenSocial</a> initiative.  In the <a href="http://www.megginson.com/blogs/quoderat/2007/11/03/first-looks-at-opensocial-part-1-urls/">first part</a>, I cut down through all the text in the specs to get at the basic URLs, which represent the raw skeleton of services defined by the spec.  This time, I&#8217;m going to look at the data formats, starting with the real bread and butter of social networking, people and their friends.</p>
+<div id="atom">
+<h3>The atomic age</h3>
+<p>The content format for OpenSocial is always the <a href="http://en.wikipedia.org/wiki/Atom_%28standard%29">Atom syndication format</a>, a competitor to <a href="http://en.wikipedia.org/wiki/RSS">RSS</a> for syndicating blogs and other similar information.  I haven&#8217;t spent very much time with Atom yet &mdash; I appreciate that it&#8217;s more fully-specified than RSS 2.0, but I already know RSS and have run into no practical problems with it (through I&#8217;m aware of the potential ones) &mdash; so I&#8217;m probably not going to notice if or where the OpenSocial specs are violating the spirit or even letter of the Atom specs.  I&#8217;ve occasionally seen complaints from Atom-heads about Atom-compliance in Google&#8217;s <a href="http://code.google.com/apis/gdata/index.html">GData</a>, and assume those apply to OpenSocial as well.</p>
+</div>
+<div id="people">
+<h3>People</h3>
+<p>When you ask an OpenSocial provider for information about a member (using the URL pattern <a href="http://">http://</a>{DOMAIN}/feeds/people/{userId}), the spec says you get back something like this, assuming you&#8217;re authorized to make the request (lifted straight from the spec<del>, and <em>not</em> namespace-compliant</del>):</p>
+<pre>
+&lt;entry xmlns='http://www.w3.org/2005/Atom'
+  xmlns:georss='http://www.georss.org/georss'
+  xmlns:gd='http://schemas.google.com/g/2005'&gt;
+  &lt;id&gt;http://sandbox.orkut.com:80/feeds/people/14358878523263729569&lt;/id&gt;
+  &lt;updated&gt;2007-10-28T14:01:29.948-07:00&lt;/updated&gt;
+  &lt;title&gt;Elizabeth Bennet&lt;/title&gt;
+  &lt;link rel='thumbnail' type='image/*'
+    href='http://img1.orkut.com/images/small/1193601584/115566312.jpg'/&gt;
+  &lt;link rel='alternate' type='text/html'
+    href='http://orkut.com/Profile.aspx?uid=17583631990196664929'/&gt;
+  &lt;link rel='self' type='application/atom+xml'
+    href='http://sandbox.orkut.com:80/feeds/people/14358878523263729569'/&gt;
+  &lt;georss:where&gt;
+    &lt;gml:Point xmlns:gml='http://www.opengis.net/gml'&gt;
+      &lt;gml:pos&gt;51.668674 -0.066235&lt;/gml:pos&gt;
+    &lt;/gml:Point&gt;
+  &lt;/georss:where&gt;
+  &lt;gd:extendedProperty name='lang' value='en-US'/&gt;
+  &lt;gd:postalAddress/&gt;
+&lt;/entry&gt;
+</pre>
+<p>Aside from the fact that the tech writer is a <a href="http://en.wikipedia.org/wiki/Jane_Austen">Jane Austen</a> fan, a couple of other points jump out:</p>
+<ol>
+<li>In addition to the Atom namespace, they&#8217;re using the <a href="http://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> namespace to provide lat/lon information (so that you could place the person on a map, for example), the <a href="http://en.wikipedia.org/wiki/Geography_Markup_Language#Point_Profile">GML</a> namespace <del>(which the example forgets to declare)</del>, and the GData namespace for generally unimportant information like the postal address (who gives that out?).</li>
+<li>The two most important pieces of information seem to be the thumbnail picture/buddy icon and the member&#8217;s HTML profile page, both of which are the targets of typed links.</li>
+</ol>
+<p>Of course, in reality, the most important information about a member is the member&#8217;s friends list, but that information comes through a separate URL, <a href="http://">http://</a>{DOMAIN}/feeds/people/{userId}/friends.</p>
+</div>
+<div id="friends">
+<h3>Friends</h3>
+<p>This example is also lifted from the spec <del>(and is still missing the declaration for the GML namespace)</del>:</p>
+<pre>
+&lt;feed xmlns='http://www.w3.org/2005/Atom'
+  xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
+  xmlns:georss='http://www.georss.org/georss'
+  xmlns:gd='http://schemas.google.com/g/2005'&gt;
+  &lt;id&gt;http://sandbox.orkut.com:80/feeds/people/14358878523263729569/friends&lt;/id&gt;
+  &lt;updated&gt;2007-10-28T21:01:03.690Z&lt;/updated&gt;
+  &lt;title&gt;Friends&lt;/title&gt;
+  &lt;link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+    href='http://sandbox.orkut.com:80/feeds/people/14358878523263729569/friends'/&gt;
+  &lt;link rel='self' type='application/atom+xml' href='http://sandbox.orkut.com:80/feeds/people/14358878523263729569/friends'/&gt;
+  &lt;author&gt;&lt;name&gt;Elizabeth Bennet&lt;/name&gt;&lt;/author&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://sandbox.orkut.com:80/feeds/people/02938391851054991972&lt;/id&gt;
+    &lt;updated&gt;2007-10-28T14:01:03.690-07:00&lt;/updated&gt;
+    &lt;title&gt;Jane Bennet&lt;/title&gt;
+    &lt;link rel='thumbnail' type='image/*' href='http://img1.orkut.com/images/small/null'/&gt;
+    &lt;link rel='alternate' type='text/html' href='http://sandbox.orkut.com:80/Profile.aspx?uid=574036770800045389'/&gt;
+    &lt;link rel='self' type='application/atom+xml' href='http://sandbox.orkut.com:80/feeds/people/02938391851054991972'/&gt;
+    &lt;georss:where&gt;
+    &lt;gml:Point xmlns:gml='http://www.opengis.net/gml'&gt;
+    &lt;gml:pos&gt;51.668674 -0.066235&lt;/gml:pos&gt;&lt;/gml:Point&gt;&lt;/georss:where&gt;
+    &lt;gd:extendedProperty name='lang' value='en-US'/&gt;
+    &lt;gd:postalAddress/&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://sandbox.orkut.com:80/feeds/people/12490088926525765025&lt;/id&gt;
+    &lt;updated&gt;2007-10-28T14:01:03.691-07:00&lt;/updated&gt;
+    &lt;title&gt;Charlotte Lucas&lt;/title&gt;
+    &lt;link rel='thumbnail' type='image/*' href='http://img2.orkut.com/images/small/null'/&gt;
+    &lt;link rel='alternate' type='text/html' href='http://sandbox.orkut.com:80/Profile.aspx?uid=5799256900854924919'/&gt;
+    &lt;link rel='self' type='application/atom+xml' href='http://sandbox.orkut.com:80/feeds/people/12490088926525765025'/&gt;
+    &lt;georss:where&gt;
+    &lt;gml:Point xmlns:gml='http://www.opengis.net/gml'&gt;
+    &lt;gml:pos&gt;0.0 0.0&lt;/gml:pos&gt;&lt;/gml:Point&gt;&lt;/georss:where&gt;
+    &lt;gd:extendedProperty name='lang' value='en-US'/&gt;
+    &lt;gd:postalAddress/&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;id&gt;http://sandbox.orkut.com:80/feeds/people/15827776984733875930&lt;/id&gt;
+    &lt;updated&gt;2007-10-28T14:01:03.692-07:00&lt;/updated&gt;
+    &lt;title&gt;Fitzwilliam Darcy&lt;/title&gt;
+    &lt;link rel='thumbnail' type='image/*' href='http://img3.orkut.com/images/small/1193603277/115555466.jpg'/&gt;
+    &lt;link rel='alternate' type='text/html' href='http://sandbox.orkut.com:80/Profile.aspx?uid=14256507824223085777'/&gt;
+    &lt;link rel='self' type='application/atom+xml' href='http://sandbox.orkut.com:80/feeds/people/15827776984733875930'/&gt;
+    &lt;georss:where&gt;
+    &lt;gml:Point xmlns:gml='http://www.opengis.net/gml'&gt;
+    &lt;gml:pos&gt;53.017016 -1.424363&lt;/gml:pos&gt;&lt;/gml:Point&gt;
+    &lt;/georss:where&gt;
+    &lt;gd:extendedProperty name='lang' value='en-US'/&gt;
+    &lt;gd:postalAddress/&gt;
+  &lt;/entry&gt;
+&lt;/feed&gt;
+</pre>
+<p>Again, very straight-forward<del>, if not namespace-compliant (due to the missing GML namespace declaration)</del>.  There&#8217;s also a declaration of an <a href="http://en.wikipedia.org/wiki/OpenSearch">OpenSearch</a> namespace URI that&#8217;s never used, suggesting a feature that was removed in haste just before release. The friends list is simply a feed of person entries, just like the single entry returned for the member query, with a title, date, etc. at the top.  Note that you <em>always</em> get the full friends list &mdash; there&#8217;s no support for filtering &mdash; so this might not be fun for someone who has 10,000+ friends.</p>
+<p>What I don&#8217;t see, either in the example or the spec, is a way to provide typed relationships, like &#8220;spouse&#8221;, &#8220;colleague&#8221;, &#8220;classmate&#8221;, etc.  I don&#8217;t know how important that is to application developers &mdash; simply getting the list of friends is probably the most important thing.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/11/05/first-looks-at-opensocial-part-2-content-for-members-and-friends/feed/</wfw:commentRss>
+			<slash:comments>4</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>First looks at OpenSocial: part 1 (URLs)</title>
+		<link>https://quoderat.megginson.com/2007/11/03/first-looks-at-opensocial-part-1-urls/</link>
+					<comments>https://quoderat.megginson.com/2007/11/03/first-looks-at-opensocial-part-1-urls/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 03 Nov 2007 21:46:59 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/11/03/first-looks-at-opensocial-part-1-urls/</guid>
+
+					<description><![CDATA[In a year or two, we&#8217;ll know whether the Google-lead OpenSocial initiative was a turning point in the social web or just a weak shot fired across Facebook&#8217;s bow. In the meantime, I think it&#8217;s worth taking some time to &#8230; <a href="https://quoderat.megginson.com/2007/11/03/first-looks-at-opensocial-part-1-urls/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>In a year or two, we&#8217;ll know whether the Google-lead <a href="http://code.google.com/apis/opensocial/">OpenSocial</a> initiative was a turning point in the social web or just a weak shot fired across Facebook&#8217;s bow.  In the meantime, I think it&#8217;s worth taking some time to digest the <a href="http://code.google.com/apis/opensocial/docs/">API docs</a>, which are still pretty rough.</p>
+<h2>I don&#8217;t know what I&#8217;m talking about&#8230;</h2>
+<p>Instead of reading and understanding everything first and then posting from a (virtual) podium, I&#8217;m going to try to work out my own understanding of the APIs right here on the web.  That means that I&#8217;ll be asking questions that I&#8217;ll find the answers for later, that I&#8217;ll be making incorrect assumptions, and that I&#8217;ll be deferring hard stuff (like authorization/authentication) until I understand the basics.  This is <em>not</em>, then, an OpenSocial primer by any stretch, since I don&#8217;t actually know what I&#8217;m talking about, but it might be useful as a snapshot of how a developer approaches a new API.</p>
+<h2>It&#8217;s the URLs, stupid</h2>
+<p>OpenSocial is designed so that any app can get information from any site as long as it has permission (I&#8217;ll figure out how that works later) &mdash; to accomplish that, it uses standard URL patterns on every site returning Atom entries and feeds.  So after digging through a lot of crackerjack, I finally found the prize buried in the docs.  Here are the URL patterns:</p>
+<dl>
+<dt>Information about a person</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/people/{userId}</dd>
+<dd>GET only.</dd>
+<dt>List of a person&#8217;s friends</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/people/{userId}/friends</dd>
+<dd>GET only.</dd>
+<dt>List of a person&#8217;s activities</dt>
+<dd>(Wrong?) <a href="http://">http://</a>{DOMAIN}/activities/feeds/activities/user/{userId}</dd>
+<dd>GET only</dd>
+<dt>List of a person&#8217;s activities from a single source</dt>
+<dd>(Wrong?) <a href="http://">http://</a>{DOMAIN}/activities/feeds/activities/user/{userId}/source/{sourceId}</dd>
+<dd>GET, POST, PUT, DELETE</dd>
+<dt>Application-global data</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/apps/{appId}/persistence/global<br />
+<a href="http://">http://</a>{DOMAIN}/feeds/apps/{appId}/persistence/global/{partKey}</dd>
+<dd>GET, POST, PUT, DELETE</dd>
+<dt>Per-instance data</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/apps/{appId}/persistence/{userId}/instance/{instanceId}/{partKey}</dd>
+<dd>GET, POST, PUT, DELETE</dd>
+<dt>Shared user data</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/apps/{appID}/persistence/{userId}/shared/{partKey}</dd>
+<dd>GET, POST, PUT, DELETE</dd>
+<dt>Friends&#8217; shared data</dt>
+<dd><a href="http://">http://</a>{DOMAIN}/feeds/apps/{appID}/persistence/{userId}/friends</dd>
+<dd>GET, POST, PUT, DELETE</dd>
+</dl>
+<h2>Did I miss anything?</h2>
+<p>Listing all the URLs together like this, instead of spreading them out over pages and pages of docs, is the best way to start with a REST API.  For example, you can tell at a glance what what kind of information is available and what is and isn&#8217;t writable (you can&#8217;t add new friends for a user, but you can add a new activity).  Sure, Javascript libraries, etc. are nice, but the class hierarchies can obscure how simple the underlying data actually is (or &#8220;are&#8221;, if you&#8217;ve studied Latin). You can also spot possible typos in the docs &mdash; for example, what are the odds that the activity URLs are really supposed to start with &#8220;/activities/feeds/&#8221; when everything else starts with &#8220;/feeds/&#8221;?  It could be poor, inconsistent design, but I suspect cut-and-paste errors.</p>
+<h2>Next time: content</h2>
+<p>The next time I get around to looking at OpenSocial, I&#8217;ll try to figure out the formats &mdash; it shouldn&#8217;t be too hard, since they&#8217;re all Atom entries or feeds.  Then I&#8217;ll get into messier stuff like auth/auth, and I may eventually try adding OpenSocial support to my <a href="http://www.ourairports.com/">OurAirports</a> hobby site, though it doesn&#8217;t even support friends yet.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/11/03/first-looks-at-opensocial-part-1-urls/feed/</wfw:commentRss>
+			<slash:comments>4</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>[not] Protecting web sites and services from DNS rebinding attacks</title>
+		<link>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/</link>
+					<comments>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 01 Aug 2007 21:45:58 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/</guid>
+
+					<description><![CDATA[Update: Nope, my solution won&#8217;t work. As Christian Matthies points out in the comments, it is possible to spoof the HTTP Host header as well (his link in the comment is broken because of an extra comma, but this one &#8230; <a href="https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote style="background:yellow;"><p><strong>Update:</strong> Nope, my solution won&#8217;t work.  As Christian Matthies points out in the comments, it is possible to spoof the HTTP Host header as well (his link in the comment is broken because of an extra comma, but <a href="http://christ1an.blogspot.com/2007/07/dns-pinning-explained.html">this one</a> works).  As a kludge, browsers could be modified to prevent Host header spoofing, but (a) it would take a long time to deploy to the world at large, and (b) it would be only a bandaid for a much bigger problem.</p></blockquote>
+<blockquote><p><em><strong>Summary:</strong> While there&#8217;s no way to protect browsers against the DNS rebinding attack, you can protect web sites and web services by forcing them to check the HTTP <code>Host</code> header with every request.  This is easy to do for RESTful services going through a regular web server like Apache &mdash; you get it by default with virtual hosts &mdash; but might be trickier for WS-* services.</em></p></blockquote>
+<p>If you or your company is using HTTP-based web services (either WS-* or REST), you might be in trouble &mdash; a new exploit allows a web site from outside your firewall to use a web browser as a proxy to read any web site or service <em>inside</em> your firewall.</p>
+<p>Artur Bergman at O&#8217;Reilly has <a href="http://radar.oreilly.com/archives/2007/08/your_web_browse.html">a posting</a> on the <a href="http://www.darkreading.com/document.asp?doc_id=129880">DNS rebinding</a> (aka anti-DNS-pinning) attack that works against all major browsers, including all versions of Firefox and MSIE.  There&#8217;s no obvious general fix for this, though there&#8217;s a <a href="http://databasement.net/labs/localrodeo/">Firefox extension</a> that helps a tiny bit.</p>
+<div id="attack">
+<h2>The attack</h2>
+<p>In a DNS-rebinding attack, the attacker is able to force your browser to read data from any IP address that <em>your browser</em> has access to, even if you&#8217;re behind a router/firewall, by changing the IP address associated with a domain name you&#8217;ve connected to.  That means that given an IP address, an outside attacker can read your local website (at 127.0.0.1), anything behind your corporate firewall (such as an Intranet accounting page or a web service), or &mdash; I think (haven&#8217;t tested yet) &mdash; a website that you&#8217;re logged into using a cookie (HTTP authentication will force a popup, since the browser will see a different domain name, even if you&#8217;re logged into the site in another tab/window).  If you run a local web server on your computer (say, at 127.0.0.1), you can go to <a href="http://www.jumperz.net/index.php?i=2&amp;a=1&amp;b=7">http://www.jumperz.net/index.php?i=2&amp;a=1&amp;b=7</a>, type in the local address, and see jumperz.net use the exploit display the source of your home page.</p>
+</div>
+<div id="defence">
+<h2>The defence</h2>
+<p>There&#8217;s no way to protect the browser yet, but you can protect your HTTP-based sites and services from this attack very easily &mdash; in fact, many sites on the web are already unknowingly protected, though I don&#8217;t know if most enterprise web services are.</p>
+<p>The trick is in the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23">HTTP <code>Host</code> header</a>.  While the DNS rebinding attack can associate a new IP address with a hostname, <del>it cannot change the hostname itself, so the browser will still send the original hostname to the new host</del>.  Nearly all shared-hosting servers &mdash; and many servers at dedicated hosts as well &mdash; will check the <code>Host</code> header to decide what pages to serve out.  As long as the site does something harmless when it gets an unrecognized hostname (such as returning a &#8220;501 Not implemented&#8221; HTTP status code), the site will be safe the attack.  In Apache, for example, you use the ServerName directive for each virtual host, and just make sure that there&#8217;s a default virtual host that returns an error or at least does nothing harmful.</p>
+<p>For Web Services, the same thing applies.  It&#8217;s often tempting to use IP addresses instead of hostnames for web services (including RESTful services), especially during development, but doing so opens you right up to a DNS-rebinding attack, which could be very harmful if you&#8217;re using real data for development and testing.  To protect your HTTP-based services from this attack, you need to make sure that <em>every</em> web service is accessed via a hostname rather than a raw IP address, and that every service checks its hostname.  For RESTful services, this is trivially easy (since you&#8217;re probably going through Apache or something similar anyway, just as with a web site); for WS-* services, I don&#8217;t know the implementations well enough to be sure, but it should be possible to force them to check the <code>Host</code> header somehow.</p>
+<p>Even if you&#8217;re not building web services, managing an enterprise intranet, or running a public web site, don&#8217;t forget to protect the web server on your local computer, if you have one.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/feed/</wfw:commentRss>
+			<slash:comments>8</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Three simple tips for LAMP web site developers</title>
+		<link>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/</link>
+					<comments>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 22 Jul 2007 01:25:37 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/07/21/three-simple-tips-for-lamp-web-site-developers/</guid>
+
+					<description><![CDATA[You&#8217;ve learned to write some basic HTML, CSS, PHP/Python/Perl and SQL, found a hosting service, and are ready to create your first LAMP web application. You&#8217;ve already read a bit about security (you know always to escape user-supplied parameters, etc.). &#8230; <a href="https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>You&#8217;ve learned to write some basic HTML, CSS, PHP/Python/Perl and SQL, found a hosting service, and are ready to create your first LAMP web application. You&#8217;ve already read a bit about security (you know always to escape user-supplied parameters, etc.).  Here are a three very simple tips that will help you along right at the start, without getting caught up in religious wars about frameworks, MVC, REST, abstraction, object orientation, etc.:</p>
+<ol>
+<li>
+<p><strong>Keep all the database code together.</strong> Put all your database calls into a single source file if you can &mdash; functions like <code>mysqli_query</code> (PHP) should never appear anywhere else but in this file &mdash; and create neutral functions like <code>get_member()</code> or <code>delete_cart()</code> for the rest of your code to call.  The reason for this is <em>not</em> so that you can switch databases in the future (that&#8217;s easy enough to fix), but so that you can easily do a search/replace when you rename or modify tables.  If all your database code is in the same place, your application will be orders of magnitude easier to maintain and upgrade a few months from now. Seriously.</p>
+</li>
+<li>
+<p><strong>Make an extra database for junk.</strong> If your hosting account allows more than one database, create at least two, say &#8220;foo&#8221; and &#8220;foo_cache&#8221;  &mdash; put all the tables you need to back up into the first one, and all the stuff you don&#8217;t need to back up (views, caching tables, session states, etc.) into the second.  Write a SQL script to automatically regenerate any required tables in &#8220;foo_cache&#8221; when you restore.  That way, you won&#8217;t waste time and bandwidth every day backing up megabytes or gigabytes of stuff you don&#8217;t need and can easily regenerate.</p>
+</li>
+<li>
+<p><strong>Make GET harmless.</strong> If you use HTTP GET (e.g. <code>$_GET</code> in PHP) to do things like deleting or modifying records, bad things will happen to your application &mdash; search engines will start randomly changing your database by following links (<code>robots.txt</code> might not be enough to protect you), browsers will delete records by trying to precache pages, etc.  Always use POST (normally from a form button) for anything that can make a change.  <a href="http://www.megginson.com/blogs/quoderat/2007/02/15/rest-the-quick-pitch/">More here</a>.</p>
+</li>
+</ol>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/feed/</wfw:commentRss>
+			<slash:comments>3</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Coding lessons from university</title>
+		<link>https://quoderat.megginson.com/2007/06/27/coding-lessons-from-university/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 27 Jun 2007 21:25:26 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/06/27/coding-lessons-from-university/</guid>
+
+					<description><![CDATA[Dare Obasanjo, smart code guy and occasional punching bag for the anti-Microsoft people, is collecting lists of Three Things I Learned About Software In College. I posted mine in a comment on his blog, but decided to reproduce them here. &#8230; <a href="https://quoderat.megginson.com/2007/06/27/coding-lessons-from-university/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote><p><em><strong>Dare Obasanjo</strong>, smart code guy and occasional punching bag for the anti-Microsoft people, is collecting lists of <a href="http://www.25hoursaday.com/weblog/2007/06/27/ThreeThingsILearnedAboutSoftwareInCollege.aspx">Three Things I Learned About Software In College</a>.  I posted mine in a comment on his blog, but decided to reproduce them here.  Note that these are not lessons you learned 10 or 20 years later, but what you discovered back then.</em></p></blockquote>
+<p>I coded a lot in university &mdash; some of it for pay &mdash; but fortunately, I didn&#8217;t study computer science or engineering. Here are my major lessons:</p>
+<ol>
+<li>
+<p>Readable code goes further and survives longer than optimized code, especially once you&#8217;re no longer the one maintaining it (or if you have to come back to it two years later).</p>
+</li>
+<li>
+<p>If you write code that makes you feel like a genius, throw it out &mdash; you&#8217;ll realize later that it&#8217;s crap. If you write code that makes you feel like a competent tradesman, you&#8217;re on the right track.</p>
+</li>
+<li>
+<p>No matter how smart you are, everyone &mdash; even the most incompetent loser of a coder &mdash; knows at least one thing you don&#8217;t. It&#8217;s a good idea to listen.</p>
+</li>
+</ol>
+<p><strong>Note:</strong> If you want to record your own list of three things, please leave it as a comment to <a href="http://www.25hoursaday.com/weblog/2007/06/27/ThreeThingsILearnedAboutSoftwareInCollege.aspx">Dare&#8217;s original posting</a>, not here.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Maybe the women are right</title>
+		<link>https://quoderat.megginson.com/2007/06/21/maybe-the-women-are-right/</link>
+					<comments>https://quoderat.megginson.com/2007/06/21/maybe-the-women-are-right/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 21 Jun 2007 12:28:34 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[business]]></category>
+		<category><![CDATA[economy]]></category>
+		<category><![CDATA[kulcher]]></category>
+		<category><![CDATA[programming]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/06/21/maybe-the-women-are-right/</guid>
+
+					<description><![CDATA[Summary: Perhaps the women who don&#8217;t choose computer programming are making a good choice, especially with the deteriorating working conditions, stagnant or falling salaries, and offshoring. Recently, we&#8217;ve had a few postings about women in computing (or the lack thereof) &#8230; <a href="https://quoderat.megginson.com/2007/06/21/maybe-the-women-are-right/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote><p><em><strong>Summary:</strong> Perhaps the women who don&#8217;t choose computer programming are making a good choice, especially with the deteriorating working conditions, stagnant or falling salaries, and offshoring.</em></p></blockquote>
+<p>Recently, we&#8217;ve had a few postings about women in computing (or the lack thereof) — see <a href="http://www.tbray.org/ongoing/When/200x/2007/06/14/DevChix">Bray</a>, <a href="http://www.laurenwood.org/anyway/archives/2007/06/14/tech-women/">Wood</a>, <a href="http://www.jenitennison.com/blog/node/30">Tenison</a>, and <a href="http://www.tbray.org/ongoing/When/200x/2007/06/20/Women">Bray (again)</a>, all ignited by a <a href="http://www.devchix.com/2007/06/09/let%e2%80%99s-all-evolve-past-this-the-barriers-women-face-in-tech-communities/">piece in devChix</a>.</p>
+<p>These postings all assume that we need to <em>do something</em> to pull more women into coding.  Why?  Do we think there are there lots of women would be happy coding, but aren&#8217;t smart enough or motivated enough to choose the right careers for themselves, or are too timid to deal with any barriers unless someone comes along and dismantles them first?</p>
+<div id="market">
+<h3>Listen to the market</h3>
+<p>In an age where we&#8217;ve come to trust central planning less and the free market more, why not try to learn from the labour market instead of trying to push it ways it doesn&#8217;t want to go?</p>
+<p>If we assume that the majority of working women <em>are</em> smart, strong, motivated, and brave, then we can also assume that they have good reasons for choosing their careers.  And in fact, it turns out that their track record isn&#8217;t bad.  For example, in the 1970s and 1980s, women were grossly underrepresented in manufacturing and overrepresented in lower-paying service-industry jobs like retail.  But when manufacturing starting offshoring in the 1980s and 1990s, it was the women who were still working (often as managers, at this point), while the men were at home, depressed, collecting welfare cheques or trying to retrain for jobs that paid a fraction of what they used to earn.</p>
+<p>Now, while there&#8217;s lots of work connected with tech, we see pure coding increasingly being offshored, the same way that manufacturing was 20 years ago.  There&#8217;s no shortage of women working in jobs connected with computers, but instead of coding, many women choose onsite consulting, training, marketing, and other jobs that are not only social but require face time with customers, and as a result, are much more difficult to offshore.</p>
+<p>Of course, if you absolutely love coding, like I do (and most of the people reading this do), you&#8217;re going to work hard to try to find a way to keep doing it, whether you&#8217;re a man or a woman.  But if you don&#8217;t feel that burning love, why let yourself be dragged kicking and screaming into an industry where salaries are falling, jobs are fleeing, hours are increasing (bye bye weekends!), and workers are increasingly treated as interchangeable cogs on a development assembly line, without even the (questionable) union protection their parents had in their factory jobs 20-30 years ago?</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/06/21/maybe-the-women-are-right/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Ruby on Rails pain at Twitter</title>
+		<link>https://quoderat.megginson.com/2007/04/12/ruby-on-rails-pain-at-twitter/</link>
+					<comments>https://quoderat.megginson.com/2007/04/12/ruby-on-rails-pain-at-twitter/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 12 Apr 2007 22:08:58 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/04/12/ruby-on-rails-pain-at-twitter/</guid>
+
+					<description><![CDATA[Josh Kenzer has posted an interview with Alex Payne, a developer for Twitter, which is one of (if not the) biggest Ruby on Rails-based web apps. A couple of years ago, when I was getting tired of working within the &#8230; <a href="https://quoderat.megginson.com/2007/04/12/ruby-on-rails-pain-at-twitter/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><img src='/blogs/quoderat/images/railslogo.png' align='right' alt='' /></p>
+<p>Josh Kenzer has posted an <a href="http://www.radicalbehavior.com/5-question-interview-with-twitter-developer-alex-payne/">interview with Alex Payne</a>, a developer for <a href="http://en.wikipedia.org/wiki/Twitter">Twitter</a>, which is one of (if not <em>the</em>) biggest <a href="http://en.wikipedia.org/wiki/Ruby_on_rails">Ruby on Rails</a>-based web apps.</p>
+<p>A couple of years ago, when I was getting tired of working within the confines of the Java/J2EE bubblesphere, I <a href="http://www.megginson.com/blogs/quoderat/2005/06/11/rails-vs-php-mvc-or-view-centric/">tried out PHP and Ruby on Rails</a>, intended to like Rails; instead, I surprised myself by preferring <a href="http://en.wikipedia.org/wiki/PHP">PHP</a>, an ugly hack of a language optimized for script kiddies (I&#8217;ve been using it ever since).  It looks like Payne is coming to the same conclusion, as his team has ended up working to keep Twitter running <em>despite</em> RoR instead of <em>because of</em> it.  Here is an excerpt:</p>
+<blockquote><p>
+All the convenience methods and syntactical sugar that makes Rails such a pleasure for coders ends up being absolutely punishing, performance-wise. Once you hit a certain threshold of traffic, either you need to strip out all the costly neat stuff that Rails does for you (RJS, ActiveRecord, ActiveSupport, etc.) or move the slow parts of your application out of Rails, or both.
+</p></blockquote>
+<p>There&#8217;s lots more in Kenzer&#8217;s posting, including Payne&#8217;s claim (I don&#8217;t know enough to verify) that Rails cannot support more than one database at once, and that &#8220;Running on Rails has forced us to deal with scaling issues &mdash; issues that any growing site eventually contends with &mdash; far sooner than I think we would on another framework.&#8221;.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/04/12/ruby-on-rails-pain-at-twitter/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>In praise of architecture astronauts</title>
+		<link>https://quoderat.megginson.com/2007/01/04/in-praise-of-architecture-astronauts/</link>
+					<comments>https://quoderat.megginson.com/2007/01/04/in-praise-of-architecture-astronauts/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 04 Jan 2007 15:17:35 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/04/in-praise-of-architecture-astronauts/</guid>
+
+					<description><![CDATA[Six years ago, Joel Spolsky wrote a piece on Architecture Astronauts, people who get so obsessed with the big picture that they miss the important little details that actually make things work. More recently, Dare Obasanjo pointed to Spolsky&#8217;s piece &#8230; <a href="https://quoderat.megginson.com/2007/01/04/in-praise-of-architecture-astronauts/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Six years ago, Joel Spolsky wrote a piece on <a href="http://www.joelonsoftware.com/articles/fog0000000018.html">Architecture Astronauts</a>, people who get so obsessed with the big picture that they miss the important little details that actually make things work.  More recently, Dare Obasanjo pointed to Spolsky&#8217;s piece in his posting <a href="http://www.25hoursaday.com/weblog/PermaLink.aspx?guid=d639d908-7fbc-40cd-8e36-e6d48c07f659">XML Has Too Many Architecture Astronauts</a>.</p>
+<p>I&#8217;d like to start by agreeing with Dare: <a href="http://en.wikipedia.org/wiki/XML">XML</a> <em>does</em> have too many architecture astronauts, and almost everything that&#8217;s bad, ugly, or simply scary about the huge number of standards built around XML (WS-* springs immediately to mind, but it&#8217;s not alone) comes from gross overgeneralization.  That said, architecture astronauts do have their place, and we ignore them at our peril.</p>
+<div id="napster">
+<h2>Case 1: Napster</h2>
+<p>Let&#8217;s start by turning Spolsky&#8217;s main example (which Dare cites) on its head.  Here are two different perspectives on <a href="http://en.wikipedia.org/wiki/Napster">Napster</a> circa 2001:</p>
+<blockquote>
+<p><strong>Architecture pedestrian:</strong> Napster lets people find and download songs.</p>
+<p><strong>Architecture astronaut:</strong> Peer-to-peer networks let people find and download songs.  Napster is (was) a peer-to-peer network.</p>
+</blockquote>
+<p>Spolsky writes about how <em>architecture astronaut</em> perspective helped to fuel a mini-P2P bubble at the time, with investors pouring wasted money into P2P-everything, when Napster&#8217;s success was due not to the fact that it was P2P but to the fact that it let people get songs easily.  However, consider what was happening at the same time in the music industry.  Rightly or wrongly, they wanted to stop people from sharing songs.  The <em>architecture pedestrian</em> perspective (my term, not Spolsky&#8217;s) told them that Napster lets people find and download songs, so the industry spent millions of dollars in legal fees, PR, etc. shutting down Napster.  The result?  People downloaded even more music.  After all, as the astronauts said, it was P2P networks that let people share music, not Napster in particular.  Since then, the music industry has been fighting the equivalent of an insurgency, putting down one uprising after another with no end in sight.</p>
+</div>
+<div id="netscape">
+<h2>Case #2: The Netscape IPO</h2>
+<p>My second example took place over 11 years ago, kicking of the much larger dot.com bubble (the P2P mini-bubble was just a tiny part of its tail).  It was around 1995 that most non-techies noticed the web, mostly through the lens of the <a href="http://en.wikipedia.org/wiki/Netscape">Netscape</a> browser.  Again, the architecture pedestrian and the architecture astronaut looked at this differently:</p>
+<blockquote>
+<p><strong>Architecture pedestrian:</strong> Netscape lets people see text and pictures online.</p>
+<p><strong>Architecture astronaut:</strong> The web allows people to put text and pictures online. Netscape is a web browser.</p>
+</blockquote>
+<p>This time, the investors listened to the architecture pedestrian rather than the architecture astronaut: Netscape was set to open at $14/share, doubled to $28/share, and climbed to $75/share on the first day, and eventually reached a peak market cap of $8 billion. The astronauts knew all along, however, that while people (at the time) thought of the web in terms of the Netscape browser, the web <em>wasn&#8217;t</em> Netscape.  If Internet Explorer hadn&#8217;t knocked Netscape off its perch (resulting in layoffs as early as January 1998), some other browser soon would have.</p>
+</div>
+<div id="xml">
+<h2>Case #3: XML</h2>
+<p>So how does this all apply to XML?  I think that there are two ways that architecture astronauts can approach XML, one good and one bad.  The bad one is in line with Spolsky&#8217;s original piece, where people miss what made XML popular (relative simplicity, no need to create DTDS, etc.) and believe that if a bit of standardization is good, a lot must be even better.  The good one is to step back and point out that most of the advantages that appear to come from XML actually come from <em>generic tree markup</em>, and that holy wars between XML, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>, etc. are really beside the point.  In various situations, one syntax may have an advantage due to software support &#8212; for example, web browsers have built-in support for parsing XML or styling it using CSS, and they can convert JSON directly to JavaScript data structures using the <var>eval()</var> function &#8212; but when you look at the whole world of generic markup, those are small blips on a very large screen, and all of the markup languages <a href="http://www.megginson.com/blogs/quoderat/2007/01/03/all-markup-ends-up-looking-like-xml/">more-or-less look the same</a>.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/01/04/in-praise-of-architecture-astronauts/feed/</wfw:commentRss>
+			<slash:comments>5</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Templating languages and XML</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/</link>
+					<comments>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 24 Dec 2006 02:56:59 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/</guid>
+
+					<description><![CDATA[Erich Schubert is talking about web templating languages. He&#8217;s looking for a pure-XML templating solution, but that might not be necessary for simple web-page design, where we don&#8217;t need all the extra benefits of heavy-duty transformation standards like XSLT. Keeping &#8230; <a href="https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Erich Schubert is <a href="http://blog.drinsama.de/erich/en/xml/2006122401-website-meta-languages">talking about web templating languages</a>.  He&#8217;s looking for a pure-XML templating solution, but that might not be necessary for simple web-page design, where we don&#8217;t need all the extra benefits of heavy-duty transformation standards like XSLT.</p>
+<div id="kiss">
+<h2>Keeping it simple</h2>
+<p>For PHP-driven web sites, I&#8217;m a big fan of <a href="http://smarty.php.net/">Smarty</a>, which uses braces (&#8220;{&#8221; and &#8220;}&#8221;) to delimit template constructions.  Braces have no special meaning to XML parsers (they&#8217;re just character data), so it&#8217;s possible to put a template expression inside an attribute value (for example), while keeping the template itself as well-formed XML and not requiring the elaborate paraphrastic expressions you need to set up attribute values in XSLT:</p>
+<pre>
+&lt;p id="x-{$myvalue|escape}"&gt;Hello, world!&lt;/p&gt;
+</pre>
+</div>
+<div id="concur">
+<h2>Concurrent markup resurrected</h2>
+<p>Really, Smarty adds a second set of <em>concurrent</em> markup on top of the XHTML.  Smarty constructs don&#8217;t have to balance with XML element boundaries, and with only a little care, I&#8217;ve never ended up with a Smarty template that wasn&#8217;t well-formed.  JSP&#8217;s mistake was using something that looks like XML but isn&#8217;t quite, messing up parsers.  Even the old SGML CONCUR feature would not have allowed markup inside attribute values. Sometimes there&#8217;s something to be said for using two different syntaxes when you&#8217;re trying to represent two different things.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Gap buffers</title>
+		<link>https://quoderat.megginson.com/2006/06/07/gap-buffers/</link>
+					<comments>https://quoderat.megginson.com/2006/06/07/gap-buffers/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 07 Jun 2006 20:23:21 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/06/07/gap-buffers/</guid>
+
+					<description><![CDATA[Tim Bray updated an old piece on binary search this morning &#8212; I missed it the first time around, so I was glad that it popped up in my blog reader. Tim&#8217;s taking some flak about data abstraction from people &#8230; <a href="https://quoderat.megginson.com/2006/06/07/gap-buffers/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Tim Bray updated an <a href="http://www.tbray.org/ongoing/When/200x/2003/03/22/Binary">old piece on binary search</a> this morning &#8212; I missed it the first time around, so I was glad that it popped up in my blog reader.  Tim&#8217;s <a href="http://www.tbray.org/ongoing/When/200x/2006/06/07/Abstract-Numbers">taking some flak</a> about data abstraction from people who don&#8217;t have his experience in high-performance environments, but what got my attention most was his mention of using gaps in a long array to provide efficient updates.</p>
+<p>It turns out that this technique, called a <a href="http://en.wikipedia.org/wiki/Gap_buffer">gap buffer</a> [wikipedia], is one of the cornerstones of text editors like Gnu Emacs.  I&#8217;ve been using Emacs for 20 years and have contributed to the main distribution (see <code>derived.el</code>), but never bothered to look at the C code long enough to discover this particular technique.  There&#8217;s surprisingly little information online &#8212; if anyone&#8217;s ever bothered to do testing for the optimum gap size, etc., it&#8217;s not showing up in Google &#8212; but it&#8217;s still nice to experience the joy and excitement of a new (to me), simple algorithm that solves a common problem well.</p>
+<p>Does anyone have pointers to more detailed research on gap buffers? It seems to me that they&#8217;d have applications far beyond text editing, including (perhaps) storing compiled tree data (aka <em>binary xml</em>) on disk.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/06/07/gap-buffers/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Continuations, cont&#039;d</title>
+		<link>https://quoderat.megginson.com/2006/05/20/continuations-contd/</link>
+					<comments>https://quoderat.megginson.com/2006/05/20/continuations-contd/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 20 May 2006 18:31:46 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/20/continuations-contd/</guid>
+
+					<description><![CDATA[[Update: see further contributions to the discussion from Ian Griffiths, Avi Bryant, James Robertson, and Joe Duffy; note also John Cowan&#8217;s excellent comment below, pointing out that hidden fields work with the back button but not with bookmarks.] It looks &#8230; <a href="https://quoderat.megginson.com/2006/05/20/continuations-contd/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><em>[Update: see further contributions to the discussion from <a href="http://www.interact-sw.co.uk/iangblog/2006/05/21/webcontinuations">Ian Griffiths</a>, <a href="http://smallthought.com/avi/?p=14">Avi Bryant</a>, <a href="http://www.cincomsmalltalk.com/blog/blogView?showComments=true&amp;entry=3325571673">James Robertson</a>, and <a href="http://www.bluebytesoftware.com/blog/PermaLink,guid,db077b7d-47ed-4f2a-8300-44203f514638.aspx">Joe Duffy</a>; note also John Cowan&#8217;s excellent comment below, pointing out that hidden fields work with the back button but not with bookmarks.]</em></p>
+<p>It looks like <a href="http://en.wikipedia.org/wiki/Continuation">continuations</a> are back on the discussion board (<a href="http://blogs.sun.com/roller/page/gbracha?entry=will_continuations_continue">Gilad Bracha</a>, <a href="http://www.tbray.org/ongoing/When/200x/2006/05/19/Continuations-and-GUIs">Tim Bray</a>, and <a href="http://pluralsight.com/blogs/dbox/archive/2006/05/20/24599.aspx">Don Box</a>). I spent some time with <a href="http://en.wikipedia.org/wiki/Scheme_programming_language">Scheme</a> a decade ago and continuations were one of the new features I had to try to understand. Then, as now, I found them more clever than practical.</p>
+<p>Gilad sets up a use case for continuations before he goes on to oppose them: in essence, a web application could use continuations to maintain separate stacks, so that as a user hits the back button and then starts down new paths, the web application would not become confused, selling the user a trip to Hawaii instead of Alaska.  I can see how continuations would work for that, just as I can see how a bulldozer could turn over the sod in my garden, but I&#8217;m far from convinced that either is the right tool for what is really a much simpler problem.</p>
+<div id="explicit-state">
+<h2>Explicit state</h2>
+<p>First, a continuation preserves the <em>entire state</em> of a program, including the stack, instruction counter, local variables, etc.  How much of that do you really need for a hypothetical travel web app?  In reality, you probably need, maybe, 1-5 variable values to restore a previous state in the travel app, so why not just save those explicitly?  It would be faster, more secure (less information being saved), and much easier to performance tune and debug (since no magic is happening behind the scenes).  Save those variables in a database, in a hash table, in an XML or CSV file, in <a href="http://en.wikipedia.org/wiki/Memcached">memcached</a>, or wherever happens to be most convenient.  You may be looking at under 100 bytes for each saved state, so if you really want to do this, it&#8217;s not going to hurt too badly.</p>
+</div>
+<div id="rest">
+<h2>REST</h2>
+<p>But do you really want to do this?  Most of the discussion around <a href="http://en.wikipedia.org/wiki/REST">REST</a> has focussed on the use of persistent URLs and how to use <a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> verbs like <var>GET</var>, <var>POST</var>, <var>PUT</var>, and <var>DELETE</var>, but there&#8217;s another, perhaps more critical idea behind REST &#8212; that the resource your retrieve (a web page, XML document, or what-have-you) contains its own transition information.</p>
+<p>Let&#8217;s say that you load a web page into your browser, load more web pages, then use the back button to return to the original one.  Now, select a link.  What happens?  Did you browser have to go back to the original web server, which was using continuations (or other kinds of saved state) to keep track of the links from every page you visited, so that it won&#8217;t send you to the wrong one?  Of course not.  The web page that you originally downloaded already included a list of all its transitions (links), and intuitive things just happen naturally when you hit the back button.</p>
+<p>The web is stateless, but web application toolkits maintain pseudo-sessions (using cookies, URL rewriting, or what-have-you) that makes them <em>look</em> stateful, and that makes programmers lazy.  Obviously, you don&#8217;t want to stick information like &#8216;isauthenticated&#8217; on a web page, since it could be forged; likewise, you don&#8217;t want to put a credit-card number there.  But it is trivially simple to make sure that forms, like links, go to the right place even when you hit the back button &#8212; just make the transitions fully independent of any session stored on the server side.  For example, consider this:</p>
+<pre>
+&lt;form method="post" action="/actions/book-trip"&gt;
+  &lt;button&gt;Book this trip!&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+<p>Presumably, the trip the person was looking at is stored somewhere in a session variable on the browser. <strong>DON&#8217;T DO THIS!</strong>  As Gilad pointed out, someone hitting the back button might end up booking the wrong trip.  There are gazillions of ways to push all of the context-sensitive stuff into the web page itself, where it belongs.  Here&#8217;s one example:</p>
+<pre>
+&lt;form method="post" action="/actions/book-trip"&gt;
+  &lt;label&gt;Book your economy trip to Alaska!&lt;/label&gt;
+  &lt;input type="hidden" name="destination" value="alaska"/&gt;
+  &lt;input type="hidden" name="package" value="economy"/&gt;
+  &lt;button&gt;Book it.&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+<p>Here&#8217;s another:</p>
+<pre>
+&lt;form method="post" action="/actions/book-trip/alaska/economy"&gt;
+  &lt;label&gt;Book your economy trip to Alaska!&lt;/label&gt;
+  &lt;button&gt;Book it.&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+<p>This is 100% backbutton-proof and it&#8217;s trivially simple to implement.  It took me a while after reading Gilad&#8217;s (admittedly, strawman) example to realize that there are people who do <em>not</em> develop webapps this way.  If they do this much damage just with a Session stack, how much pain will they be able to cause with continuations?</p>
+<p>The REST people are right, at least on this point: there&#8217;s no need to drive a continuation bulldozer through your webapp, when a little REST garden spade will work quite nicely (and won&#8217;t tear up your lawn in the process).  Don suggests that there may be other, more legitimate use cases for continuations outside of web applications, and I have no reason to disagree, but I would like to look at them pretty carefully.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/05/20/continuations-contd/feed/</wfw:commentRss>
+			<slash:comments>11</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How many environments?</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/</link>
+					<comments>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 12:15:51 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/</guid>
+
+					<description><![CDATA[Assume that you are a lone developer, maintaining a small web site in a shared hosting account. How many software environments do you need from development to production? One environment On the simplest level, you could develop directly in your &#8230; <a href="https://quoderat.megginson.com/2006/05/02/how-many-environments/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Assume that you are a lone developer, maintaining a small web site in a shared hosting account. How many software environments do you need from development to production?</p>
+<div id="one-environment">
+<h2>One environment</h2>
+<p>On the simplest level, you could develop directly in your ISP account, loading and saving files remotely via SFTP, WebDav, etc. &#8212; in other words, your development and production environment would be the same. For anything non-trivial, that&#8217;s a pretty hairy way to work, since you have no way to test changes before they&#8217;re rolled out into the world.</p>
+</div>
+<div id="two-environments">
+<h2>Two environments</h2>
+<p>I normally use the two-environment approach that (I suspect) is the most common one for single-developer <a href="http://en.wikipedia.org/wiki/LAMP_%28software_bundle%29">LAMP</a> sites: I maintain a development environment on my notebook, and periodically upload changes to the production environment at the ISP. I try to run roughly the same version of Apache, PHP, MySQL, etc. as my ISP, but otherwise, I take no special steps to replicate the production environment. On my notebook, I set up the development directory as its own virtual host (e.g. <a href="http://localhost:8001/" rel="nofollow">http://localhost:8001/</a>, etc.) so that I can test changes literally as I type.</p>
+</div>
+<div id="three-environments">
+<h2>Three environments?</h2>
+<p>Even though there are no other developers working with me right now, I sometimes wonder if it would make sense to start using a third environment between development and production (a separate directory and virtual host on my notebook). A third development would allow me to run major experiments and restructuring in the development code, while still making small bug fixes, typo corrections, etc. in the stable code before uploading them to my ISP production environment.</p>
+<p>While this sounds like a good idea initially, there is a major coordination problem involved in backporting fixes from the middle environment to the development environment, and the middle environment will still become unstable while new changes are rolled out into it, tempting me to create <em>another</em> environment &#8212; complexity is, sadly, highly contagious. Have any other lone developers had success (or failure) with this approach?</p>
+</div>
+<div id="more">
+<h2>More</h2>
+<p>Big organizations use an enormous number of environments to build and roll-out a system:</p>
+<ul>
+<li>Each developer&#8217;s desktop, where code generally lives for a few hours.</li>
+<li>The development server, typically a single server running database, application server, etc. as well as version control unit/regression tests.</li>
+<li>One or more test environments, covering integration testing, system testing, user-acceptance testing, etc. (these can range from single servers to small clusters to near-duplicates of the full production environment).</li>
+<li>The staging environment, which is typically very similar or identical to the production environment.</li>
+<li>The production environment, where the system runs.</li>
+</ul>
+<p>I&#8217;m still undecided about whether enterprises help or hurt themselves by making things so complicated &#8212; coordinating a lot of people on a big system <em>is</em> hard, it&#8217;s even harder to imagine an <a>agile</a> process functioning under so many layers of pain.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/05/02/how-many-environments/feed/</wfw:commentRss>
+			<slash:comments>7</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

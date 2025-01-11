@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: The complexity of XML parsing APIs	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 12 Mar 2005 20:46:51 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-42</link>
+
+		<dc:creator><![CDATA[Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems]]></dc:creator>
+		<pubDate>Sat, 12 Mar 2005 20:46:51 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-42</guid>
+
+					<description><![CDATA[&lt;strong&gt;POX: The plague in your enterprise architecture&lt;/strong&gt;]]></description>
+			<content:encoded><![CDATA[<p><strong>POX: The plague in your enterprise architecture</strong></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-41</link>
+
+		<dc:creator><![CDATA[Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems]]></dc:creator>
+		<pubDate>Sat, 12 Mar 2005 20:42:27 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-41</guid>
+
+					<description><![CDATA[&lt;strong&gt;POX: The plague in your enterprise architecture&lt;/strong&gt;]]></description>
+			<content:encoded><![CDATA[<p><strong>POX: The plague in your enterprise architecture</strong></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Dan Diephouse		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-40</link>
+
+		<dc:creator><![CDATA[Dan Diephouse]]></dc:creator>
+		<pubDate>Mon, 21 Feb 2005 00:05:41 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-40</guid>
+
+					<description><![CDATA[Are you refering just to W3C DOM in Java (which definitely sucks) or to all DOM toolkits?  Have you looked at &lt;a href=&quot;http://www.xom.nu&quot; rel=&quot;nofollow&quot;&gt;XOM&lt;/a&gt;?]]></description>
+			<content:encoded><![CDATA[<p>Are you refering just to W3C DOM in Java (which definitely sucks) or to all DOM toolkits?  Have you looked at <a href="http://www.xom.nu" rel="nofollow">XOM</a>?</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Software Documentation Weblog		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-39</link>
+
+		<dc:creator><![CDATA[Software Documentation Weblog]]></dc:creator>
+		<pubDate>Fri, 11 Feb 2005 22:19:35 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-39</guid>
+
+					<description><![CDATA[&lt;strong&gt;XPath is a nice DOM wrapper, but what to do about SAX?&lt;/strong&gt;
+Martin Probst  complaints about overly complex XML-APIs  and recommends the use of XQuery as a language that can be used to work with XML data programatically, that does not suck.
+
+ In most cases XQuery is more than people need in their applications. I]]></description>
+			<content:encoded><![CDATA[<p><strong>XPath is a nice DOM wrapper, but what to do about SAX?</strong><br />
+Martin Probst  complaints about overly complex XML-APIs  and recommends the use of XQuery as a language that can be used to work with XML data programatically, that does not suck.</p>
+<p> In most cases XQuery is more than people need in their applications. I</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-38</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 11 Feb 2005 19:07:58 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-38</guid>
+
+					<description><![CDATA[Thanks for the comment, Tony.  The template approach is a pleasant way to generate XML, whether through XSLT transformations (when used in a templatey way) or JSP -- you have everything in front of you at once, just like in a fullscreen text editor (vs. the old line-oriented editors, which have a lot in common with programming code to manipulate XML).
+
+The trouble is that the templates don&#039;t really work for reading XML into objects or data structures, or for taking complex programming actions based on the XML.  Also, XSLT (or DOM) can bring a busy web server to its knees because of the processor and memory requirements, though for some applications smart caching can help a lot.
+
+By the time people get to the point of using a streaming API like SAX or StAX, they often have a serious problem like a sluggish application server and are willing to accept a lot of pain for the sake of curing it.  It would be nice if we could figure out some middle ground, something that wasn&#039;t as hard to use as a streaming API but not as maddeningly inefficient as DOM or XSLT.]]></description>
+			<content:encoded><![CDATA[<p>Thanks for the comment, Tony.  The template approach is a pleasant way to generate XML, whether through XSLT transformations (when used in a templatey way) or JSP &#8212; you have everything in front of you at once, just like in a fullscreen text editor (vs. the old line-oriented editors, which have a lot in common with programming code to manipulate XML).</p>
+<p>The trouble is that the templates don&#8217;t really work for reading XML into objects or data structures, or for taking complex programming actions based on the XML.  Also, XSLT (or DOM) can bring a busy web server to its knees because of the processor and memory requirements, though for some applications smart caching can help a lot.</p>
+<p>By the time people get to the point of using a streaming API like SAX or StAX, they often have a serious problem like a sluggish application server and are willing to accept a lot of pain for the sake of curing it.  It would be nice if we could figure out some middle ground, something that wasn&#8217;t as hard to use as a streaming API but not as maddeningly inefficient as DOM or XSLT.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Anthony B. Coates		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-37</link>
+
+		<dc:creator><![CDATA[Anthony B. Coates]]></dc:creator>
+		<pubDate>Fri, 11 Feb 2005 19:00:30 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-37</guid>
+
+					<description><![CDATA[Here&#039;s the thing.  I&#039;ve been doing Java for rather longer than I&#039;ve been doing XML, and yet, whenever I have to convert one kind of XML into another, I go straight for XSLT.  Why?  Well, I guess there are two things:
+(i) XML is a genuine part of the data model in XSLT.  So you don&#039;t get stupid complications that arise from forcing the square peg XML data model through some round hole language data model.  JavaBeans and C/C++/C# classes just don&#039;t map neatly onto the XML infoset.
+(ii) When you write XSLT, you can write fragments of XML directly, and embed bits of code within the XML fragments for the dynamic parts of the code.  That often makes it vastly easier to see what the result will be like, and that just speeds up the whole development process.
+What it all comes down to is that any XML API will suck where XML isn&#039;t a first class data type, and where it isn&#039;t integrated into the language syntax.  Languages that allow XML (or even tree-structured data) are just easier to write and maintain (XSLT, E4X, Comega, Groovy), and some if not all can be compiled so that you don&#039;t lose much in performance, but gain lots in development time.
+That&#039;s how I see it anyway.  Cheers, Tony.
+PS  With JDK 5.0, it would be an afternoon task to write a compiler front-end that compiles both Java and XSLT 1.0 sources into Java bytecodes.  Horses for courses?  Could be.]]></description>
+			<content:encoded><![CDATA[<p>Here&#8217;s the thing.  I&#8217;ve been doing Java for rather longer than I&#8217;ve been doing XML, and yet, whenever I have to convert one kind of XML into another, I go straight for XSLT.  Why?  Well, I guess there are two things:<br />
+(i) XML is a genuine part of the data model in XSLT.  So you don&#8217;t get stupid complications that arise from forcing the square peg XML data model through some round hole language data model.  JavaBeans and C/C++/C# classes just don&#8217;t map neatly onto the XML infoset.<br />
+(ii) When you write XSLT, you can write fragments of XML directly, and embed bits of code within the XML fragments for the dynamic parts of the code.  That often makes it vastly easier to see what the result will be like, and that just speeds up the whole development process.<br />
+What it all comes down to is that any XML API will suck where XML isn&#8217;t a first class data type, and where it isn&#8217;t integrated into the language syntax.  Languages that allow XML (or even tree-structured data) are just easier to write and maintain (XSLT, E4X, Comega, Groovy), and some if not all can be compiled so that you don&#8217;t lose much in performance, but gain lots in development time.<br />
+That&#8217;s how I see it anyway.  Cheers, Tony.<br />
+PS  With JDK 5.0, it would be an afternoon task to write a compiler front-end that compiles both Java and XSLT 1.0 sources into Java bytecodes.  Horses for courses?  Could be.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Dare Obasanjo's WebLog		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-36</link>
+
+		<dc:creator><![CDATA[Dare Obasanjo's WebLog]]></dc:creator>
+		<pubDate>Wed, 09 Feb 2005 15:04:19 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-36</guid>
+
+					<description><![CDATA[&lt;strong&gt;On the Complexity of XML APIs&lt;/strong&gt;]]></description>
+			<content:encoded><![CDATA[<p><strong>On the Complexity of XML APIs</strong></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-34</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 09 Feb 2005 12:18:44 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-34</guid>
+
+					<description><![CDATA[Thanks, Mike -- that sounds like a great idea for a future posting.]]></description>
+			<content:encoded><![CDATA[<p>Thanks, Mike &#8212; that sounds like a great idea for a future posting.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mike Champion		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-33</link>
+
+		<dc:creator><![CDATA[Mike Champion]]></dc:creator>
+		<pubDate>Wed, 09 Feb 2005 02:33:05 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-33</guid>
+
+					<description><![CDATA[Well since you admit that SAX sucks, I can agree that DOM sucks too :-)  It&#039;s very interesting and somewhat disheartening that you found the next generation of APIs better for simple things but no better for realistically hard problems. Obviously we have to do better, and its probably a good thing that nobody is trying to standardize XML APIs anymore so that innovation and competition can drive progress.
+
+I wonder if you could suggest at least the outlines of a realistic application scenario that is complex enough to exhibit the problems you noted but simple enough to become sortof a common example that can be used as a reference point.  Something more complex than Hello, World or the XQuery book database of course ... maybe at the level of the  Employee-Department-Manager-etc. Personnel database that one tends to see in every RDBMS book and tutorial.
+
+We know how to make trivial XML programs trivial to write (in the next-generation-after-SAX/DOM APIs, anyway).  It would be nice to make an interesting class of less trivial XML applications at least easy, and having a common reference example might help us all evolve in that direction.]]></description>
+			<content:encoded><![CDATA[<p>Well since you admit that SAX sucks, I can agree that DOM sucks too 🙂  It&#8217;s very interesting and somewhat disheartening that you found the next generation of APIs better for simple things but no better for realistically hard problems. Obviously we have to do better, and its probably a good thing that nobody is trying to standardize XML APIs anymore so that innovation and competition can drive progress.</p>
+<p>I wonder if you could suggest at least the outlines of a realistic application scenario that is complex enough to exhibit the problems you noted but simple enough to become sortof a common example that can be used as a reference point.  Something more complex than Hello, World or the XQuery book database of course &#8230; maybe at the level of the  Employee-Department-Manager-etc. Personnel database that one tends to see in every RDBMS book and tutorial.</p>
+<p>We know how to make trivial XML programs trivial to write (in the next-generation-after-SAX/DOM APIs, anyway).  It would be nice to make an interesting class of less trivial XML applications at least easy, and having a common reference example might help us all evolve in that direction.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Martins Notepad		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-32</link>
+
+		<dc:creator><![CDATA[Martins Notepad]]></dc:creator>
+		<pubDate>Wed, 09 Feb 2005 00:36:20 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-32</guid>
+
+					<description><![CDATA[&lt;strong&gt;Why do XML APIs suck?&lt;/strong&gt;
+The complexity of XML parsing APIs seems to be a general complaint about XML parsing APIs. So why do these APIs suck?
+
+I&#039;ve worked with the three major API styles myself (DOM, SAX, XML Push thingies) and yes, they do suck. But if you come to think a...]]></description>
+			<content:encoded><![CDATA[<p><strong>Why do XML APIs suck?</strong><br />
+The complexity of XML parsing APIs seems to be a general complaint about XML parsing APIs. So why do these APIs suck?</p>
+<p>I&#8217;ve worked with the three major API styles myself (DOM, SAX, XML Push thingies) and yes, they do suck. But if you come to think a&#8230;</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Danny Ayers, Raw Blog		</title>
+		<link>https://quoderat.megginson.com/2005/02/08/the-complexity-of-xml-parsing-apis/#comment-35</link>
+
+		<dc:creator><![CDATA[Danny Ayers, Raw Blog]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=12#comment-35</guid>
+
+					<description><![CDATA[[...] 212; Danny @ 14:26  	 	 			David Megginson, developer of SAX has an interesting post on &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/02/08/the-complexity-of-xml-parsing-apis/&quot; rel=&quot;nofollow&quot;&gt;The complexity of XML parsing APIs&lt;/a&gt;, partly in res [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] 212; Danny @ 14:26 </p>
+<p> 			David Megginson, developer of SAX has an interesting post on <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/08/the-complexity-of-xml-parsing-apis/" rel="nofollow">The complexity of XML parsing APIs</a>, partly in res [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

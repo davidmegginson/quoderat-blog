@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: CSV linked data	</title>
+	<atom:link href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Fri, 21 Feb 2014 16:21:16 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-5542</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 21 Feb 2014 16:21:16 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-5542</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-5540&quot;&gt;John Cowan&lt;/a&gt;.
+
+:-)]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-5540">John Cowan</a>.</p>
+<p>🙂</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-5540</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Fri, 21 Feb 2014 14:10:56 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-5540</guid>
+
+					<description><![CDATA[You know, I was going to point the person who wrote &quot;CSV is a bugger for distributed, linked data&quot; as part of &lt;a href=&quot;https://www.tbray.org/ongoing/When/201x/2014/02/19/Leaving-Google#c1392934027.247352&quot; rel=&quot;nofollow&quot;&gt;a comment on Tim Bray&#039;s latest&lt;/a&gt; to this page for an example of how to do it — and then I saw that it was you!]]></description>
+			<content:encoded><![CDATA[<p>You know, I was going to point the person who wrote &#8220;CSV is a bugger for distributed, linked data&#8221; as part of <a href="https://www.tbray.org/ongoing/When/201x/2014/02/19/Leaving-Google#c1392934027.247352" rel="nofollow">a comment on Tim Bray&#8217;s latest</a> to this page for an example of how to do it — and then I saw that it was you!</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4267</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 20:26:08 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4267</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4173&quot;&gt;Bob DuCharme&lt;/a&gt;.
+
+Bob, David&#039;s idea is stronger than you think.  In fact, if the features of the Hausenblas draft are adopted, his scheme is &lt;i&gt;completely&lt;/i&gt; equivalent to RDF triples, except that there&#039;s no way to specify b-nodes, xml:lang, or XML Schema typed literals.  Each cell represents a triple: the subject is the URI of the row (using the #row:n or #where:name-value fragment identifiers), the verb is the URI of the column (using the #col:name or  #col:n fragment identifiers), and the object is the content of the cell, which can be a literal or a URI.  To add that power, I&#039;d recommend switching to the Hausenblas draft wholesale, as it neatly distinguishes the different kinds of fragment identifiers that are needed, for interchange with conventional triple stores.
+
+What is more, this scheme applies not only to CSV documents but to relational database tables, provided you have a method for a URI to specify a table within a database.  If the RDBMS provides typed columns, specifically a URI type, then you don&#039;t even need the double braces.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4173">Bob DuCharme</a>.</p>
+<p>Bob, David&#8217;s idea is stronger than you think.  In fact, if the features of the Hausenblas draft are adopted, his scheme is <i>completely</i> equivalent to RDF triples, except that there&#8217;s no way to specify b-nodes, xml:lang, or XML Schema typed literals.  Each cell represents a triple: the subject is the URI of the row (using the #row:n or #where:name-value fragment identifiers), the verb is the URI of the column (using the #col:name or  #col:n fragment identifiers), and the object is the content of the cell, which can be a literal or a URI.  To add that power, I&#8217;d recommend switching to the Hausenblas draft wholesale, as it neatly distinguishes the different kinds of fragment identifiers that are needed, for interchange with conventional triple stores.</p>
+<p>What is more, this scheme applies not only to CSV documents but to relational database tables, provided you have a method for a URI to specify a table within a database.  If the RDBMS provides typed columns, specifically a URI type, then you don&#8217;t even need the double braces.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4266</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 19:03:45 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4266</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179&quot;&gt;David Megginson&lt;/a&gt;.
+
+The slice-based selection syntax #where:name=value is definitely better, though more verbose.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179">David Megginson</a>.</p>
+<p>The slice-based selection syntax #where:name=value is definitely better, though more verbose.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4265</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 18:56:03 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4265</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4187&quot;&gt;Remy Porter&lt;/a&gt;.
+
+Indeed, a link is the simplest case of a query.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4187">Remy Porter</a>.</p>
+<p>Indeed, a link is the simplest case of a query.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: mera		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4255</link>
+
+		<dc:creator><![CDATA[mera]]></dc:creator>
+		<pubDate>Tue, 09 Apr 2013 10:32:43 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4255</guid>
+
+					<description><![CDATA[Presently there a few interesting points over time in this posting however I don’t know if I view these center to heart. There can be many validity but I’ll take hold viewpoint until I discover it even more. Excellent write-up, thanks and after that we really wish for much more! Placed into FeedBurner way too]]></description>
+			<content:encoded><![CDATA[<p>Presently there a few interesting points over time in this posting however I don’t know if I view these center to heart. There can be many validity but I’ll take hold viewpoint until I discover it even more. Excellent write-up, thanks and after that we really wish for much more! Placed into FeedBurner way too</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4226</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 31 Jan 2013 13:04:22 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4226</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179&quot;&gt;David Megginson&lt;/a&gt;.
+
+Markus is absolutely right that I misread the draft -- it does allow selection of *rows* based on multiple *column* values.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179">David Megginson</a>.</p>
+<p>Markus is absolutely right that I misread the draft &#8212; it does allow selection of *rows* based on multiple *column* values.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Markus Lanthaler		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4214</link>
+
+		<dc:creator><![CDATA[Markus Lanthaler]]></dc:creator>
+		<pubDate>Tue, 22 Jan 2013 22:41:24 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4214</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179&quot;&gt;David Megginson&lt;/a&gt;.
+
+Isn’t that exactly what they call “slide-based selection” (http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01#section-2.5)?]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179">David Megginson</a>.</p>
+<p>Isn’t that exactly what they call “slide-based selection” (<a href="http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01#section-2.5" rel="nofollow ugc">http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01#section-2.5</a>)?</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4188</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 12 Jan 2013 22:12:14 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4188</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4187&quot;&gt;Remy Porter&lt;/a&gt;.
+
+Thanks, Remy — that&#039;s an interesting point.  Yes, fragment identifiers really are queries, though they still play an primary role in REST when you&#039;re dealing with machine-readable data, since you&#039;re actually identifying a target within a resource, rather than just prescrolling to a position on an HTML page.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4187">Remy Porter</a>.</p>
+<p>Thanks, Remy — that&#8217;s an interesting point.  Yes, fragment identifiers really are queries, though they still play an primary role in REST when you&#8217;re dealing with machine-readable data, since you&#8217;re actually identifying a target within a resource, rather than just prescrolling to a position on an HTML page.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Remy Porter		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4187</link>
+
+		<dc:creator><![CDATA[Remy Porter]]></dc:creator>
+		<pubDate>Sat, 12 Jan 2013 13:47:23 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4187</guid>
+
+					<description><![CDATA[You haven&#039;t created a system for linking CSV files. You&#039;ve created a system for querying CSV files via RESTful operations. The only queries supported are equality comparisons, although there&#039;s no reason that there couldn&#039;t be more operations, aside from the fact that you&#039;d lose some simplicity and really, you&#039;re not trying to reinvent SQL.
+
+You can use these queries to link data together because they&#039;re simple text and can easily be stored via CSV.
+
+That said, this RESTful query language you&#039;ve built could just as easily be migrated to JSON or XML if one makes certain assumptions about the tree of those hierarchical data types. It could also  query RDBMS data, or really anything.]]></description>
+			<content:encoded><![CDATA[<p>You haven&#8217;t created a system for linking CSV files. You&#8217;ve created a system for querying CSV files via RESTful operations. The only queries supported are equality comparisons, although there&#8217;s no reason that there couldn&#8217;t be more operations, aside from the fact that you&#8217;d lose some simplicity and really, you&#8217;re not trying to reinvent SQL.</p>
+<p>You can use these queries to link data together because they&#8217;re simple text and can easily be stored via CSV.</p>
+<p>That said, this RESTful query language you&#8217;ve built could just as easily be migrated to JSON or XML if one makes certain assumptions about the tree of those hierarchical data types. It could also  query RDBMS data, or really anything.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4180</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 09 Jan 2013 01:59:45 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4180</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4173&quot;&gt;Bob DuCharme&lt;/a&gt;.
+
+Those are good points, Bob, but whether RDF has succeeded or failed is a matter of perspective (and as with all such topics, is ultimately a futile debate).  Without asserting that I have a monopoly possession of &quot;truth&quot; (whatever that means), I&#039;ll just state my own contrasting point of view here.
+
+From my perspective, RDF, at best, to a (hypothetical) successful linked-data implementation what HyperCard was to the Web.  HyperCard helped people get used to the idea of hypertext and hypermedia, and it had many more features than the Web (at least for the Web&#039;s first decade or so), but it existed only in a very constrained environment.
+
+Of course, there were much more-powerful (though less-popular) hypermedia systems than HyperCard.  I remember reading the proceeds of the annual Hypertext conferences from 1988 or 1989 before I knew about Tim B-L&#039;s work.  It was fascinating stuff, and the systems presented addressed many of the ontological and epistemelogical problems that RDF, OWL, etc. try to address for linked data.  These systems had seemingly huge success inside academia during my graduate-school years from 86-92, along with some marquee non-academic implementations in corporate and other environments, but when Tim B-L introduced stupid, brain-dead, unidirectional, untyped, single-linking HTML, it took off so fast that what had previously been considered &quot;success&quot; for all the other hypertext systems became basically a rounding error.
+
+I don&#039;t expect that scale of adoption for any linked-data initiative, because the potential audience is much smaller — the potential audience for the web is anyone who can read (or now, watch videos or listen to music), while the most-optimistic potential direct audience for linked data is anyone who can use a spreadsheet (i.e. millions, not billions).  But the lesson holds — start simple, and don&#039;t try to solve problems that people don&#039;t actually have yet.  Unfortunately, I think Tim B-L forgot that lesson with the Semantic Web, and in a kind-of reverse Stockholm Syndrome, became like the hypertext academicians who were fighting and mocking him so much when he first launched HTML.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4173">Bob DuCharme</a>.</p>
+<p>Those are good points, Bob, but whether RDF has succeeded or failed is a matter of perspective (and as with all such topics, is ultimately a futile debate).  Without asserting that I have a monopoly possession of &#8220;truth&#8221; (whatever that means), I&#8217;ll just state my own contrasting point of view here.</p>
+<p>From my perspective, RDF, at best, to a (hypothetical) successful linked-data implementation what HyperCard was to the Web.  HyperCard helped people get used to the idea of hypertext and hypermedia, and it had many more features than the Web (at least for the Web&#8217;s first decade or so), but it existed only in a very constrained environment.</p>
+<p>Of course, there were much more-powerful (though less-popular) hypermedia systems than HyperCard.  I remember reading the proceeds of the annual Hypertext conferences from 1988 or 1989 before I knew about Tim B-L&#8217;s work.  It was fascinating stuff, and the systems presented addressed many of the ontological and epistemelogical problems that RDF, OWL, etc. try to address for linked data.  These systems had seemingly huge success inside academia during my graduate-school years from 86-92, along with some marquee non-academic implementations in corporate and other environments, but when Tim B-L introduced stupid, brain-dead, unidirectional, untyped, single-linking HTML, it took off so fast that what had previously been considered &#8220;success&#8221; for all the other hypertext systems became basically a rounding error.</p>
+<p>I don&#8217;t expect that scale of adoption for any linked-data initiative, because the potential audience is much smaller — the potential audience for the web is anyone who can read (or now, watch videos or listen to music), while the most-optimistic potential direct audience for linked data is anyone who can use a spreadsheet (i.e. millions, not billions).  But the lesson holds — start simple, and don&#8217;t try to solve problems that people don&#8217;t actually have yet.  Unfortunately, I think Tim B-L forgot that lesson with the Semantic Web, and in a kind-of reverse Stockholm Syndrome, became like the hypertext academicians who were fighting and mocking him so much when he first launched HTML.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4179</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 09 Jan 2013 01:46:37 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4179</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4174&quot;&gt;Markus Lanthaler&lt;/a&gt;.
+
+Thanks, Markus.  I hadn&#039;t read it, and was very excited about the possibility of using it, but I think it&#039;s fundamentally flawed — it lets me select a column by header name, but does not let me select a row by a cell&#039;s contents.  Since CSV data generally represents each entity as a row, I&#039;m assuming the most common use case will be to point to a specific row (e.g. the row where employee_id=&quot;12345&quot;), and the RFC doesn&#039;t support that.  I will update the blog post to include a link.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4174">Markus Lanthaler</a>.</p>
+<p>Thanks, Markus.  I hadn&#8217;t read it, and was very excited about the possibility of using it, but I think it&#8217;s fundamentally flawed — it lets me select a column by header name, but does not let me select a row by a cell&#8217;s contents.  Since CSV data generally represents each entity as a row, I&#8217;m assuming the most common use case will be to point to a specific row (e.g. the row where employee_id=&#8221;12345&#8243;), and the RFC doesn&#8217;t support that.  I will update the blog post to include a link.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Markus Lanthaler		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4174</link>
+
+		<dc:creator><![CDATA[Markus Lanthaler]]></dc:creator>
+		<pubDate>Tue, 08 Jan 2013 14:59:31 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4174</guid>
+
+					<description><![CDATA[Are you aware of http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01 ? No need to reinvent the wheel :-P]]></description>
+			<content:encoded><![CDATA[<p>Are you aware of <a href="http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01" rel="nofollow ugc">http://tools.ietf.org/html/draft-hausenblas-csv-fragment-01</a> ? No need to reinvent the wheel 😛</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Bob DuCharme		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4173</link>
+
+		<dc:creator><![CDATA[Bob DuCharme]]></dc:creator>
+		<pubDate>Tue, 08 Jan 2013 14:50:50 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4173</guid>
+
+					<description><![CDATA[Hi David,
+
+The idea that all links mean the same thing (a pointer to a more-complete and more-authoritative version of a piece of information) is very limiting. Even HTML can do better than that, because the anchor text can tell you something about why the link is there (e.g. &#060;a&#062;earlier version of document&#060;/a&#062;, &#060;a&#062;proposed revision&#060;&#062;
+
+&#062; it could bring 95% of the benefit of linked data to CSV for 5% of the effort.
+
+95% is a very high number. The indication of link targets is only one part of linked data. Along with the ability to describe the relationships themselves, which as noted above you&#039;ve dropped, the ability to unambiguously identify resources is key to letting anyone in the world create a link between any two resources. How do I know that &quot;CA&quot; in your examples doesn&#039;t refer to California or Computer Associates? Because it has &quot;Canada&quot; on the same line? The country or the Richard Ford novel? If it said http://dbpedia.org/resource/Canada or http://dbpedia.org/resource/Canada_%28novel%29, I could be sure. If it was the former, I (or an automated query using a well-implemented, standardized query language) could follow links from there to http://www4.wiwiss.fu-berlin.de/factbook/resource/Canada and find CIA World Factbook data about the country. (factbook:airports_withpavedrunways_total 509, factbook:airports_withunpavedrunways_total 828. I thought you&#039;d like those.) The fact that the CSV file has &quot;countries&quot; in its name won&#039;t scale very far; &quot;hierarchy&quot; and &quot;subdivisions&quot; are both pretty vague.
+
+RDF is more complex and lets you do more. That&#039;s the tradeoff with just about any technology choice outside of RELAX NG vs. XSD. I don&#039;t want to retread any arguments about whether each aspect of the complexity is worth the effort, but many, many companies and governments are getting great value from it. XLink failed, and Topic Maps failed, but RDF is churning along very nicely, and with several good reasons. 
+
+Bob]]></description>
+			<content:encoded><![CDATA[<p>Hi David,</p>
+<p>The idea that all links mean the same thing (a pointer to a more-complete and more-authoritative version of a piece of information) is very limiting. Even HTML can do better than that, because the anchor text can tell you something about why the link is there (e.g. &lt;a&gt;earlier version of document&lt;/a&gt;, &lt;a&gt;proposed revision&lt;&gt;</p>
+<p>&gt; it could bring 95% of the benefit of linked data to CSV for 5% of the effort.</p>
+<p>95% is a very high number. The indication of link targets is only one part of linked data. Along with the ability to describe the relationships themselves, which as noted above you&#8217;ve dropped, the ability to unambiguously identify resources is key to letting anyone in the world create a link between any two resources. How do I know that &#8220;CA&#8221; in your examples doesn&#8217;t refer to California or Computer Associates? Because it has &#8220;Canada&#8221; on the same line? The country or the Richard Ford novel? If it said <a href="http://dbpedia.org/resource/Canada" rel="nofollow ugc">http://dbpedia.org/resource/Canada</a> or <a href="http://dbpedia.org/resource/Canada_%28novel%29" rel="nofollow ugc">http://dbpedia.org/resource/Canada_%28novel%29</a>, I could be sure. If it was the former, I (or an automated query using a well-implemented, standardized query language) could follow links from there to <a href="http://www4.wiwiss.fu-berlin.de/factbook/resource/Canada" rel="nofollow ugc">http://www4.wiwiss.fu-berlin.de/factbook/resource/Canada</a> and find CIA World Factbook data about the country. (factbook:airports_withpavedrunways_total 509, factbook:airports_withunpavedrunways_total 828. I thought you&#8217;d like those.) The fact that the CSV file has &#8220;countries&#8221; in its name won&#8217;t scale very far; &#8220;hierarchy&#8221; and &#8220;subdivisions&#8221; are both pretty vague.</p>
+<p>RDF is more complex and lets you do more. That&#8217;s the tradeoff with just about any technology choice outside of RELAX NG vs. XSD. I don&#8217;t want to retread any arguments about whether each aspect of the complexity is worth the effort, but many, many companies and governments are getting great value from it. XLink failed, and Topic Maps failed, but RDF is churning along very nicely, and with several good reasons. </p>
+<p>Bob</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Martin Davis		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4163</link>
+
+		<dc:creator><![CDATA[Martin Davis]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 22:24:08 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4163</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4162&quot;&gt;David Megginson&lt;/a&gt;.
+
+Ah, good point about enhancing &quot;crawlability&quot;.  I was thinking only of usage by humans, which is a narrower viewpoint.   And (as you suggested by your mention of RDF) the bigger picture is to help link data into the &quot;Semantic Web&quot; (if, when, and how it ever comes to pass).]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4162">David Megginson</a>.</p>
+<p>Ah, good point about enhancing &#8220;crawlability&#8221;.  I was thinking only of usage by humans, which is a narrower viewpoint.   And (as you suggested by your mention of RDF) the bigger picture is to help link data into the &#8220;Semantic Web&#8221; (if, when, and how it ever comes to pass).</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4162</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 22:11:32 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4162</guid>
+
+					<description><![CDATA[In reply to &lt;a href=&quot;https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4158&quot;&gt;Martin Davis&lt;/a&gt;.
+
+Martin: thanks for introducing two good points into the discussion.
+
+1. Syntax — I&#039;m still on the fence about whether an explicit syntax is necessary or not.  You&#039;re right that an unadorned URL would probably work most of the time.  I just need to make sure that there aren&#039;t rare-but-important cases that might bite us.  Is it important to capture the user&#039;s intention that this is supposed to be a link to more data (rather than just a URL)?
+
+2. Use cases — I&#039;m starting with two major classes of use cases: (1) humans browsing data the way they browse the web (say, to discover data to download for further analysis), and (2) machines crawling or pulling in data as needed.  On the (mostly-unstructured-content/document) web, we know that crawling is useful for building search indexes.  What else might crawling be useful for on a (structured-content/data) web?  Hierarchical information springs to mind — for example, an index of major aid donors, each with a link to a list of their projects, and a link to the country/region where they&#039;re talking place.  In an ideal world, there would also be links to *other* donors&#039; projects.]]></description>
+			<content:encoded><![CDATA[<p>In reply to <a href="https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4158">Martin Davis</a>.</p>
+<p>Martin: thanks for introducing two good points into the discussion.</p>
+<p>1. Syntax — I&#8217;m still on the fence about whether an explicit syntax is necessary or not.  You&#8217;re right that an unadorned URL would probably work most of the time.  I just need to make sure that there aren&#8217;t rare-but-important cases that might bite us.  Is it important to capture the user&#8217;s intention that this is supposed to be a link to more data (rather than just a URL)?</p>
+<p>2. Use cases — I&#8217;m starting with two major classes of use cases: (1) humans browsing data the way they browse the web (say, to discover data to download for further analysis), and (2) machines crawling or pulling in data as needed.  On the (mostly-unstructured-content/document) web, we know that crawling is useful for building search indexes.  What else might crawling be useful for on a (structured-content/data) web?  Hierarchical information springs to mind — for example, an index of major aid donors, each with a link to a list of their projects, and a link to the country/region where they&#8217;re talking place.  In an ideal world, there would also be links to *other* donors&#8217; projects.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Kingsley Uyi Idehen (@kidehen)		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4159</link>
+
+		<dc:creator><![CDATA[Kingsley Uyi Idehen (@kidehen)]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 20:06:17 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4159</guid>
+
+					<description><![CDATA[Hence the following:
+
+1. http://dbpedia.org/page/Linked_Data -- note the footer which has a link to CSV representation of the entity description
+
+2. http://bit.ly/SboANR -- why Linked Data integration into Google Spreadsheet and Excel is trivial thanks to SPARQL Protocol and the ability to hook in CSV representation of output (be it the tree based query results or entity description graphs)
+
+3. http://www.slideshare.net/kidehen/accessing-linked-open-data-sources-via-virtuoso-odbc/6 -- excerpt from presentation showing CSV basic all the way to Linked Data (presented in tabular form) .]]></description>
+			<content:encoded><![CDATA[<p>Hence the following:</p>
+<p>1. <a href="http://dbpedia.org/page/Linked_Data" rel="nofollow ugc">http://dbpedia.org/page/Linked_Data</a> &#8212; note the footer which has a link to CSV representation of the entity description</p>
+<p>2. <a href="http://bit.ly/SboANR" rel="nofollow ugc">http://bit.ly/SboANR</a> &#8212; why Linked Data integration into Google Spreadsheet and Excel is trivial thanks to SPARQL Protocol and the ability to hook in CSV representation of output (be it the tree based query results or entity description graphs)</p>
+<p>3. <a href="http://www.slideshare.net/kidehen/accessing-linked-open-data-sources-via-virtuoso-odbc/6" rel="nofollow ugc">http://www.slideshare.net/kidehen/accessing-linked-open-data-sources-via-virtuoso-odbc/6</a> &#8212; excerpt from presentation showing CSV basic all the way to Linked Data (presented in tabular form) .</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Martin Davis		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4158</link>
+
+		<dc:creator><![CDATA[Martin Davis]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 19:44:21 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4158</guid>
+
+					<description><![CDATA[Does it even need the double-curly-bracket syntax?  Can&#039;t the convention be simply a value which starts with a recognizable URI prefix?  (E.g http:// or file://).  The descriptive text can simply be delimited by the first blank char.
+
+And in order to make the utility of this convention fully apparent, can you talk a bit about how clients (&quot;user-agents&quot; in web-speak) would make use of this information?  It seems to me that one reason that linked data on the web is so useful is that it corresponds to a very useful client action - that of displaying further web content, or else carrying out some action on a remote server.   In order to show this isn&#039;t just cargo-cultism some examples would be useful.]]></description>
+			<content:encoded><![CDATA[<p>Does it even need the double-curly-bracket syntax?  Can&#8217;t the convention be simply a value which starts with a recognizable URI prefix?  (E.g http:// or file://).  The descriptive text can simply be delimited by the first blank char.</p>
+<p>And in order to make the utility of this convention fully apparent, can you talk a bit about how clients (&#8220;user-agents&#8221; in web-speak) would make use of this information?  It seems to me that one reason that linked data on the web is so useful is that it corresponds to a very useful client action &#8211; that of displaying further web content, or else carrying out some action on a remote server.   In order to show this isn&#8217;t just cargo-cultism some examples would be useful.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4145</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 02:23:24 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4145</guid>
+
+					<description><![CDATA[Paul: thanks — I&#039;ve corrected the id.
+
+Michael: also thanks — agreed about the fragility of URLs (a problem faced by all online resources, tightly- or loosely-structured), but I have not yet seen a widely-implemented solution to it.  There&#039;s no reason the URLs actually have to be file names, of course; they could be something like http://example.org/data/people (with or without content negotiation).]]></description>
+			<content:encoded><![CDATA[<p>Paul: thanks — I&#8217;ve corrected the id.</p>
+<p>Michael: also thanks — agreed about the fragility of URLs (a problem faced by all online resources, tightly- or loosely-structured), but I have not yet seen a widely-implemented solution to it.  There&#8217;s no reason the URLs actually have to be file names, of course; they could be something like <a href="http://example.org/data/people" rel="nofollow ugc">http://example.org/data/people</a> (with or without content negotiation).</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Michael Sokolov		</title>
+		<link>https://quoderat.megginson.com/2013/01/06/csv-linked-data/#comment-4144</link>
+
+		<dc:creator><![CDATA[Michael Sokolov]]></dc:creator>
+		<pubDate>Mon, 07 Jan 2013 02:18:19 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=564#comment-4144</guid>
+
+					<description><![CDATA[The syntax seems workable. The interpretation doesn&#039;t make any sense to me. When I saw this my first thought was that it provides a mechanism for representing relational data in CSV. Nobody gets tied up in knots about what many-one relationships mean in SQL, or if they do, it&#039;s probably a waste of time.  Containment, ownership, parentage, whatever. Authority? I suppose, if you like.
+
+I think it&#039;s a problem that the filename is critical, but files tend to copied, moved around, renamed, versioned (get dates attached to them).]]></description>
+			<content:encoded><![CDATA[<p>The syntax seems workable. The interpretation doesn&#8217;t make any sense to me. When I saw this my first thought was that it provides a mechanism for representing relational data in CSV. Nobody gets tied up in knots about what many-one relationships mean in SQL, or if they do, it&#8217;s probably a waste of time.  Containment, ownership, parentage, whatever. Authority? I suppose, if you like.</p>
+<p>I think it&#8217;s a problem that the filename is critical, but files tend to copied, moved around, renamed, versioned (get dates attached to them).</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

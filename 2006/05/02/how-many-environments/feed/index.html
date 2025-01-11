@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: How many environments?	</title>
+	<atom:link href="https://quoderat.megginson.com/2006/05/02/how-many-environments/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sun, 03 Sep 2006 09:52:46 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Renjith		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-465</link>
+
+		<dc:creator><![CDATA[Renjith]]></dc:creator>
+		<pubDate>Sun, 03 Sep 2006 09:52:46 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-465</guid>
+
+					<description><![CDATA[I think Steeve gives the right idea]]></description>
+			<content:encoded><![CDATA[<p>I think Steeve gives the right idea</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Douglas		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-464</link>
+
+		<dc:creator><![CDATA[Douglas]]></dc:creator>
+		<pubDate>Wed, 03 May 2006 18:37:20 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-464</guid>
+
+					<description><![CDATA[I would contend that two environments is enough for single or small teams of perhaps no more than four people or so. The critical aspect of that, however, is to ensure that the test data used in the development environment is the same, or at least very similar, to the production data. I suspect that all too often the test data consists of a handful of users and associated data and then no one can understand why their SQL queries run so slow or pages are slow to render. If your developers don&#039;t want to develop using big DBs then the only alternative would be to go to three environments, development, QA/test and production. And your QA/test data would be a mirror of production data.]]></description>
+			<content:encoded><![CDATA[<p>I would contend that two environments is enough for single or small teams of perhaps no more than four people or so. The critical aspect of that, however, is to ensure that the test data used in the development environment is the same, or at least very similar, to the production data. I suspect that all too often the test data consists of a handful of users and associated data and then no one can understand why their SQL queries run so slow or pages are slow to render. If your developers don&#8217;t want to develop using big DBs then the only alternative would be to go to three environments, development, QA/test and production. And your QA/test data would be a mirror of production data.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: stand		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-463</link>
+
+		<dc:creator><![CDATA[stand]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 16:57:29 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-463</guid>
+
+					<description><![CDATA[I&#039;m sort of in line with Tim here. I think it&#039;s best to concentrate on automating the process of building an environment up from nothing. In an idealized setup, you&#039;d be able to run a single script on an empty box and at the end, you&#039;d have a new environment. I suspect that Tony&#039;s suggestion of virtual servers could greatly aid in achieving this. In fact, I&#039;ve seen development shops that are sort of set up this way.
+
+One problem with this approach I think is managing the time it takes to build the environment. There are certain operations (things like installing a web server, database server, etc.) that could be skipped by the build script if they were already in place, but there are intricacies here that I haven&#039;t really thought out in full.]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m sort of in line with Tim here. I think it&#8217;s best to concentrate on automating the process of building an environment up from nothing. In an idealized setup, you&#8217;d be able to run a single script on an empty box and at the end, you&#8217;d have a new environment. I suspect that Tony&#8217;s suggestion of virtual servers could greatly aid in achieving this. In fact, I&#8217;ve seen development shops that are sort of set up this way.</p>
+<p>One problem with this approach I think is managing the time it takes to build the environment. There are certain operations (things like installing a web server, database server, etc.) that could be skipped by the build script if they were already in place, but there are intricacies here that I haven&#8217;t really thought out in full.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Steve Loughran		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-462</link>
+
+		<dc:creator><![CDATA[Steve Loughran]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 15:03:37 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-462</guid>
+
+					<description><![CDATA[I think even small devs should have a split of dev/(staging/test)/production. I use a vmware images hosting luntbuild to do staging: within 30 minutes of checking something in, staging is running on that code with tests. Production is just a laptop, but it is a laptop hosted at home to let me test my long-haul WS stuff from work.
+
+I dont agree with tim, that operations/deployment should be split from development, because the developers need to think about the needs of operations too -automated deploy/config, management instrumentation. What is important is that the operations&#039; tasks have to be treated as important use cases for an app as the user front end.]]></description>
+			<content:encoded><![CDATA[<p>I think even small devs should have a split of dev/(staging/test)/production. I use a vmware images hosting luntbuild to do staging: within 30 minutes of checking something in, staging is running on that code with tests. Production is just a laptop, but it is a laptop hosted at home to let me test my long-haul WS stuff from work.</p>
+<p>I dont agree with tim, that operations/deployment should be split from development, because the developers need to think about the needs of operations too -automated deploy/config, management instrumentation. What is important is that the operations&#8217; tasks have to be treated as important use cases for an app as the user front end.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Tim Howland		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-461</link>
+
+		<dc:creator><![CDATA[Tim Howland]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 14:37:02 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-461</guid>
+
+					<description><![CDATA[Actually, many of the things that make agile work make it pretty easy to support multiple deployment environments:
+
+- network-oriented version control (subversion / cvs) make it easy to do checkout to lots of machines
+- test driven development makes it simple to run automated tests to catch regressions
+- continuous integration doesn&#039;t work without automated deployment scripts
+
+I think the key thing is that the developers shouldn&#039;t be intimately involved with deployment once the team scales up to a certain size. If you have more than 5 developers, your burn rate is a few thousand bucks a day - and it makes sense to hire a full time or part time release engineer to properly manage your deployments. A smart release engineer will use these agile tools to simplify deployments to multiple environments.
+
+There are some builds that you want to do that you simply can&#039;t run in production: load testing, aggressive security testing, and so on- stuff that will absolutely break your live site. If you run these on staging, you risk compromising the network that production lives in.
+
+I&#039;ve seen a pretty common pattern of development -&#062; integration -&#062; staging -&#062; production, with additional special purpose builds happening on the side to support load testing, security testing, multi-platform testing, and so forth- but these don&#039;t get in the way of an agile process, they support it. If you separate the development team from the deployment team (to an extent; you always want the developers on hand if something blows up) then it&#039;s easy to put in this infrastructure, and set it up so the developers don&#039;t have to mess with it.]]></description>
+			<content:encoded><![CDATA[<p>Actually, many of the things that make agile work make it pretty easy to support multiple deployment environments:</p>
+<p>&#8211; network-oriented version control (subversion / cvs) make it easy to do checkout to lots of machines<br />
+&#8211; test driven development makes it simple to run automated tests to catch regressions<br />
+&#8211; continuous integration doesn&#8217;t work without automated deployment scripts</p>
+<p>I think the key thing is that the developers shouldn&#8217;t be intimately involved with deployment once the team scales up to a certain size. If you have more than 5 developers, your burn rate is a few thousand bucks a day &#8211; and it makes sense to hire a full time or part time release engineer to properly manage your deployments. A smart release engineer will use these agile tools to simplify deployments to multiple environments.</p>
+<p>There are some builds that you want to do that you simply can&#8217;t run in production: load testing, aggressive security testing, and so on- stuff that will absolutely break your live site. If you run these on staging, you risk compromising the network that production lives in.</p>
+<p>I&#8217;ve seen a pretty common pattern of development -&gt; integration -&gt; staging -&gt; production, with additional special purpose builds happening on the side to support load testing, security testing, multi-platform testing, and so forth- but these don&#8217;t get in the way of an agile process, they support it. If you separate the development team from the deployment team (to an extent; you always want the developers on hand if something blows up) then it&#8217;s easy to put in this infrastructure, and set it up so the developers don&#8217;t have to mess with it.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-460</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 14:11:04 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-460</guid>
+
+					<description><![CDATA[I agree, Tony, that big enterprise is higher risk, and thus, harder: the question is at what point adding more environments raises the risk rather than lowering it. Managing and coordinating so many environments (I&#039;ve seen as many as six or seven) tends to soak up resources that could otherwise be used for fixing bugs, refactoring code, etc.; environments tend to fall out of sync (and stay that way), limiting their usefulness; and the presence of so many environments and the extra process associated with them slows down the people who are left coding, debugging, and testing, so that they have even less time to spend improving the application. They&#039;ll frequently be called away for hours or days to debug a problem in with their code in a middle-level environment that turns out to be a configuration problem in that environment.
+
+I wonder if, excluding the developers&#039; desktops, most enterprise apps should have at most three environments -- development, combined testing/staging, and production. All unit testing and most regression testing can (and should) take place in the development environment automatically, at least once a day; everything else can happen on a combined staging/testing server before the code is rolled out into production use.]]></description>
+			<content:encoded><![CDATA[<p>I agree, Tony, that big enterprise is higher risk, and thus, harder: the question is at what point adding more environments raises the risk rather than lowering it. Managing and coordinating so many environments (I&#8217;ve seen as many as six or seven) tends to soak up resources that could otherwise be used for fixing bugs, refactoring code, etc.; environments tend to fall out of sync (and stay that way), limiting their usefulness; and the presence of so many environments and the extra process associated with them slows down the people who are left coding, debugging, and testing, so that they have even less time to spend improving the application. They&#8217;ll frequently be called away for hours or days to debug a problem in with their code in a middle-level environment that turns out to be a configuration problem in that environment.</p>
+<p>I wonder if, excluding the developers&#8217; desktops, most enterprise apps should have at most three environments &#8212; development, combined testing/staging, and production. All unit testing and most regression testing can (and should) take place in the development environment automatically, at least once a day; everything else can happen on a combined staging/testing server before the code is rolled out into production use.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Anthony B. Coates		</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comment-459</link>
+
+		<dc:creator><![CDATA[Anthony B. Coates]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 13:51:15 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/#comment-459</guid>
+
+					<description><![CDATA[For big enterprises, it&#039;s necessary.  In the banking/finance world, if any stock market trade gets delayed significantly, someone is likely to be fined a 6 figure sum.  For the petroleum industry, if your software stops you from fulfilling your oil orders, you have to fulfil them by purchasing off the open market, at a big premium to your own internal cost.
+
+It&#039;s not that the agile approach is bad, but I don&#039;t think it scales up well to situations where the cost of a bug out in the field is too high.  It works best where the bugs aren&#039;t likely to shut down the business, and where the users don&#039;t mind being treated as beta testers.
+
+Personally, I&#039;m moving in the direction of using virtual PC sessions (e.g. VMware) to allow me to test in test-only environments without having to increase the actual number of physical boxes I have to share my office with.
+
+Cheers, Tony.]]></description>
+			<content:encoded><![CDATA[<p>For big enterprises, it&#8217;s necessary.  In the banking/finance world, if any stock market trade gets delayed significantly, someone is likely to be fined a 6 figure sum.  For the petroleum industry, if your software stops you from fulfilling your oil orders, you have to fulfil them by purchasing off the open market, at a big premium to your own internal cost.</p>
+<p>It&#8217;s not that the agile approach is bad, but I don&#8217;t think it scales up well to situations where the cost of a bug out in the field is too high.  It works best where the bugs aren&#8217;t likely to shut down the business, and where the users don&#8217;t mind being treated as beta testers.</p>
+<p>Personally, I&#8217;m moving in the direction of using virtual PC sessions (e.g. VMware) to allow me to test in test-only environments without having to increase the actual number of physical boxes I have to share my office with.</p>
+<p>Cheers, Tony.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

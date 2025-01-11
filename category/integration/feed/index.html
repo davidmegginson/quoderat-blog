@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>Integration &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/category/integration/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 29 Mar 2014 14:11:37 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>Integration &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>Netflix, Philips, and the fragility of APIs</title>
+		<link>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/</link>
+					<comments>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 20 Mar 2014 14:16:11 +0000</pubDate>
+				<category><![CDATA[Integration]]></category>
+		<category><![CDATA[REST]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=811</guid>
+
+					<description><![CDATA[Update: Either Philips or Netflix has now fixed the problem described below (2014-03-29). I bought an inexpensive 29&#8243; Philips 4000 series TV for the basement, and its built-in Netflix app isn&#8217;t working. Why doesn&#8217;t Netflix work on my TV? Time &#8230; <a href="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><i><b>Update:</b> Either Philips or Netflix has now fixed the problem described below (2014-03-29).</i></p>
+<p><a href="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg"><img data-attachment-id="820" data-permalink="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/philips-tv/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" data-orig-size="225,225" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Philips 4000 series TV" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" src="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=640" alt="Philips 4000 series TV"   class="alignright size-full wp-image-820" srcset="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg 225w, https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=150&amp;h=150 150w" sizes="(max-width: 225px) 100vw, 225px" /></a></p>
+<p>I bought an inexpensive 29&#8243; <a href="http://www.p4c.philips.com/cgi-bin/dcbint/cpindex.pl?slg=en&amp;scy=us&amp;ctn=29PFL4908/F7">Philips 4000 series</a> TV for the basement, and its built-in Netflix app isn&#8217;t working.</p>
+<h2 style="clear:none;">Why doesn&#8217;t Netflix work on my TV?</h2>
+<p>Time to head for the online support chats.  What does Philips have to say?</p>
+<blockquote><p>
+Unfortunately at this time Netflix is not working on any of our units at this time.  Netflix processed an update without informing our company.  With all smart TVs, when an app maker processes an update, their API will change.  This essentially locks our entire unit out of Netflix until we can process a software update for our units by individual model.  We are working on this issue as fast as possible. Unfortunately there is no ETA on the update.
+</p></blockquote>
+<p>OK, then what does Netflix have to say?</p>
+<blockquote><p>
+I just checked on this issue and yes indeed there is an issue. Our tech geeks over here are working on the matter and we don&#8217;t have an ETA as suggested by the guys at Phillips for sure, but no worries with the help of them I can assure you that it will be fixed, 2 heads are better than 1 huh&#8230;
+</p></blockquote>
+<p>Thanks to both companies for giving me honest answers fast.  So it just turns out that Netflix had one idea of the API, Philips had another, there was no management/communication mechanism before deployment, and the consumer experience broke.</p>
+<h2>Approaching O(n²) complexity</h2>
+<p>This is a good example of a growing systemic problem in the world of API-based integration, and one that will apply far beyond just consumer devices: ever since the <a href="http://en.wikipedia.org/wiki/Web_2.0">Web 2.0</a> fad of the past decade, people have pushed the idea of APIs as a <a href="http://en.wikipedia.org/wiki/No_silver_bullet">silver bullet</a> for integrating information and services from separate organisations.  APIs are a huge step forward from scraping, but if you have <i>m</i> service providers with APIs and <i>n</i> service consumers using the API, how do you keep the <i>m*n</i> dependencies all in sync?  What happens when your business depends on an API <a href="http://www.pcworld.com/article/2104603/metrotwit-vanishes-as-twitter-restrictions-claim-another-victim.html">whose terms of use change</a>?  As shown above, change management is not easy, even for big, consumer-facing companies (and especially not for someone like Netflix, who tries to work on so many different devices from so many companies).</p>
+<h2>Closing rant</h2>
+<p>While we&#8217;re on the topic of APIs, please don&#8217;t use the nonsense term &#8220;RESTful API&#8221; — the whole point of <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> is that it&#8217;s <em>not</em> an API (or rather, that its API is HTTP, and most of the semantic burden gets switched from API to payload).</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" medium="image">
+			<media:title type="html">Philips 4000 series TV</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

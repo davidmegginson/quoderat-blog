@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: Blame Larry Wall	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/02/04/blame-larry-wall/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/02/04/blame-larry-wall/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Mon, 07 Feb 2005 17:58:37 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Brent Hendricks		</title>
+		<link>https://quoderat.megginson.com/2005/02/04/blame-larry-wall/#comment-31</link>
+
+		<dc:creator><![CDATA[Brent Hendricks]]></dc:creator>
+		<pubDate>Mon, 07 Feb 2005 17:58:37 +0000</pubDate>
+		<guid isPermaLink="false">/?p=10#comment-31</guid>
+
+					<description><![CDATA[I&#039;m not really a Java programmer, but couldn&#039;t you reverse the order of the arguments and make the namespace URL optional?  Then either of:
+
+&lt;code&gt;
+branch.setName(&quot;foo&quot;);
+branch.setName(&quot;foo&quot;,&quot;http://www.example.org/ns&quot;);
+&lt;/code&gt;
+
+would be legal]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m not really a Java programmer, but couldn&#8217;t you reverse the order of the arguments and make the namespace URL optional?  Then either of:</p>
+<p><code><br />
+branch.setName("foo");<br />
+branch.setName("foo","http://www.example.org/ns");<br />
+</code></p>
+<p>would be legal</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/02/04/blame-larry-wall/#comment-30</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 04 Feb 2005 18:46:23 +0000</pubDate>
+		<guid isPermaLink="false">/?p=10#comment-30</guid>
+
+					<description><![CDATA[That&#039;s a good example, Bill -- thanks.  I thought about it (as well as separate getters and setters for the namespace URI and local part), and I agree that there are cases where those would be a good idea.  Still, that approach adds the problem (for the easiest case) of dealing with two strings and passing them around.  To be memory efficient, there would also have to be some kind of internalization facility for the pair.]]></description>
+			<content:encoded><![CDATA[<p>That&#8217;s a good example, Bill &#8212; thanks.  I thought about it (as well as separate getters and setters for the namespace URI and local part), and I agree that there are cases where those would be a good idea.  Still, that approach adds the problem (for the easiest case) of dealing with two strings and passing them around.  To be memory efficient, there would also have to be some kind of internalization facility for the pair.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Bill de hÓra		</title>
+		<link>https://quoderat.megginson.com/2005/02/04/blame-larry-wall/#comment-29</link>
+
+		<dc:creator><![CDATA[Bill de hÓra]]></dc:creator>
+		<pubDate>Fri, 04 Feb 2005 17:45:01 +0000</pubDate>
+		<guid isPermaLink="false">/?p=10#comment-29</guid>
+
+					<description><![CDATA[&lt;code&gt;
+  String parts[2] = branch.getNamepair();
+  branch.setNamepair(&quot;foo&quot;, &quot;http://www.example.org/ns&quot;);
+&lt;/code&gt;]]></description>
+			<content:encoded><![CDATA[<p><code><br />
+  String parts[2] = branch.getNamepair();<br />
+  branch.setNamepair("foo", "http://www.example.org/ns");<br />
+</code></p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

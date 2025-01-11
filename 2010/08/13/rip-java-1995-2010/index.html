@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+RIP Java, 1995-2010 | Quoderat</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://quoderat.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=381'
+					+ '&is_singular=1';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9xdW9kZXJhdC5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14988159"
+		+ "&time=1736548544";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Feed" href="../../../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Comments Feed" href="../../../../comments/feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; RIP Java, 1995-2010 Comments Feed" href="feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJxtzFsKgCAQQNENZaMg+BWtRXQI39KMtP0ogiD6PHC5cHThWmWsDGWInscWKkFE7talx0CjQml+ZCTYMVtGL3oj/mh2RBP8H3NI+H5vXflaFmWU0VJLo+MJKT40cA==&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s1.wp.com/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s0.wp.com/_static/??-eJyNjcsKQjEMBX/ImlsQry7ET5GahrbXNCmmRfx7H7gRN+7OwGEGbs2hSifpUIdrPFIRg4V6C3j5MNgQqBoHk4HlcKUYYry/Z5G0RrMV/C06FUEwxRLYsSa1L/iR9Uz1mc0bSKznwK/DsR787Kd5P/ntbnkAuNBIYA==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14988159","postID":"381","siteURL":"https:\/\/quoderat.megginson.com","xhrURL":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/p10T6v-69","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/sun\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/_static/??/wp-content/mu-plugins/jetpack-plugin/sun/_inc/build/related-posts/related-posts.min.js,/wp-content/js/rlt-proxy.js?m=1733765333j'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://quoderatech.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="index.html" />
+<link rel='shortlink' href='https://wp.me/p10T6v-69' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2010%2F08%2F13%2Frip-java-1995-2010%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2010%2F08%2F13%2Frip-java-1995-2010%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="RIP Java, 1995-2010" />
+<meta property="og:url" content="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/" />
+<meta property="og:description" content="Java is dead. A lot of developers have thought they were too hip for Java, but I still liked it. I implemented SAX in Java first of all, and have developed software in Java and encouraged my enterp…" />
+<meta property="article:published_time" content="2010-08-13T20:54:37+00:00" />
+<meta property="article:modified_time" content="2010-08-13T20:58:56+00:00" />
+<meta property="og:site_name" content="Quoderat" />
+<meta property="og:image" content="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg" />
+<meta property="og:image:width" content="212" />
+<meta property="og:image:height" content="194" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:creator" content="@david_megginson" />
+<meta name="twitter:site" content="@david_megginson" />
+<meta name="twitter:text:title" content="RIP Java, 1995-2010" />
+<meta name="twitter:image" content="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=144" />
+<meta name="twitter:card" content="summary" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s2.wp.com/i/webclip.png" />
+<link rel='openid.server' href='../../../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../../../osd.xml" title="Quoderat" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Quoderat" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Open information and technology." /><meta name="description" content="Java is dead. A lot of developers have thought they were too hip for Java, but I still liked it. I implemented SAX in Java first of all, and have developed software in Java and encouraged my enterprise customers to use it for many years, sometimes in 9-figure projects at Fortune-500 companies &mdash; it&#039;s a&hellip;" />
+</head>
+
+<body class="post-template-default single single-post postid-381 single-format-standard customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="../../../../index.html" title="Quoderat" rel="home">Quoderat</a>
+					</span>
+				</div>
+				<div id="site-description">Open information and technology.</div>
+
+									<a class="home-link" href="../../../../index.html" title="Quoderat" rel="home">
+						<img src="../../../../wp-content/uploads/2010/08/cropped-manuscript-scribe12-172v-1604.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="../../09/mobile-users-want-fresh-data/index.html" rel="prev"><span class="meta-nav">&larr;</span> Mobile users want fresh&nbsp;data</a></div>
+					<div class="nav-next"><a href="../../27/google-voice-sort-of-available-in-canada/index.html" rel="next">Google Voice (sort-of) available in&nbsp;Canada <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-381" class="post-381 post type-post status-publish format-standard hentry category-general tag-news tag-programming tag-rights">
+											<h2 class="entry-title"><a href="index.html" rel="bookmark">RIP Java, 1995-2010</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="index.html" title="4:54 pm" rel="bookmark"><span class="entry-date">August 13, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p><a href="../../../../wp-content/uploads/2010/08/java.jpg"><img data-attachment-id="383" data-permalink="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/java/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg" data-orig-size="212,194" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Java" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=212" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2010/08/java.jpg?w=212" src="../../../../wp-content/uploads/2010/08/java.jpg%3Fw=640" alt="" title="Java"   class="alignleft size-full wp-image-383" srcset="../../../../wp-content/uploads/2010/08/java.jpg 212w, ../../../../wp-content/uploads/2010/08/java.jpg%3Fw=150&amp;h=137=137 150w" sizes="(max-width: 212px) 100vw, 212px" /></a></p>
+<p>Java is dead.</p>
+<p>A lot of developers have thought they were too hip for Java, but I still liked it.  I implemented <a href="http://en.wikipedia.org/wiki/Simple_API_for_XML">SAX</a> in Java first of all, and have developed software in Java and encouraged my enterprise customers to use it for many years, sometimes in 9-figure projects at Fortune-500 companies &mdash; it&#8217;s a great, mature platform, with a lot of tools for managing large projects and development teams, and it has unit-testing and IDE support that is second to none.</p>
+<p>But now, Oracle (which recently bought Sun) has <a href="http://www.informationweek.com/news/software/open_source/showArticle.jhtml?articleID=226700231&amp;cid=RSSfeed_IWK_All">decided to sue Google for using Java in Android</a>, even though (a) Sun long ago open sourced Java, and (b) Google built its own VM anyway.  I very much hope that Oracle will suffer the same humiliating, crushing, well-deserved defeat that <a href="http://en.wikipedia.org/wiki/SCO-Linux_controversies">the SCO group suffered</a> when it went after Linux with its own bogus law suits, but it will take years for that to happen.  The Android and Blackberry mobile operating systems will be fine, and Java (of a sort) will live on there (though I still <a href="../../../01/10/one-app-store-to-rule-them-all/index.html">recommend web apps instead of phone apps</a>), but the days of Java and Eclipse in the enterprise are finished.</p>
+<p>In the meantime, there are lots of open alternatives to Java, and the litigation risks of using Java have suddenly become far too high.  In my consulting work, I&#8217;ll reluctantly have to advise customers not to use Java for any new projects, and to consider migrating older projects to a different platform.  If you&#8217;re a big company or government, you just can&#8217;t afford the risk that Oracle will come after you, too.</p>
+<p>I&#8217;m sorry the end was so sudden and messy, but still, it was a great 15 years.  Thanks to James Gosling and all the other people in the Java community for the memories and opportunities.</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-381" class="share-facebook sd-button share-icon" href="index.html%3Fshare=facebook.html" target="_blank" title="Click to share on Facebook" ><span>Facebook</span></a></li><li class="share-x"><a rel="nofollow noopener noreferrer" data-shared="sharing-x-381" class="share-x sd-button share-icon" href="index.html%3Fshare=x.html" target="_blank" title="Click to share on X" ><span>X</span></a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14988159-381-6781a0c072024' data-src='//widgets.wp.com/likes/index.html?ver=20250110#blog_id=14988159&amp;post_id=381&amp;origin=quoderatech.wordpress.com&amp;obj_id=14988159-381-6781a0c072024&amp;domain=quoderat.megginson.com' data-name='like-post-frame-14988159-381-6781a0c072024' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="../../../../category/general/index.html" rel="category tag">General</a> and tagged <a href="../../../../tag/news/index.html" rel="tag">news</a>, <a href="../../../../tag/programming/index.html" rel="tag">programming</a>, <a href="../../../../tag/rights/index.html" rel="tag">rights</a>. Bookmark the <a href="index.html" title="Permalink to RIP Java, 1995-2010" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-381 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="../../09/mobile-users-want-fresh-data/index.html" rel="prev"><span class="meta-nav">&larr;</span> Mobile users want fresh&nbsp;data</a></div>
+					<div class="nav-next"><a href="../../27/google-voice-sort-of-available-in-canada/index.html" rel="next">Google Voice (sort-of) available in&nbsp;Canada <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			19 Responses to <em>RIP Java, 1995-2010</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="comment even thread-even depth-1" id="li-comment-3312">
+		<div id="comment-3312">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/649ab2ea39894ba7baa52f27716b15aa5a65d069ec87ada5805a1d80c4e9447d?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Bob Foster</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3312">
+				August 14, 2010 at 3:39 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Jeez, Dave. Can you say over-reaction? Very disappointing.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-3314">
+		<div id="comment-3314">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/47c6af1637ddfd518ceceeb321104274c763a9fdfa3d1c379531d489eb481979?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">angler</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3314">
+				August 14, 2010 at 5:44 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>From what I read the point of contention is the use of an an alternate VM, not the language itself. I&#8217;m sure your enterprise customers can sleep soundly.</p>
+<p>Moreover, you are comparing apples to oranges when it comes to the (in)famous SCO lawsuit: they never showed to have any merit, but this patent dispute might, in which case they will settle instead of killing the goose that lays golden eggs.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-3318">
+		<div id="comment-3318">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">davidmegginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3318">
+				August 14, 2010 at 8:32 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p><strong>Bob:</strong> you must have noticed that Java was already in trouble.  10 years ago, Java attracted the brightest and creative new people.  Now, most of your fellow Java gurus, like Bruce Tate, long-ago jumped ship, and it&#8217;s almost impossible to get talented developers under 30 excited about Java (though I still meet many young &#8216;uns who love Python — ¿¡Python!? — go figure).  There will always be Java work in my lifetime, like there will always be Cobol and Fortran work, but with no one less than James Gosling writing that <a href="http://nighthacks.com/roller/jag/entry/the_shit_finally_hits_the" rel="nofollow">Oracle bought Sun only to get at the Java patents</a>, I suspect most future Java work will be maintaining or enhancing aging applications, not writing new ones.</p>
+<p><strong>angler:</strong> <em>Java-the-platform</em> vs. <em>Java-the-language</em> matters from a technical perspective, but this is a legal problem.  Sun owned patents covering all aspects of the Java ecosystem, but rarely tried to use them.  Now, Oracle has made it clear that it bought Sun only to use as a patent farm (as backed up by Gosling&#8217;s link above).</p>
+<p>There are lots of ways to define &#8220;dead&#8221; — perhaps my definition (a platform sapped of its creative energy and momentum, with an aging developer base, used mainly in legacy apps) isn&#8217;t the same as yours.  Perhaps Oracle will realize, as <em>angler</em> wrote in his/her comment, that it&#8217;s gutting its golden goose, and will pull back the knife before the incision is fatal (if it&#8217;s not already too late).  It will take a couple of years to find out if I&#8217;m right; in the meantime, if you&#8217;re a Java specialist, I recommend adding one or two new arrows to your career quiver, just to be safe.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-3319">
+		<div id="comment-3319">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/55d8ff05acb23c03170e5fc9e881c8a6acdcc0338b98ac7b97cd6eda263cadf7?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.myloadtest.com" class="url" rel="ugc external nofollow">Stuart Moncrieff</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3319">
+				August 14, 2010 at 9:31 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Dave,</p>
+<p>I don&#8217;t think your customers have much to worry about unless they are creating their own JVM &#8211; I have worked with a lot of large enterprise customers, and haven&#8217;t seen any of them do this yet. 🙂</p>
+<p>Cheers,<br />
+Stu.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-3324">
+		<div id="comment-3324">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/6b35496b62b14340583fceae8c9e87e0945de01996bbba37e8a61008dcd9b479?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://jonas.arnklint.com" class="url" rel="ugc external nofollow">Jonas Arnklint</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3324">
+				August 14, 2010 at 6:38 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Interesting thoughts! Most of the people I know that are doing Java usually have those big enterprise corporation clients. I´m certainly not a Java expert, but I what´s your opinion on the next big thing? Towards which direction should their two arrows point? 🙂</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-3334">
+		<div id="comment-3334">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">davidmegginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3334">
+				August 15, 2010 at 12:37 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Jonas: I think we&#8217;re seeing a split between the backend and the frontend, and maybe less of a demand for general-purpose languages like Java that are good at both.  On the frontend, I&#8217;m seeing a surprising amount of demand for PHP-based CMSs like Drupal.  The backend, though, is up for grabs &#8212; I don&#8217;t think I&#8217;d want to use PHP for something like that, even with talented developers.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-3355">
+		<div id="comment-3355">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e1d4a4d55a6b78ea572b5433daa432c42e29f97c791524fbb8eddb6d7f37c687?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://cafe.elharo.com/" class="url" rel="ugc external nofollow">Elliotte Rusty Harold</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3355">
+				August 20, 2010 at 8:50 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>So what do you think is next? They&#8217;re some good options in the scripting space&#8211;Python especially&#8211;but I can&#8217;t think of any languages that combine Java&#8217;s performance, ease of development, and broad support that aren&#8217;t themselves built on top of the Java VM. C#/.NET is closest, but that&#8217;s just jumping out of the frying pan and into the fire. The only surprise is that Oracle tried this stunt before Microsoft did. </p>
+<p>I think it may be time to give D and Go a serious look.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt depth-2" id="li-comment-3357">
+		<div id="comment-3357">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">davidmegginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3357">
+				August 21, 2010 at 12:40 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>The enterprise-y people will eventually congregate around one of the options, and then start filling it in with all the tools they miss from their Java days.  </p>
+<p>I&#8217;ll probably avoid Go and C# — I&#8217;m wary of committing to another BigCorp&#8217;s language, even when the company is as benign as Google — but I&#8217;ll take a look at D, will give Python a third chance, and will fish around through some of the other new-ish languages out there.  I like PHP for web work, but I can&#8217;t see it ever growing into a good back-end or middleware language.  Ruby still repels me, but perhaps I should try to be more open minded.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-3391">
+		<div id="comment-3391">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/797dc7383680d5b31c98a8eab7bdd24a82dcf49293fdd3a4b633767ab6b0b145?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.xponentsoftware.com" class="url" rel="ugc external nofollow">Bill Conniff</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3391">
+				August 30, 2010 at 5:04 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>The lawsuit is about Google’s use of the desktop version of Java, which is not licensed for use on smartphones. I do not see that it implies future lawsuits over the Java language. Nor do I see Oracle suing their customers for building in-house apps using Java. That would be shooting themselves in both feet.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-even depth-1" id="li-comment-3392">
+		<div id="comment-3392">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">davidmegginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3392">
+				August 30, 2010 at 5:51 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Bill: good points, but when the owner of open-source software (like Java) starts using patents to attack the software&#8217;s users, it&#8217;s time to fight or run. Google&#8217;s big enough to stand and fight Oracle, but the rest of us will be safer diving behind the bar and waiting it out.</p>
+<p>Oracle has the ability to hurt any Java user: by suing them directly (if they&#8217;re big enough to justify the effort), or by suing their vendors and forcing Java out of the products.  When they&#8217;ve dropped the patent bomb once, I see no reason to trust that they won&#8217;t do it again.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-3396">
+		<div id="comment-3396">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e970861ea501b3370445308e35bab306b94bcfb232bf537b0756e300629e144a?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Bret Godwin</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3396">
+				August 31, 2010 at 2:20 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>David,</p>
+<p>Why do you over exaggerate this issue by making statements like Java is Dead.  This is a patent fight between two Goliaths about the JVM and it&#8217;s use in the mobile space &#8211; Android specifically.   Here is a summary of the complaint:</p>
+<p>The actual compliant (via Engadget), filed in U.S. District Court in Northern California, goes a little deeper than the press release, and hints that Google itself is not the problem, it’s the device manufacturers. It claims that the device manufacturers must obtain copyrighted versions of the Java platform to use on Android devices. “Such use is not licensed,” it says, adding that Google has “induced, caused, and materially contributed to the infringing acts of others by encouraging, inducing, allowing and assisting others to use, copy, and distribute” these copyrighted works.</p>
+<p>( source: <a href="http://moconews.net/article/419-the-skinny-on-the-oracle-google-lawsuit-over-androids-use-of-java/" rel="nofollow ugc">http://moconews.net/article/419-the-skinny-on-the-oracle-google-lawsuit-over-androids-use-of-java/</a>)</p>
+<p>This has nothing to do with Java in Corporate America which is where Java is predominantly being used today.   So, if you had correctly stated that Java may be Dead in the mobile space on Android, then I would agree with your perspective and that is a valid point to pontificate about.</p>
+<p>I absolutely disagree with you going around telling your Customers to run from Java.  That is fear mongering and all you are doing is misleading people, and that, in my opinion, is wrong and hurts our industry.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-even depth-1" id="li-comment-3397">
+		<div id="comment-3397">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">davidmegginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3397">
+				August 31, 2010 at 3:08 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks for the comment, Bret.  </p>
+<p>If Oracle publicly promises not to sue anyone for using Java — at least the Open Source versions — I&#8217;ll happily retract everything I wrote in this posting, reinstall the Eclipse icon on my desktop, and even release new versions of some of my free Java-based libraries.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-3405">
+		<div id="comment-3405">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/53324758ed4a570c714c4682f7a1b652ccfe0eff191fb4e4d9a586d5b84174e2?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">blah</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3405">
+				September 1, 2010 at 6:51 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hmmm.  People largely don&#8217;t care about Java except for those who have invested too much time in this dying/dead/Cobol-like language. Discussing it is basically like commenting on a 5 year old thread in a forum.. We are re-raising the undead lol.  That&#8217;s how dead it is.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-3750">
+		<div id="comment-3750">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e4e0255b4fc140e362629008490f216cf4c49db12e5e3596c895364a1815d273?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Moa</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3750">
+				May 13, 2011 at 3:30 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>If Java is dead then the other languages that are supposed to take it over are stillborn. How come so many developers pronounce Java dead as they busily collect programming languages as if they were butterflies. The reality is that all those languages are great in specific domains but are usually poor general purpose solutions, and even more importantly, have complexities that Java deliberately avoided (which allows the not-so-talented corporate/government developers to be productive in large teams). </p>
+<p>According to the figures Java is experiencing a stabilizing rebound (probably the release of pent-up demand in the enterprise, that was initially delayed due to economic uncertainty). See the following :<br />
+<a href="http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html" rel="nofollow ugc">http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html</a></p>
+<p>But don&#8217;t let the figures stop the pronouncements of &#8220;Java is Dead&#8221; (so don&#8217;t use it!) or that obscure language , with tiny developer market share, is going to take over. That is just not going to happen in the Real World and the change that knocks Java off its perch will take a decade or more.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.srazash.com/2011/08/mo-java/" class="url" rel="ugc external nofollow">Mo&rsquo; Java&hellip; &laquo; Srazash&#039;s World</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-3962">
+		<div id="comment-3962">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/fe14ca2af6a782fb2231d7f7cfca1706b8d74d35183dd3f4cc7f7280e6d8e136?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://cefn.com" class="url" rel="ugc external nofollow">Cefn Hoile</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3962">
+				November 12, 2011 at 10:18 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Java is suffering a death-by-a-thousand cuts by bad Java developers more than anything else, and Eclipse and similar tools provide a catalyst for this, though they can&#8217;t be held entirely responsible.</p>
+<p>Projects such as Maven, Google App Engine, Spring, JPA and the Servlet standards seem unable to use actual Java language constructs. </p>
+<p>Their design choices introduce run-time errors which should actually be compile-time errors and create a thicket of XML which is impossible to navigate or debug, all to essentially manage jars on your classpath &#8211; something which is already quite adequately defined by the java specification! </p>
+<p>Subsequently a million projects are born to attempt to overcome the new modes of failure which are possible by introducing bloated tools and plugins to handle the unnecessary complexity.</p>
+<p>Actually working on your code becomes a secondary activity, compared to dealing with badly documented conventions which weren&#8217;t needed in the first place.</p>
+<p>When two or more of these projects are simultaneously trying to manage your classpath, you&#8217;d better look out. It&#8217;s almost as if there were contributions in these community processes which were DESIGNED to trigger a Java death spiral.</p>
+<p>If Oracle were a grown up company, rather than a school bully, they would be setting a new direction, away from Sun&#8217;s laissez faire community process, and increasing the value of Java a thousandfold, by implementing and forcing through standards to meet the modern needs of an enterprise (dependency management, persistence, web service) which actually demonstrate the use of the Java language!</p>
+<p>The best reference example for me is Guice, which uses Java code for dependency management instead of the bizarre XML and other serialised formats fostered by other projects &#8211; formats which simply help the authors show off that they went to Parsers 101, and along the way destroy the value inherent in the design choices of the Java language.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-4094">
+		<div id="comment-4094">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/a88e7614469b72b36a9e829f3775004eb4e791187b870f0aa80b4cee4a3de554?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.facebook.com/profile.php?id=100003406023177" class="url" rel="ugc external nofollow">Sulaika</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4094">
+				May 23, 2012 at 9:45 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>There isn&#8217;t any one particular lguanage that is more friendly than another, it really depends upon the way you choose to use the one you select.The thing to consider is this Search engines spider web sites and they index the *static results* of the pages they vist So, if you are using a server-side script to generate a page, the search engine will index the resulting HTML, *not* the script that generated it.Depending upon what you&#8217;re using the script to do, this can cause interesting indexing results, especially if you&#8217;re depending upon user inputs to generate page content.Again though, the choice of scripting lguanage is up to the programmer and their comfort level.  I personally recommend PHP, simply because it&#8217;s open-source, very wide spread, and easy to use.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-5004">
+		<div id="comment-5004">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/6a6dae7db7cc8bb87422e7642e3859f965347ab7824b256c68d48f338ddab082?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.techeye.net" class="url" rel="ugc external nofollow">Fernando Cassia</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-5004">
+				October 18, 2013 at 10:59 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Guess what, 3 years later, time proved that you spoke out of your *ss.</p>
+<p>And you forgot the basic: Java is MORE THAN A PROGRAMMING LANGUAGE. It’s actually three things: a programming language, a runtime environment, and a level playing field software ecosystem.</p>
+<p>In fact, one can create Java apps without writing a single line of Java code, by using any of the many JVM languages: Jython, JRuby, NetRexx, Clojure, Scala, Ceylon, etc</p>
+<p>Dr Dobbs, late 2012<br />
+<a href="http://www.drdobbs.com/jvm/a-long-look-at-jvm-languages/240007765" rel="nofollow ugc">http://www.drdobbs.com/jvm/a-long-look-at-jvm-languages/240007765</a><br />
+&#8220;Why have so many languages, including Ruby, Groovy, and Python, been ported to Java? Mainly because it&#8217;s much easier to target one platform (Java code, in this case) and rely on the multiplatform JVM to host it than it is to write interpreters for each operating system&#8221;</p>
+<p>JVM languages are booming: RedHat&#8217;s Ceylon, JRuby, Scala, Clojure, NetRexx, and more..</p>
+<p>Oracle has been good to Java, despite early fears<br />
+<a href="http://www.infoworld.com/t/java-programming/oracle-has-been-good-java-despite-early-fears-200200" rel="nofollow ugc">http://www.infoworld.com/t/java-programming/oracle-has-been-good-java-despite-early-fears-200200</a></p>
+<p>Under Oracles stewardship, SAP, IBM, Twitter, Apple and AMD joined the OpenJDK project. Oracle made OpenJDK 7 the Java7 reference implementation, they are investing in OpenJDK 8 which will be the basis for Java 8, and Java 9 will come after that. They also released JavaFX 2.0 under the open source GPL license as OpenJFX, plus they continued the investment in Netbeans, despite Oracle having its own, closed source IDE, JDeveloper.</p>
+<p>FC</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt depth-2" id="li-comment-5005">
+		<div id="comment-5005">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-5005">
+				October 18, 2013 at 2:28 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>More importantly, most of Oracle&#8217;s desperate, unfounded lawsuits have fizzled out over the past three years, so Java is becoming safe to use again. We&#8217;re lucky there was a rich company like Google on our side, willing to fight them (for its own reasons, of course).</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+			</ol>
+
+
+			<p class="nocomments">Comments are closed.</p>
+	
+
+
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="../../../../index.html">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="nav_menu-4" class="widget-container widget_nav_menu"><h3 class="widget-title">Featured articles</h3><div class="menu-featured-posts-container"><ul id="menu-featured-posts" class="menu"><li id="menu-item-328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="../../../../blogs/quoderat/2007/03/28/open-data-matters-more-than-open-source/index.html" title="Do you care if a web site runs on Open Source software, if it still locks up your information?">Open Data or Open Source?</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-323"><a href="../../08/evil-or-misunderstood/index.html" title="Does net neutrality apply as much to content types as to providers?">Net neutrality and Google</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-322"><a href="../../../../2007/02/15/rest-the-quick-pitch/index.html" title="What actually matters for building RESTful web apps.">REST: the quick pitch</a></li>
+<li id="menu-item-326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-326"><a href="../../../../2005/08/08/patents-and-screwdrivers/index.html" title="Patents sometimes hurt their owners the most.">Patents and screwdrivers</a></li>
+<li id="menu-item-334" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-334"><a href="../../../../2007/01/03/all-markup-ends-up-looking-like-xml/index.html" title="When people complain about XML&#8217;s complexity, they&#8217;re often really complaining about the data&#8217;s complexity.">All markup ends up looking like XML</a></li>
+</ul></div></li><li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">See also &#8230;</h3><div class="menu-my-sites-container"><ul id="menu-my-sites" class="menu"><li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="http://www.megginson.com/">Megginson Technologies Ltd.</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="http://www.ourairports.com/">OurAirports airport directory</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="http://lahso.megginson.com/">Land and Hold Short (flying blog)</a></li>
+</ul></div></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../../../index.html" title="Quoderat" rel="home">
+					Quoderat				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-30de25d1d65da4ea6756cbe43a384530">
+	</div>
+	<div class="grofile-hash-map-1a28c61c3e86da3f472d35739492ae1a">
+	</div>
+	<div class="grofile-hash-map-c5f095286dd8a3f1dbbc047412a10fb3">
+	</div>
+	<div class="grofile-hash-map-a31ff288c8c9a03a8462a96e642a583f">
+	</div>
+	<div class="grofile-hash-map-847d68fcb23a10824ad0b69a7989f406">
+	</div>
+	<div class="grofile-hash-map-84f64b600182cf6afb9f5007a8abd72e">
+	</div>
+	<div class="grofile-hash-map-737867328be8ba4410c3c17b90686aaf">
+	</div>
+	<div class="grofile-hash-map-8bda5763cd2fc2fe25a2c87355e07f83">
+	</div>
+	<div class="grofile-hash-map-c59152a77c0bc073fe6f2a3141b99010">
+	</div>
+	<div class="grofile-hash-map-e6249e1d050503dd9c3c79fb33339fe4">
+	</div>
+	<div class="grofile-hash-map-5a1bcac9eaf05c0cc16689b8e69a62cd">
+	</div>
+	<div class="grofile-hash-map-b3f1b867ffea8a792c23512471364cd9">
+	</div>
+	<div class="grofile-hash-map-8157a727aafe08bc01567c7b0909dbf6">
+	</div>
+	</div>
+	<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="index.html">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14988159" />
+										<input type="hidden" name="source" value="https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="462a0c7898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2010%252F08%252F13%252Frip-java-1995-2010%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://quoderatech.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fquoderatech.wordpress.com%2F2010%2F08%2F13%2Frip-java-1995-2010%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2010%252F08%252F13%252Frip-java-1995-2010%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/p10T6v-69">Copy shortlink</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://quoderat.megginson.com/2010/08/13/rip-java-1995-2010/" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/blogs/14988159/posts/381">
+											View post in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading">&nbsp;</span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div
+				class="jp-carousel-wrap swiper-container jp-carousel-swiper-container jp-carousel-transitions"
+				itemscope
+				itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"/>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"/>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner">&nbsp;</span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<form id="jp-carousel-comment-form">
+												<label for="jp-carousel-comment-form-comment-field" class="screen-reader-text">Write a Comment...</label>
+												<textarea
+													name="comment"
+													class="jp-carousel-comment-form-field jp-carousel-comment-form-textarea"
+													id="jp-carousel-comment-form-comment-field"
+													placeholder="Write a Comment..."
+												></textarea>
+												<div id="jp-carousel-comment-form-submit-and-info-wrapper">
+													<div id="jp-carousel-comment-form-commenting-as">
+																													<fieldset>
+																<label for="jp-carousel-comment-form-email-field">Email (Required)</label>
+																<input type="text" name="email" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-email-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-author-field">Name (Required)</label>
+																<input type="text" name="author" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-author-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-url-field">Website</label>
+																<input type="text" name="url" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-url-field" />
+															</fieldset>
+																											</div>
+													<input
+														type="submit"
+														name="submit"
+														class="jp-carousel-comment-form-button"
+														id="jp-carousel-comment-form-button-submit"
+														value="Post Comment" />
+												</div>
+											</form>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" href="index.html#" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"/>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/quoderat.megginson.com\/2010\/08\/13\/rip-java-1995-2010\/":381};
+	</script>
+				<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-2' href='https://s2.wp.com/_static/??-eJydjEEKgCAQAD+UrR6KLtFbTJfQdJXWxe9HUB/oOMMw0KtyhRpSgyyqJjkCMURs1brzZWAhyMVLQgZnryKMCbiHipfahXzC0TEP8H/2NZ94fltezbxMxkx61vEGx+U/hQ==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack-carousel-js-extra">
+/* <![CDATA[ */
+var jetpackSwiperLibraryPath = {"url":"https:\/\/s2.wp.com\/wp-content\/mu-plugins\/jetpack-plugin\/sun\/_inc\/build\/carousel\/swiper-bundle.min.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"21125ed4ee","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","image_label":"Open image in full-screen.","download_original":"View full size <span class=\"photo-size\">{0}<span class=\"photo-size-times\">\u00d7<\/span>{1}<\/span>","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"https:\/\/quoderatech.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Fquoderat.megginson.com%2F2010%2F08%2F13%2Frip-java-1995-2010%2F","blog_id":"14988159","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=14988159&v=wpcom&tz=-5&user_id=0&subd=quoderatech","is_public":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s0.wp.com/_static/??-eJydjkEKwjAQRS9kOpRSxYV4FEmTsU06mcSkofT2RmlFXCi4m//n83gwB6E8T8gT2ATOd4ZQ5IRR9qUThq++smkHbzuXRaDcG05AZsQEt4wZB8maMG5jw4qyLs9CVd65ByxioKVyhr8QLU5BqnHNkDLDpbCgy4Y0KBl9kaPXbCt+ULeZmEOR+Yh/26RBRtRS6+V5Gu5XjbM71YemOdb7tmntHfMLhSg='></script>
+<script type="text/javascript" id="sharing-js-js-after">
+/* <![CDATA[ */
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-x' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-x' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomx', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+/* ]]> */
+</script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src='https://widgets.wp.com/likes/master.html?ver=20250110#ver=20250110&amp;origin=https://quoderat.megginson.com' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' class='wpl-new-layout' role="dialog" aria-hidden="true" tabindex="-1">
+		<div class="likes-text">
+			<span>%d</span>		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14988159','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14988159','v':'wpcom','tz':'-5','user_id':'0','post':'381','subd':'quoderatech'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1mNzc2NTVTamdsRWFxcEV3XUtMXVR5aWlmMVNIcUxBaFstUWRrZVpWQ2tORExSfEpUVm05SlpEZzZWOEtlbW5nZHV0dkhDNjhwP35JbkdHLyZqSUh8WkZWbVl3Qll2LkguSkRJZGEtZV9DRDIwUGZ5XTdFRkNjSkxHdDMuQ0lOUmE2JTg3PXVRcFFHYWRpbjMlYm1BN29rWUFsUnpoW3JkbkczUUZpQnErY0o5THBaMzhsWms4a1pfWUpCYXUwN1VbbDAsNnBNP0haWDZxZyxbTS5WRHJjPSUmYnJud3NHRS44VGl5LFNRaCxJOWM3SXFWfmFUSCVhLGE5UmdxTTRja0k4WXhnVGNDZ1tvW2J+U1Y='}]);
+_stq.push([ 'clickTrackerInit', '14988159', '381' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

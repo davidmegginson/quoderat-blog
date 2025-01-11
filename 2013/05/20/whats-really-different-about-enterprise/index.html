@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+What&#8217;s really different about &#8220;Enterprise&#8221; | Quoderat</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://quoderat.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=534'
+					+ '&is_singular=1';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9xdW9kZXJhdC5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14988159"
+		+ "&time=1736548488";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Feed" href="../../../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Comments Feed" href="../../../../comments/feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; What&#8217;s really different about &#8220;Enterprise&#8221; Comments Feed" href="feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJxtzFsKgCAQQNENZaMg+BWtRXQI39KMtP0ogiD6PHC5cHThWmWsDGWInscWKkFE7talx0CjQml+ZCTYMVtGL3oj/mh2RBP8H3NI+H5vXflaFmWU0VJLo+MJKT40cA==&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s1.wp.com/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s0.wp.com/_static/??-eJyNjcsKQjEMBX/ImlsQry7ET5GahrbXNCmmRfx7H7gRN+7OwGEGbs2hSifpUIdrPFIRg4V6C3j5MNgQqBoHk4HlcKUYYry/Z5G0RrMV/C06FUEwxRLYsSa1L/iR9Uz1mc0bSKznwK/DsR787Kd5P/ntbnkAuNBIYA==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14988159","postID":"534","siteURL":"https:\/\/quoderat.megginson.com","xhrURL":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/p10T6v-8C","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://quoderat.megginson.com/2013/05/20/whats-really-different-about-enterprise/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/sun\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/_static/??/wp-content/mu-plugins/jetpack-plugin/sun/_inc/build/related-posts/related-posts.min.js,/wp-content/js/rlt-proxy.js?m=1733765333j'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://quoderatech.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="index.html" />
+<link rel='shortlink' href='https://wp.me/p10T6v-8C' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2013%2F05%2F20%2Fwhats-really-different-about-enterprise%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2013%2F05%2F20%2Fwhats-really-different-about-enterprise%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="What&#8217;s really different about &#8220;Enterprise&#8221;" />
+<meta property="og:url" content="https://quoderat.megginson.com/2013/05/20/whats-really-different-about-enterprise/" />
+<meta property="og:description" content="(I wrote this in 2011 as a draft and then forgot about it. It still reads OK, so here it is, basically unchanged, and without the extra sections I&#8217;d probably originally planned to add.) Even …" />
+<meta property="article:published_time" content="2013-05-20T11:56:59+00:00" />
+<meta property="article:modified_time" content="2013-05-20T11:56:59+00:00" />
+<meta property="og:site_name" content="Quoderat" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:creator" content="@david_megginson" />
+<meta name="twitter:site" content="@david_megginson" />
+<meta name="twitter:text:title" content="What&#8217;s really different about &#8220;Enterprise&#8221;" />
+<meta name="twitter:card" content="summary" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s2.wp.com/i/webclip.png" />
+<link rel='openid.server' href='../../../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../../../osd.xml" title="Quoderat" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Quoderat" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Open information and technology." /><meta name="description" content="(I wrote this in 2011 as a draft and then forgot about it. It still reads OK, so here it is, basically unchanged, and without the extra sections I&#039;d probably originally planned to add.) Even though big web sites use lots of so-called &quot;enterprise&quot; technology, and big companies and government departments create browser-based applications, there&#039;s&hellip;" />
+</head>
+
+<body class="post-template-default single single-post postid-534 single-format-standard customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="../../../../index.html" title="Quoderat" rel="home">Quoderat</a>
+					</span>
+				</div>
+				<div id="site-description">Open information and technology.</div>
+
+									<a class="home-link" href="../../../../index.html" title="Quoderat" rel="home">
+						<img src="../../../../wp-content/uploads/2010/08/cropped-manuscript-scribe12-172v-1604.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="../../19/an-easy-break-up/index.html" rel="prev"><span class="meta-nav">&larr;</span> An easy break-up</a></div>
+					<div class="nav-next"><a href="../../../06/08/link-why-so-little-chinese-in-english/index.html" rel="next">Link: Why so little Chinese in&nbsp;English? <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-534" class="post-534 post type-post status-publish format-standard hentry category-general">
+											<h2 class="entry-title"><a href="index.html" rel="bookmark">What&#8217;s really different about &#8220;Enterprise&#8221;</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="index.html" title="7:56 am" rel="bookmark"><span class="entry-date">May 20, 2013</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p><em>(I wrote this in 2011 as a draft and then forgot about it.  It still reads OK, so here it is, basically unchanged, and without the extra sections I&#8217;d probably originally planned to add.)</em></p>
+<p>Even though big web sites use lots of so-called &#8220;enterprise&#8221; technology, and big companies and government departments create browser-based applications, there&#8217;s still a huge chasm between <strong>web developers</strong> and <strong>enterprise developers</strong>.  </p>
+<p>We&#8217;ve been flooded with clichés and stereotypes about both sides &mdash; enterprise developers do everything the hard way, web developers don&#8217;t understand security and reliability, etc. &mdash; but it&#8217;s best not to take that too seriously. A lot of my consulting work and personal projects straddle the line between Enterprise and Web, so I&#8217;ve had a decade and a half to observe people and processes on both sides.  </p>
+<p>I&#8217;ll post more about this later, but here are two differences that strike me right away:</p>
+<ol>
+<li>Enterprise does a lot of integration</li>
+<li>Enterprise doesn&#8217;t have many rock stars</li>
+</ol>
+<div id="integration">
+<h3>Enterprise does a lot of integration</h3>
+<p>Enterprise IT projects are always about integration.  We&#8217;re not talking about fun integration with a REST API on the web, but nasty, ugly integration with legacy systems as old as your parents, using custom data formats and unpronounceable character encodings out of the <cite>Mad Men</cite> era, like EBCDIC (if you&#8217;re lucky).</p>
+<p>In web dev, whether you&#8217;re using SQL or a noSQL approach, you almost certainly own and manage your application&#8217;s data (unless you&#8217;re building one of those doomed Twitter or Facebook mashups).  In an enterprise project, most of your data is coming from somewhere else (the 1970s mainframe at the Oakland data centre, the 1995 PowerBuilder app used by 350 analysts in Hong Kong, etc.).  It comes veeeeery slooooowly, and it&#8217;s unreliable, and it&#8217;s almost guaranteed to be out of sync with the data you&#8217;re receiving from other sources (so forget about strict referential integrity). There&#8217;s nothing you can do about that, because huge parts of the enterprise are based around those legacy systems, and there&#8217;s no one left alive who knows how to change them anyway.  Your whole $50M system might depend on data sent as a CSV email attachment every Tuesday night, and rejected 55% of the time because it&#8217;s malformed.</p>
+<p>There&#8217;s a lot of snake oil out there that promises to &ldquo;fix&rdquo; this problem &mdash; <a href="http://en.wikipedia.org/wiki/Enterprise_service_bus">ESB</a> products, <a href="http://en.wikipedia.org/wiki/Extract,_transform,_load">ETL</a> products, <a href="http://en.wikipedia.org/wiki/List_of_web_service_specifications">WS-*</a> products, etc. &mdash; but these all address the easy parts, near the middle, not the hard parts, at the edges (and sometimes they make even the middle more difficult than it needs to be).</p>
+<p>The benefit of all this mess, though, is that an enterprise application designer is always thinking about distributed data, something that web developers talk about don&#8217;t always really get.  It&#8217;s hard to imagine a CMS like <a href="http://en.wikipedia.org/wiki/Drupal">Drupal</a> or <a href="http://en.wikipedia.org/wiki/WordPress">WordPress</a> &mdash; that naively assumes it can keep all the information that it presents in its own (preferably MySQL) database &mdash; coming out of the enterprise.</p>
+<p><!-- #integration -->
+</div>
+<div id="stars">
+<h3>Enterprise doesn&#8217;t have many rock stars</h3>
+<p>Really, it&#8217;s true. Developers working for government, or Fortune 500 companies, on average, aren&#8217;t very good.  Of course, there must be some real talent hiding here and there, but on balance, coding for most enterprise employees (as opposed to outside contractors) is a 9&ndash;5 drudge job that they&#8217;re happy to leave at the end of the day. They&#8217;re nice people, but they&#8217;re not passionate about IT the way you and I are, and they&#8217;re not interested in becoming so.</p>
+<p>This talent deficit has pretty serious implications for building projects in-house and for maintaining projects from any source &mdash; it means that enterprises micro-manage their developers in a way that a hotshot web developer would never tolerate.  Part of that is just the overhead of working in a big team &mdash; even web companies do code reviews and write detailed requirements when they get big enough &mdash; but a lot of it is just a matter of not trusting developers to do the right thing on their own. There are huge numbers of tools out there to count, manage, audit, poke, prod, and otherwise abuse enterprise developers, and those tools are more widely-available in Java than in any other environment, hence the enterprise&#8217;s love of Java.</p>
+<p>It&#8217;s hard to know where the fault is here: would good developers work for enterprise if the working conditions were better, or would they still run off to small startups or consulting for the variety and adrenaline rush?  Would bad enterprise developers grow into average or even good ones if they were given more trust and autonomy?  In any case, if you&#8217;re designing an application for enterprise, don&#8217;t expect things that seem trivially simple to you to seem simple to the developers.</p>
+<p>The result of all this is that, even if you have a hotshot team of consultants and developers initially building an enterprise system, you have to design it so that mediocre technicians and developers can maintain it for the 10-30 years after you all leave.  The enterprise has to be able to hire people with (generally useless) certifications as &#8220;Sharepoint specialist,&#8221; &#8220;Oracle DBA&#8221;, or whatever, and the system has to contain few surprises for them.  Nothing cutting-edge, please, because they probably didn&#8217;t cover it in their certification courses.</p>
+<p><!-- #div -->
+</div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-534" class="share-facebook sd-button share-icon" href="index.html%3Fshare=facebook.html" target="_blank" title="Click to share on Facebook" ><span>Facebook</span></a></li><li class="share-x"><a rel="nofollow noopener noreferrer" data-shared="sharing-x-534" class="share-x sd-button share-icon" href="index.html%3Fshare=x.html" target="_blank" title="Click to share on X" ><span>X</span></a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14988159-534-6781a088a4c26' data-src='//widgets.wp.com/likes/index.html?ver=20250110#blog_id=14988159&amp;post_id=534&amp;origin=quoderatech.wordpress.com&amp;obj_id=14988159-534-6781a088a4c26&amp;domain=quoderat.megginson.com' data-name='like-post-frame-14988159-534-6781a088a4c26' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="../../../../category/general/index.html" rel="category tag">General</a>. Bookmark the <a href="index.html" title="Permalink to What&#8217;s really different about &#8220;Enterprise&#8221;" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-534 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="../../19/an-easy-break-up/index.html" rel="prev"><span class="meta-nav">&larr;</span> An easy break-up</a></div>
+					<div class="nav-next"><a href="../../../06/08/link-why-so-little-chinese-in-english/index.html" rel="next">Link: Why so little Chinese in&nbsp;English? <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			36 Responses to <em>What&#8217;s really different about &#8220;Enterprise&#8221;</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="comment byuser comment-author-johnwcowan even thread-even depth-1" id="li-comment-4299">
+		<div id="comment-4299">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.ccil.org/~cowan" class="url" rel="ugc external nofollow">John Cowan</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4299">
+				May 20, 2013 at 11:39 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Oh.  When I saw the headline in Feedly I thought this was about Star Trek.  Oops.</p>
+<p>Anyway, some of us passionate enthusiasts do work for enterprises, usually in small niches as I do now.  Sometimes it&#8217;s good to be the beard (or belong to the little department of beards).  My detour through Google, which feels much more enterprise on the inside than it portrays itself as, was a costly mistake.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-4301">
+		<div id="comment-4301">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4301">
+				May 20, 2013 at 9:21 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Agreed, John.  The greybeards (literal or figurative) are an important exception: consider not just yourself, but people like James Gosling at Sun, Brian Kernighan at Bell Labs, or Charles Goldfarb at IBM.  Unfortunately, the greybeards rarely have big roles in major operational IT projects.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://rominirani.com/2013/05/21/10-tech-stories-to-read-this-week-may-21-edition/" class="url" rel="ugc external nofollow">10 Tech Stories To Read This Week &#8211; May 21 Edition | iRomin</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4306">
+		<div id="comment-4306">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/320c40fb1f88d49dd4fa92529380ff3522674acb5eebf7a68299b684eda8414f?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://gravatar.com/jasonkstevens" class="url" rel="ugc external nofollow">Jason</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4306">
+				May 21, 2013 at 5:18 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Heh, nice.</p>
+<p>I heard someone say that enterprise software sucks because they use consultants a lot and they only care about getting the job done, not about maintaining the software afterwards.</p>
+<p>One thing I found is that there can be sooooo much friking code required that there&#8217;s no budget left for quality.  Literally, a handful of developers need to write mountains of code, so productive sustainability in this environment means mediocre quality &#8211; good enough to be (at least in part) sustainable.</p>
+<p>A consumer web page might have a single input field with two buttons, &#8220;Search&#8221; and &#8220;I feel lucky&#8221;, from which they build a several hundred billion dollar business.</p>
+<p>An enterprise site on the other hand has 100 pages with 5 grids each, complex business rules and the users prefer using codes for things rather than human-readable descriptions. Enterprise developers run the fine line of being flexible enough to meet all the needs of the complex business and having so much metadata the thing&#8217;s a set-up nightmare.  Not sure if that&#8217;s a fine line or a big yawning pit of despair.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-4307">
+		<div id="comment-4307">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4307">
+				May 21, 2013 at 7:38 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Jason wrote &#8220;Not sure if that’s a fine line or a big yawning pit of despair.&#8221;</p>
+<p>Yes, that&#8217;s about it.  It would be interesting to see if the enterprise could break itself down into a collection of simple, interoperable, single-purpose apps equivalent to Google search (which you mention) or Twitter.  The challenge, I think, is that there would be so many of those apps that the coordination overhead would swamp the individual component savings.  </p>
+<p>The other problem is that you sometimes have unwilling users in the enterprise — on the web, almost no one starts using Twitter (for example) unless she wants to use Twitter, so a new user is generally willing to train herself through trial-and-error and to seek out help from peers.  In the enterprise, on the other hand, users are often unwilling or even hostile, so they will use any new software as a tool for obstruction unless you swamp them with training, documentation, helpdesk support, etc.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-eliasdorneles even depth-2" id="li-comment-4313">
+		<div id="comment-4313">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/4207f4e8eed398d8521757f076b90b6a62237ccafe2cc13932ebe66b8e12416e?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://profiles.google.com/eliasdorneles" class="url" rel="ugc external nofollow">eljunior</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4313">
+				May 21, 2013 at 12:14 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hello, David!<br />
+About that enterprise components thing, I don&#8217;t really see that coming &#8212; I think that&#8217;s the type of reuse-in-the-large that is talked about in that neat little book &#8220;Facts and Fallacies of Software Engineering&#8221;: they are too damn hard to do properly!</p>
+<p>Domain specific languages are a better bet, this idea it is slowingly getting more acceptance in the enterprise.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt depth-2" id="li-comment-4322">
+		<div id="comment-4322">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/0d0bf89d44a1bce45e7fa4e5c86589cf52581aac2567ed336d35ece223f974c5?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://gravatar.com/kts186" class="url" rel="ugc external nofollow">Kyle</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4322">
+				May 22, 2013 at 12:09 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>This would be very interesting to see. I like to imagine that some newer &#8216;enterprise&#8217; operations such as Google are like this on the inside. A sparse set of services with well defined API&#8217;s for interaction.</p>
+<p>I think the challenge is the mind set in the enterprise which I&#8217;ve found to be more about synchronisation of duplicated data rather than querying over duplication.</p>
+<p>Also cost. I guess a lot of companies are focused on their business, and will put into IT resources based on the short term gain in efficiencies, not that extra cost for a gain in long term scalability or maintainability.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4308">
+		<div id="comment-4308">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/04b8f2438cdef8048f25c0df7dc5b0b04741cf092af805506a825fc298c25481?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Emert Jacobs</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4308">
+				May 21, 2013 at 7:43 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I take offence at this load of opinion and generalisation.  I am an enterprise developer and I dare say I probably know more about IT than you could dream of learning.  I am passionate about software development.  My day to day job is working with Java and various middle wares, but I am also proficient in low level C, C++ firmware development (I am an expert in USB protocols), Python, Groovy, C#, Javascript.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-4309">
+		<div id="comment-4309">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4309">
+				May 21, 2013 at 7:45 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Developers like you, Emert, are the reason that enterprise limps along at all.  Do you work for an exceptional enterprise that attracts and keeps a lot of good talent, or do you find that you have to carry/cover for a lot of your co-workers?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4310">
+		<div id="comment-4310">
+			<div class="comment-author vcard">
+				<img alt='' src='https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d' srcset='https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d 1x, https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d 1.5x, https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d 2x, https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d 3x, https://graph.facebook.com/1582785292/picture?type=large&#038;_md5=c701d31148147832eb8590da8ad84f7d 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.facebook.com/theminors" class="url" rel="ugc external nofollow">Karl Minor</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4310">
+				May 21, 2013 at 10:16 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I am a mediocre enterprise developer and I agree with all of what you say here.   Halfway through I was planning to forward it to my team, but it then it devolved into unnecessary  condescension  that neuters the message, at least for half of the audience.   This seems more of an &#8220;ain&#8217;t we great&#8221; message for frustrated wunderkinds feeling unfairly stuck in an enterprise environment.   There are valid reasons why enterprise development focuses more on supportability than rock-star innovations, and it isn&#8217;t because enterprise developers lack passion or intellect . . . we just have to temper our egos enough to adapt to the legacy environments and avoid cutting-edge technologies that might fall flat in two years.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-4311">
+		<div id="comment-4311">
+			<div class="comment-author vcard">
+				<img alt='' src='https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=40%2C40&#038;ssl=1' srcset='https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=40%2C40&#038;ssl=1 1x, https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=60%2C60&#038;ssl=1 1.5x, https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=80%2C80&#038;ssl=1 2x, https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=120%2C120&#038;ssl=1 3x, https://i0.wp.com/a0.twimg.com/profile_images/1883115630/christoohey_biopic_normal.jpg?resize=160%2C160&#038;ssl=1 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://twitter.com/christoohey" class="url" rel="ugc external nofollow">Chris Toohey (@christoohey)</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4311">
+				May 21, 2013 at 10:56 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Agree with Karl here &#8212; you make an excellent ,well-written point, but that point is potentially marred by the time you get to the end.<br />
+There are absolutely &#8220;clock puncher&#8221; developers and systems adminsitrators that are not interested in cutting-edge tech, but perhaps that&#8217;s because they&#8217;ve witnessed the hot-then-not nature of such things, or their personal fulfillment isn&#8217;t measured by how terse their code is.<br />
+Something external consultants working on enterprise projects should absolutely consider is that what is trending today will often &#8220;carbon date&#8221; a solution. Today&#8217;s Flat-UI will appear &#8220;chunky and old&#8221; within a few years&#8230; and saying &#8220;a few years&#8221; for a given version of any enterprise project is often drastically underestimating the time that version of a project will be used by the employees of said enterprise.<br />
+I would encourage all consulting developers and systems administrators to look to the individual skillset and capabilities of the employees of the given enterprise, and adjust your tactic according to what best fits the in-house dynamic. It&#8217;s *our* job to give the customer a solution that will work long-term in that specific enterprise. Code/architecture readability, simplistic design, and standards will beat out l33t h4x0r-ing any day, and will ultimately lead to a happier customer.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4312">
+		<div id="comment-4312">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/a253fc025388294a3f7e44090a55ccde16b9eb1ab1a65bb05bdedefc7a04f91d?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Steve</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4312">
+				May 21, 2013 at 12:11 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Could you be any more condescending than &#8220;They’re nice people, but they’re not passionate about IT the way you and I are, and they’re not interested in becoming so.&#8221; if you tried?  Well, at least we&#8217;re nice.  It&#8217;s too bad we could not possibly be as passionate about our craft as you and the rest of your non-enterprise readers are.  Alas.</p>
+<p>I wonder, what position in the enterprise sector do you hold that you have such clear and final vision of all enterprise developers?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-4314">
+		<div id="comment-4314">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">John Croft</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4314">
+				May 21, 2013 at 12:30 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>For those in enterprise IT whining about lack of respect and understanding of your challenges, the reality is enterprise IT doesn&#8217;t have many happy customers.  I have been in consulting, start-ups, and enterprise.  If you are in the first two and don&#8217;t have happy customers, you go out of business; but in the enterprise everyone picks up a check even if the results are less than mediocre.  After all, the business guys aren&#8217;t always trying to bring in outside solutions and consultants because they believe they have a crackerjack team of developers in house that can reliably deliver great results.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-4315">
+		<div id="comment-4315">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4315">
+				May 21, 2013 at 12:49 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Karl Minor wrote &#8221; it devolved into unnecessary condescension that neuters the message&#8221;</p>
+<p>I think you&#8217;re right, Karl — if I were writing this from scratch now, I&#8217;d probably phrase the second part a lot differently.  It&#8217;s not that there aren&#8217;t talented people in enterprise, so much as that enterprise (perhaps unconsciously) hates talent, because talent is hard to control.  It wants software developers to be interchangeable pieces, like computer boards, that you can buy according to spec on a pre-ordained salary scale and replace whenever you need to: &#8220;At least 5 years experience with X language, worked on Y kind of system, has Z certification.&#8221;</p>
+<p>If you&#8217;re an enthusiastic, talented developer actually creating software in enterprise, you&#8217;re probably doing it <em>despite</em> the enterprise instead of <em>because of</em> it.  Maybe you have the energy to keep fighting the system for the next 10-15 years &#8212; if so, good for you! &#8212; but I think the more-likely outcome within 3 years is one of the following:</p>
+<p>1. Your coding talent gets noticed in a positive way, so you get promoted to a management position where you don&#8217;t get to code any more (per the Peter Principle) or to a greybeard pundit position, where you work mainly on your personal coding projects outside the main dev teams.</p>
+<p>2. Your coding talent gets noticed in a negative way, so you leave in frustration and take up a job as an independent or a a startup employee, where you might make less money, but you don&#8217;t hate going to work every morning.</p>
+<p>3. You give up and join the system as a clock puncher, thinking of work only as the way to pay for the other parts of your life that you <em>do</em> enjoy (new deck, kids&#8217; education, family vacations, rock climbing, sailboat, or whatever).</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-4316">
+		<div id="comment-4316">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4316">
+				May 21, 2013 at 12:50 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Chris Toohey wrote &#8220;I would encourage all consulting developers and systems administrators to look to the individual skillset and capabilities of the employees of the given enterprise, and adjust your tactic according to what best fits the in-house dynamic. It’s *our* job to give the customer a solution that will work long-term in that specific enterprise. Code/architecture readability, simplistic design, and standards will beat out l33t h4x0r-ing any day, and will ultimately lead to a happier customer.&#8221;</p>
+<p>I couldn&#8217;t agree more.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4317">
+		<div id="comment-4317">
+			<div class="comment-author vcard">
+				<img alt='' src='https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744' srcset='https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744 1x, https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744 1.5x, https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744 2x, https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744 3x, https://graph.facebook.com/100001810655569/picture?type=large&#038;_md5=fb8c64f1371f4c894d23c23c50ff0744 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.facebook.com/mizuki.oshiro1" class="url" rel="ugc external nofollow">Mizuki Oshiro</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4317">
+				May 21, 2013 at 5:07 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I think you&#8217;ve confused &#8220;different&#8221; with &#8220;shit&#8221;.  You spend too much time talking about what&#8217;s wrong with enterprise development that you forget to point out what&#8217;s different.  Which is different.  I&#8217;m assuming this is an exercise in self-validation.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-4319">
+		<div id="comment-4319">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4319">
+				May 21, 2013 at 6:44 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>My biggest surprise is that, while I&#8217;ve heard some (sometimes well-deserved) complaints about overgeneralization from the enterprise developers, the web developers haven&#8217;t complained at all about my claim that they don&#8217;t really get integration &#8212; that&#8217;s where I expected most of the negative feedback, since, because of the Web 2.0 thing, they tend to think they&#8217;re good at integration (they&#8217;re usually not, unless you count adding a Facebook iframe widget to a page or reading a bit of JSON from a Twitter API).</p>
+<p>As an independent, I&#8217;m neither a web dev or an enterprise dev, but I&#8217;ve spent about equal amounts of time working with each over the past 15 years.  Most of the time, they really don&#8217;t get each-other&#8217;s worlds.  </p>
+<p>To overgeneralize again (both groups contain many exceptions), web devs complain that they can&#8217;t just use Rails and Mongo, release something simple next week, and sort out bugs later (not such a great idea if you&#8217;re the government or a big corp, and might leak 1M users&#8217; personal information and credit cards, or generate $10M in incorrect purchase orders), and enterprise devs complain that there&#8217;s not an existing module in WebSphere or SharePoint to do the work for them (even when configuring and integrating that module might take 10x as long, with a higher sustainability burden, than simply writing, documenting, and maintaining a couple of hundred lines of custom code).</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4320">
+		<div id="comment-4320">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://worldofweirdthings.com" class="url" rel="ugc external nofollow">Greg Fish</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4320">
+				May 21, 2013 at 10:21 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Wow, the condescending pats on the head about all those passionless, unenthusiastic developers in enterprise just doing the best they can in their 9-to-5, waiting to dash for the exits could not be more insulting if you tried.</p>
+<p>I hate to tell you this but simply by the laws of statistics, most developers will be mediocre, no matter the company. They&#8217;re about 80% of the bell curve, so the idea that as an independent or as a start-up, you&#8217;re going to have all this unbridled passion and expertise that&#8217;s heads above enterprise development is going to be wrong 8 times out of ten.</p>
+<p>Why doesn&#8217;t enterprise have many rock stars? What field is littered with rock stars? If there was an organization of nothing but rock stars, I haven&#8217;t seen it, and most likely it would be torn apart by  big egos of hotshots who all think they know better. Again, that 80% of the bell curve is working against you&#8230;</p>
+<p>One of the biggest things that enterprise offers is breadth. You may be working with everything from integrating with a mainframe, to writing RESTful services with JSON APIs means to manage data in a cloud you just built. And if you follow Agile and XP, odds are, you&#8217;ll get exposure to all of this in one form or another. Projects in which you get to rule your little fiefdom and write everything from scratch will not teach you this, so lets not bash the skill set of an enterprise consultant or full time dev because of the size of the teams.</p>
+<p>PS: I often find that people who say that a certain group in the profession doesn&#8217;t get something, proceed to dismiss certain tools for integration (though you really dismissed communication protocols/formats, a design pattern, and a data warehousing process in the same breath with no differentiation) with no detail as to why they&#8217;re bad, rarely inspire confidence in their abilities. It&#8217;s one thing to have a different opinion about a complex topic, but here you didn&#8217;t even try.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-jjcroftiv odd alt depth-2" id="li-comment-4334">
+		<div id="comment-4334">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">John Croft</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4334">
+				May 22, 2013 at 10:06 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Ok, you don&#8217;t grok statistics.  Both MIT and University of Florida, one of the top party schools int the country, have students that belong to bell curves, but they are independent bell curves.  The %80 of &#8220;average&#8221; MIT students are all ahead of the %80 &#8220;average&#8221; UF students.  The better point, but one which the author already conceded, is that with ten&#8217;s of thousands of students UF does have some brilliant students on campus doing very good work.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment even depth-3" id="li-comment-4346">
+		<div id="comment-4346">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/5f91a3f626bde38ad2c4e781b8091aa43815ddd54b5f87a10726090e3b1230ef?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://worldofweirdthings.com" class="url" rel="ugc external nofollow">Greg Fish</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4346">
+				May 22, 2013 at 7:47 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I don&#8217;t think you can unilaterally make the evaluation of how good the average UF student is compared to the average MIT student without hard metrics. Likewise, you&#8217;re comparing who attends what college (a matter of prestige and often self-selection) to a job or a contract. This is comparing apples to tangerines.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-jjcroftiv odd alt depth-2" id="li-comment-4348">
+		<div id="comment-4348">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/31be3512169ddebb58fc71c5a0274f7bcc22b3e90a1dad17450ad18d3d25b761?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">John Croft</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4348">
+				May 22, 2013 at 9:58 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>As I can&#8217;t directly reply to your reply, I will put this here.  First, statistical information about the quality of students is publicly available, and you can go check it out just like I did this past year as my son applied to college.  Second, nothing is more self-selecting than employment, and that&#8217;s the point; do you really think the &#8220;average&#8221; Google employee represents the &#8220;average&#8221; enterprise IT employee?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-4323">
+		<div id="comment-4323">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/561e4106ac84b365a2081ffb63acd6010c45dc6966e75b2e09195a08a4e7bc5f?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://gravatar.com/jniehus" class="url" rel="ugc external nofollow">jniehus</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4323">
+				May 22, 2013 at 1:58 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>&#8220;&#8230;but on balance, coding for most enterprise employees (as opposed to outside contractors) is a 9–5 drudge job that they’re happy to leave at the end of the day&#8230;&#8221;</p>
+<p>Way to keep the stereotype going&#8230;  </p>
+<p>Im only happy to leave at 5 because I have better things to do with my life, like play with the kids, read books, and complain on blogs.  </p>
+<p>Henry Ford figured out over 80 years ago that working more than 40 hours a week is a waste of time for the average person.  Personally, its been my experience that I&#8217;ll figure out solutions to problems more often during &#8220;off hours&#8221; while doing something completely different then sitting around staring at a screen full of code.  </p>
+<p>If a &#8220;dedicated&#8221; and &#8220;passionate&#8221; engineer has to spend 12+ hours a day and work weekends to accomplish anything, that just tells me they fuck up a lot.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-madexperiments odd alt depth-2" id="li-comment-4347">
+		<div id="comment-4347">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/88f029a2451b7165bbbe923d980e954865e536eb10c7a9bd6dadf928816e3729?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">madexperiments</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4347">
+				May 22, 2013 at 7:51 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I think &#8220;dedicated and passionate&#8221; has been confused with scoring high in the ass-in-the-chair metric&#8230;</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-4329">
+		<div id="comment-4329">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Chris</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4329">
+				May 22, 2013 at 9:16 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>As an enterprise developer I take offense at some of the generalizations made in this article.  I work at a large academic institution with dozens of decentralized development groups in addition to a few large centralized IT and data groups.  The bit about consumer-oriented developers not understanding data integration as practiced in enterprise rings true, but not for the right reasons.  The system I developed/maintained accesses data from at least 6 different sources, mostly relational, some non, and others through web services.  This isn&#8217;t legacy data at all, its real data being generated by other systems that I must interact with.</p>
+<p>Like jniehus said above, I choose to not work after hours or on into the night because I have a wife and two small kids and my life is not solely about being a developer.  I am highly productive and get a lot done and don&#8217;t feel compelled to work until midnight jacked up on mountain dew hacking out the most awesomest code.</p>
+<p>The bit about there not being any good developers in enterprise is an absurd generalization.  There are A players here, but there are a lot of B and C players too.  I find enterprise is slow to adopt bleeding edge technologies (we are only now getting away from IE7) and so the speed at which things move forward is slow.  As a consequence enterprise developers are often not as interested in learning and self-educating in their craft.  The B and C players more often come with a certain set of skills and never evolve.  But you are mistaken if you don&#8217;t think there are A players in enterprise that are churning out great code and even better ideas.</p>
+<p>Bottom line is the set of problems enterprise developers are solving are quite different, and it requires different focus.  Some of us prefer the security of employment in a large, stable organization rather than the unsure nature of indie start ups and consumer oriented/social/e-commerce work.  </p>
+<p>Some day when i ride off into the sunset with my retirement account fully funded, I may develop independently, but that&#8217;s after the kids are through college and I have other arrangements for health care, etc. etc. Until then I am making good money being an A player in enterprise.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-chrishhr odd alt thread-odd thread-alt depth-1" id="li-comment-4330">
+		<div id="comment-4330">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">chrishhr</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4330">
+				May 22, 2013 at 9:20 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I would also add that some of the problems enterprise developers are solving are fantastically complex and would blow your mind.  I cannot possibly explain some of the complex work flows that I&#8217;ve seen translated into reliable and clever applications by A players at my institution.  Enterprise is about more than shopping carts and css3, you are solving unique problems that don&#8217;t have established design patterns.  You don&#8217;t get a lot of credit either, since most enterprise developers either cannot (confidentiality) or prefer not to bear their developer souls on a blog or some such.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-4332">
+		<div id="comment-4332">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4332">
+				May 22, 2013 at 9:43 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>A lot of the comments are unwittingly duplicating the same point that I made in the first half of the post (about web developers not getting integration and complex environments).  I&#8217;ll take the fact that people are repeating what I wrote (in different words) as a complement. 🙂</p>
+<p>The work-life balance issue that a few comments have brought up is also similar to what I wrote in the second half (though perhaps with too much condescension).  The difference between a typical enterprise dev and a typical web dev is that the (stereotypical, overgeneralized) enterprise dev sees coding itself as work, while the (stereotypical, overgeneralized) does not.  When this archetypal web dev gets home from &#8220;work&#8221;, she curls up with a new book on NodeJS instead of a spy novel, because that&#8217;s what she&#8217;s been looking forward to all day &#8212; that&#8217;s not work for her; it&#8217;s relaxation.  Think of the airline pilot who rushes home on non-duty days to fly his Piper Cub instead of heading for the golf course &#8212; it&#8217;s the same idea.</p>
+<p>Of course, there are people like that in enterprise, too, but it&#8217;s hard for them to last, because the enterprise can really wear down your soul and make you hate coding (simply because big organizations, public or private, have such a high transaction overhead).  I&#8217;m at the end of deep involvement in a complex, high-visibility, 3+-year enterprise project right now, and it&#8217;s going to take a couple of months before I actually <em>like</em> coding again.  At this moment, I more resemble the enterprise developer in my posting than I do the web developer.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-chrishhr odd alt thread-odd thread-alt depth-1" id="li-comment-4335">
+		<div id="comment-4335">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/f4b8f2293fad34b8727e3021f96badd732a3bc87a5069a634f2df57b6d798946?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">chrishhr</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4335">
+				May 22, 2013 at 10:26 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Yet you insist on continuing to over generalize&#8230;.</p>
+<p>     &#8220;Of course, there are people like that in enterprise, too, but it’s hard for them to last, because the enterprise can really wear down your soul and make you hate coding.&#8221;</p>
+<p>This may be your experience but that doesn&#8217;t make it everyone&#8217;s experience.  Are you saying that non-enterprise devs never get worn down?  Really?  At best you can say this is a more common occurrence for developers in any large scale organization.  That would be reasonable.</p>
+<p>This article was clearly posted before being well thought out, and you&#8217;re paying the price in the comments section.  You get kudos for encouraging the discussion.</p>
+<p>Would be fantastic if this post took the occasion to look at the different focuses of the two camps and what each can learn from the other.  As it reads, its simply passing blanket judgement on an entire tier of developers, which is patently unfair. If you&#8217;re going to back down from the generalizations, then stop making more of them.  If you find yourself in a hole, stop digging.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-4336">
+		<div id="comment-4336">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4336">
+				May 22, 2013 at 10:49 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>chrishhr wrote: &#8220;As it reads, its simply passing blanket judgement on an entire tier of developers&#8221;</p>
+<p>Actually, it passes blanket judgement on <em>two</em> entire tiers of developers.  It&#8217;s just as harsh on web devs as it is on enterprise devs, though the web devs haven&#8217;t been the ones reacting in comments (probably because they haven&#8217;t discovered the posting).</p>
+<p>Perhaps some more perspective would be helpful.  I&#8217;m writing this from the POV of an architect designing systems.  While I deal with individual developers, I can&#8217;t design for them individually, because developers change jobs; instead, I have to design for the organisation.  That means that I have to have a mental model of the <em>kinds of</em> people who will be building, maintaining, and operating the system.</p>
+<p>With that in mind, I have to design for a hypothetical average developer in both camps.  Of course, averages are unfair to individuals &#8212; someone (I&#8217;m too lazy to look it up) once wrote that the &#8220;average&#8221; person has one breast and one testicle &#8212; but over and over again, I&#8217;ve found that I have to adjust my designs for the two worlds to avoid disaster:</p>
+<ul>
+<li>Web developers work faster, know lots of tech, and take a lot of initiative.  For a specific coding task, I typically assume an &#8220;average&#8221; web dev will work about 10 times as fast as an &#8220;average&#8221; enterprise dev, produce better code, and have a much-larger IT skill set.  They can change a system quickly if it&#8217;s not working, and they&#8217;re happy working with incomplete requirements, so the initial release can go up faster — for a web dev, every release is just a step towards the next one.</li>
+<li>Enterprise developers are better team players, consult more, and communicate better.  I typically assume that the &#8220;average&#8221; enterprise dev knows how to coordinate with other teams, understands the importance of shared artefacts (whether requirements docs, UML diagrams or Agile stories), and gets that there&#8217;s more to software development than just coding (product management, documentation, sustainability, etc.).  They need a more-stable product to work with, but once they have it, they&#8217;ll keep it running, and will make sure that it works with everyone else&#8217;s systems, too.</li>
+</ul>
+<p>Two different kinds of audiences == two different kinds of design.  Of course, there are many individual web devs who are good communicators, and many individual enterprise devs who are hotshot coders, but when I&#8217;m designing a system that might be in use for 10+ years, I can&#8217;t design for the outliers.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-4349">
+		<div id="comment-4349">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://gravatar.com/gterrill" class="url" rel="ugc external nofollow">Gavin</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4349">
+				May 23, 2013 at 1:01 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Well, I&#8217;m just finishing up a stint at a large bank firmly in the Enterprise camp and before that I was with startup (software vendor). I think you&#8217;ve nailed it in terms of characterizing the main concerns of the Enterprise dev. A lot of it is about integration. &#8220;No surprises&#8221; is key because it needs to be robust and battle hardened. </p>
+<p>One thing I would add is that while there is a lot of focus on getting maximum efficiencies out of the devs, there isn&#8217;t as strong portfolio management. We are good at building stuff predictably, but is it the right thing to be building? It is exacerbated with the project funding process which starts mid-year. You effectively are asking $x for a project that won&#8217;t start until 15 months away. Can you really quantify the value and effort for something that far out?</p>
+<p>One idea I&#8217;ve heard of that I&#8217;d love to experiment with, is to have cross functional teams lobby for funding much as a start-up would pitch to an Angel investor. Projects would be funded based on a business case, but only enough to get to MVP and you have to be able to demonstrate value in 3 months max. Kind of a lean intrapreneur model.</p>
+<p>Unfortunately, I&#8217;ll never get the chance to experiment because I have resigned to go back to a startup&#8230;</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-4356">
+		<div id="comment-4356">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4356">
+				May 23, 2013 at 8:03 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Gavin: excellent point about portfolio management — if you don&#8217;t mind, I&#8217;m going to steal that term to make me sound smarter than I really am.</p>
+<p>In principle, the portfolio of apps is the responsibility of the Enterprise Architect, but I fear that the enterprise-architecture field isn&#8217;t really getting a practical grip on it yet (other than drawing diagrams and trademarking new process names).  What have you observed?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment odd alt depth-2" id="li-comment-4368">
+		<div id="comment-4368">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/0ac15029fc996534f5d36c176c45b53cca528c6f1d83eec95adbc871949f9ba2?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://gravatar.com/gterrill" class="url" rel="ugc external nofollow">Gavin</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4368">
+				May 23, 2013 at 6:42 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>My responsibility was the architecture, and it was my first exposure to enterprise level concerns. You had to understand the domain very thoroughly to be effective and it was more about functionality and &#8220;maximizing global investment&#8221; than pushing out edicts encapsulated in TOGAF diagrams. I was working at a regional location so most of our build involved connecting to the various &#8220;utilities&#8221;, and helping the Ops guys do their stuff more efficiently through automation.</p>
+<p>My mandate was basically to avoid building anything locally if you can, but if you did then the guidance from the high priests was a bit or miss. In one case they insisted using an Model Driven Development approach complete with ESB for a simple ETL problem. That turned out to be a bit of a train wreck (drawing software instead of writing it has never turned out well for me) and it ended up being a franken-architecture that will live on as my legacy unfortunately (sorry guys!). On other occasions we were able to do things really well because of the organisations ability to focus investment (they have a great reporting solution used across multiple lines of business).</p>
+<p>To answer your question, yes I agree this is a difficult thing to get your head around as an enterprise and I am surprised how well it works sometimes to be honest. In terms of a practical approach I like what Neal Ford has been saying about evolutionary architecture (<a href="http://www.ibm.com/developerworks/library/j-eaed1/" rel="nofollow ugc">http://www.ibm.com/developerworks/library/j-eaed1/</a>), but I think the tricky part is spotting the accidental complexity when you are flying at low oxygen levels.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even depth-3" id="li-comment-4373">
+		<div id="comment-4373">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4373">
+				May 24, 2013 at 7:57 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks again, Gavin.  I&#8217;ve only just started reading the IBM series on evolutionary architecture and emergent design.  One challenge for evolutionary architecture in the enterprise — and especially the public sector — can be long hiring and procurement cycles.  It&#8217;s tough to discover pain indicating the need for a new component and dev team during iteration 3, then wait 3-6 months for a new hire or for an RFP to go out (with luck, you&#8217;ll have them by iteration 30).  </p>
+<p>I&#8217;m sure that&#8217;s a problem that can be solved &#8212; needs to be solved, in fact &#8212; but again, it&#8217;s very different from the startup/web world, and I think it&#8217;s one reason that the Big Design Up Front has such staying power in the enterprise, even though it&#8217;s almost always wrong: the BDUF at least ensures that you start out with a lot of resources, which you can later reshuffle as the architecture evolves.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-4360">
+		<div id="comment-4360">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/669cf2a6061dd5a3d36fcb3f7d4825a2aa9212e3d6c5864a74f014096592e397?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.uofr.net/~jdrake/" class="url" rel="ugc external nofollow">Joshua Drake</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4360">
+				May 23, 2013 at 11:32 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Why didn&#8217;t you do the same thing for the web developers?  The good and the bad.</p>
+<p>Good: Up to date on the latest tech. Passionate about technology.</p>
+<p>Bad: Get bored if things don&#8217;t work in the first 30 minutes.  Have no idea what would happen to their business if all their clients&#8217; credit card numbers were pilfered by a SQL Injection attack. Or don&#8217;t have a business because they&#8217;d rather make it look cool than provide actual value.</p>
+<p>The above doesn&#8217;t apply to everyone of course, but the article appears biased, especially as it starts off with claims to have straddled the fence and therefore bring a balanced viewpoint.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even thread-even depth-1" id="li-comment-4361">
+		<div id="comment-4361">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4361">
+				May 23, 2013 at 11:49 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Joshua: here&#8217;s my (very harsh) criticism of web developers from the original posting:</p>
+<p>&#8220;The benefit of all this mess, though, is that an enterprise application designer is always thinking about distributed data, something that web developers talk about don’t always really get. It’s hard to imagine a CMS like Drupal or WordPress — that naively assumes it can keep all the information that it presents in its own (preferably MySQL) database — coming out of the enterprise.&#8221;</p>
+<p>So basically, I&#8217;m saying (again, overgeneralizing) that web developers are completely clueless about data and integration.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-5014">
+		<div id="comment-5014">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/27eb0b0e5948c6e02695c6d32d4d50356c9c45f8dc8fcdef9af2e1551acdd67b?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Zoe</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-5014">
+				October 22, 2013 at 2:38 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>One huge difference is simply age. Web developers tend to be in their mid-to-late 20s. Enterprise tends to be at least ten years older. There&#8217;s a lot of past-tech-experience there, people who&#8217;ve lived through many good and awful trends and been burned by fast changes. They also have a different lifestyle and goals that are simply the result of growing up and wanting to step back, slow down, and appreciate the bigger picture. As we get more experience, we tend to think more of systems rather than atomic parts, and start to realize how important things like change management really are.*</p>
+<p>Enterprise selects for older, more staid individuals who have that specific perspective. Web definitely does not; there&#8217;s no consequences in web for becoming obsolete &#8212; except winning a new contract to build something new that isn&#8217;t. Websites and apps have an average turnaround of about three years (for agency work, anyway.) People who are looking to break barriers and find the newest thing are rewarded in web. They are anathema to enterprise.</p>
+<p>* I&#8217;m an early-30s web developer in an old enterprise environment. I consult outside to keep up on the trendzz. I often chafe at the pace of the work inside, but am starting to understand why it&#8217;s so. Sometimes it&#8217;s for dumb reasons; but sometimes it&#8217;s very necessary, and it&#8217;s as much about people as it is about technology. Which isn&#8217;t a bad goal for technology.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment byuser comment-author-davidmegginson bypostauthor even depth-2" id="li-comment-5016">
+		<div id="comment-5016">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.megginson.com/" class="url" rel="ugc external nofollow">David Megginson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-5016">
+				October 22, 2013 at 6:11 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Nicely put.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+			</ol>
+
+
+			<p class="nocomments">Comments are closed.</p>
+	
+
+
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="../../../../index.html">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="nav_menu-4" class="widget-container widget_nav_menu"><h3 class="widget-title">Featured articles</h3><div class="menu-featured-posts-container"><ul id="menu-featured-posts" class="menu"><li id="menu-item-328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="../../../../blogs/quoderat/2007/03/28/open-data-matters-more-than-open-source/index.html" title="Do you care if a web site runs on Open Source software, if it still locks up your information?">Open Data or Open Source?</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-323"><a href="../../../../2010/08/08/evil-or-misunderstood/index.html" title="Does net neutrality apply as much to content types as to providers?">Net neutrality and Google</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-322"><a href="../../../../2007/02/15/rest-the-quick-pitch/index.html" title="What actually matters for building RESTful web apps.">REST: the quick pitch</a></li>
+<li id="menu-item-326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-326"><a href="../../../../2005/08/08/patents-and-screwdrivers/index.html" title="Patents sometimes hurt their owners the most.">Patents and screwdrivers</a></li>
+<li id="menu-item-334" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-334"><a href="../../../../2007/01/03/all-markup-ends-up-looking-like-xml/index.html" title="When people complain about XML&#8217;s complexity, they&#8217;re often really complaining about the data&#8217;s complexity.">All markup ends up looking like XML</a></li>
+</ul></div></li><li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">See also &#8230;</h3><div class="menu-my-sites-container"><ul id="menu-my-sites" class="menu"><li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="http://www.megginson.com/">Megginson Technologies Ltd.</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="http://www.ourairports.com/">OurAirports airport directory</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="http://lahso.megginson.com/">Land and Hold Short (flying blog)</a></li>
+</ul></div></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../../../index.html" title="Quoderat" rel="home">
+					Quoderat				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-5583ee5cd9fc9109043328f4e0fdf7ae">
+	</div>
+	<div class="grofile-hash-map-c5f095286dd8a3f1dbbc047412a10fb3">
+	</div>
+	<div class="grofile-hash-map-cbdeba7737fe9239dbdb1aaaabdbf85b">
+	</div>
+	<div class="grofile-hash-map-6d6627d5c5710e56d0be3991cc104f2e">
+	</div>
+	<div class="grofile-hash-map-46d5821293452726e15fa02687d228e9">
+	</div>
+	<div class="grofile-hash-map-78e53197880b11aec59c00ddfffe1a7c">
+	</div>
+	<div class="grofile-hash-map-75b6edb96623ac5d50a560d8e32b6095">
+	</div>
+	<div class="grofile-hash-map-b1562978d1b24f7dca75d5605bf52873">
+	</div>
+	<div class="grofile-hash-map-e2c9e71efd64d974b94046a10e61b44f">
+	</div>
+	<div class="grofile-hash-map-a6784afd401cf711dbbbe3ccce4b38a3">
+	</div>
+	<div class="grofile-hash-map-8746cc380754e7e9f88dcc58fa939ff9">
+	</div>
+	<div class="grofile-hash-map-6c4c9aa038d4c685b76f10a2e005e107">
+	</div>
+	<div class="grofile-hash-map-a6784afd401cf711dbbbe3ccce4b38a3">
+	</div>
+	<div class="grofile-hash-map-6354f4caf78098478b6fe14f11a72a69">
+	</div>
+	<div class="grofile-hash-map-ba214a69aabc7a2d7e41fcf293c0efd1">
+	</div>
+	<div class="grofile-hash-map-21dac5ac1a9b7b02781f467e6f99c6ac">
+	</div>
+	<div class="grofile-hash-map-21dac5ac1a9b7b02781f467e6f99c6ac">
+	</div>
+	<div class="grofile-hash-map-a8924dfee3d0ebfea4f119420da7c3cb">
+	</div>
+	<div class="grofile-hash-map-357484c51a4516af57969653e3535680">
+	</div>
+	<div class="grofile-hash-map-1448e5db5e60f2a8728f45ea256cdf3f">
+	</div>
+	</div>
+	<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="index.html">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14988159" />
+										<input type="hidden" name="source" value="https://quoderat.megginson.com/2013/05/20/whats-really-different-about-enterprise/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="462a0c7898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2013%252F05%252F20%252Fwhats-really-different-about-enterprise%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://quoderatech.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fquoderatech.wordpress.com%2F2013%2F05%2F20%2Fwhats-really-different-about-enterprise%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2013%252F05%252F20%252Fwhats-really-different-about-enterprise%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/p10T6v-8C">Copy shortlink</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://quoderat.megginson.com/2013/05/20/whats-really-different-about-enterprise/" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/blogs/14988159/posts/534">
+											View post in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/quoderat.megginson.com\/2013\/05\/20\/whats-really-different-about-enterprise\/":534};
+	</script>
+				<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/_static/??-eJx9zNEOwiAMBdAfkjXT6OKD8VMMg7qVQUGgMft70czEJ996e28OPJMykStyBVcgxJE8KimY9dR+ivgeO1d28LMLopKXibiApwULPAQFZ83WY/6OiY0X28qmmhjCG8uY/NoF4j+iw5q0WbYMRRhuzYJRyFsos85otbXr5ySeNu4aLv2wP54O/Xno3QvjtU8J'></script>
+<script type="text/javascript" id="sharing-js-js-after">
+/* <![CDATA[ */
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-x' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-x' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomx', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+/* ]]> */
+</script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src='https://widgets.wp.com/likes/master.html?ver=20250110#ver=20250110&amp;origin=https://quoderat.megginson.com' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' class='wpl-new-layout' role="dialog" aria-hidden="true" tabindex="-1">
+		<div class="likes-text">
+			<span>%d</span>		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14988159','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14988159','v':'wpcom','tz':'-5','user_id':'0','post':'534','subd':'quoderatech'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1mNzc2NTVTamdsRWFxcEV3XUtMXVR5aWlmMVNIcUxBaFstUWRrZVpWQ2tORExSfEpUVm05SlpEZzZWOEtlbW5nZHV0dkhDNjhwP35JbkdHLyZqSUh8WkZWbVl3Qll2LkguSkRJZGEtZV9DRDIwUGZ5XTdFRkNjSkxHdDMuQ0lOUmE2JTg3PXVRcFFHYWRfTnRLa1JzRklXcFRMd3p8eGJSNlEzJmpSaWRCWUMvZU55SHpaM2kuck9kLURRWS1SP1I3JUV0VX45TWstQXJ5JUNpa2l2c2wuZjJPP0VbVE55fDF+VSY1UXlONj0xcjJWTm1GRzFLZFJOUkxxdTlzNWN1ZiVwQ2NtLS5wSTJ1MkN5NDNi'}]);
+_stq.push([ 'clickTrackerInit', '14988159', '534' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

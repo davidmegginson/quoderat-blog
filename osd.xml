@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>Quoderat</ShortName>
+	<Description>Search Quoderat - Open information and technology.</Description>
+	<Contact>help@wordpress.com</Contact>
+	<Url type="application/atom+xml" template="https://quoderat.megginson.com/?s={searchTerms}&amp;feed=atom" />
+	<Url type="rss+xml" template="https://quoderat.megginson.com/?s={searchTerms}&amp;feed=rss2" />
+	<Url type="text/html" template="https://quoderat.megginson.com/?s={searchTerms}" method="GET" />
+	<Url type="application/opensearchdescription+xml" rel="self" template="https://quoderat.megginson.com/osd.xml" />
+	<LongName>Quoderat</LongName>
+	<Image height="16" width="16" type="image/vnd.microsoft.icon">https://quoderat.megginson.com/favicon.ico</Image>
+	<Image height="64" width="64" type="image/png">https://s-ssl.wordpress.com/i/logo/gray-white-transparent-64.png</Image>
+	<Query role="example" searchTerms="photography" />
+	<Tags>web conferences programming news business tips architecture kulcher blogging rights</Tags>
+	<Developer>Automattic</Developer>
+	<SyndicationRight>open</SyndicationRight>
+	<AdultContent>false</AdultContent>
+	<Language>en</Language>
+	<OutputEncoding>UTF-8</OutputEncoding>
+	<InputEncoding>UTF-8</InputEncoding>
+	<moz:SearchForm>https://quoderat.megginson.com</moz:SearchForm>
+</OpenSearchDescription>

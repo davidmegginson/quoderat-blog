@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: Templating languages and XML	</title>
+	<atom:link href="https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Wed, 17 Jan 2007 13:50:59 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: James		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-561</link>
+
+		<dc:creator><![CDATA[James]]></dc:creator>
+		<pubDate>Wed, 17 Jan 2007 13:50:59 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-561</guid>
+
+					<description><![CDATA[Cheers, trying again. The XSLT example of attribute value templates that I was trying to insert looked something like this:
+
+&#060;foo a=&quot;{//a}&quot; b=&quot;http://{$host}/{$path}&quot; /&#062;
+
+but I appreciate that tooling for this falls a little short of what would be desired; i.e. invalid markup only gets found out at runtime, or if you&#039;re thorough, during your automated tests.]]></description>
+			<content:encoded><![CDATA[<p>Cheers, trying again. The XSLT example of attribute value templates that I was trying to insert looked something like this:</p>
+<p>&lt;foo a=&#8221;{//a}&#8221; b=&#8221;http://{$host}/{$path}&#8221; /&gt;</p>
+<p>but I appreciate that tooling for this falls a little short of what would be desired; i.e. invalid markup only gets found out at runtime, or if you&#8217;re thorough, during your automated tests.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-560</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Fri, 05 Jan 2007 14:05:11 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-560</guid>
+
+					<description><![CDATA[James: just type straight HTML into the comments.  The code element in HTML just changes the typeface; it doesn&#039;t escape anything.  If you want to include markup, you&#039;ll also have to escape special characters (like &lt;code&gt;&#060;&lt;/code&gt; and &lt;code&gt;&#038;&lt;/code&gt;) using entities.  For example, to write this:
+
+&lt;pre&gt;
+&#060;a href=&quot;http://www.megginson.com/&quot;&#062;Megginson Technologies&#060;/a&#062;
+&lt;/pre&gt;
+
+you&#039;ll have to type this
+
+&lt;pre&gt;
+&#038;lt;a href=&quot;http://www.megginson.com/&quot;&#062;Megginson Technologies&#038;lt;/a&#062;
+&lt;/pre&gt;
+
+(Most people would also escape the &lt;code&gt;&#062;&lt;/code&gt; with &lt;code&gt;&#038;gt;&lt;/code&gt; just for good measure.)]]></description>
+			<content:encoded><![CDATA[<p>James: just type straight HTML into the comments.  The code element in HTML just changes the typeface; it doesn&#8217;t escape anything.  If you want to include markup, you&#8217;ll also have to escape special characters (like <code>&lt;</code> and <code>&amp;</code>) using entities.  For example, to write this:</p>
+<pre>
+&lt;a href="http://www.megginson.com/"&gt;Megginson Technologies&lt;/a&gt;
+</pre>
+<p>you&#8217;ll have to type this</p>
+<pre>
+&amp;lt;a href="http://www.megginson.com/"&gt;Megginson Technologies&amp;lt;/a&gt;
+</pre>
+<p>(Most people would also escape the <code>&gt;</code> with <code>&amp;gt;</code> just for good measure.)</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: James		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-559</link>
+
+		<dc:creator><![CDATA[James]]></dc:creator>
+		<pubDate>Fri, 05 Jan 2007 08:32:05 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-559</guid>
+
+					<description><![CDATA[btw, it would be good to have a link describing how to insert markup into your comments system, or maybe support comment preview? I&#039;ve tried three different ways (this will be the fourth) and still haven&#039;t worked it out, but then maybe I&#039;m just lucky like that! Other WordPress installations tend to state which XHTML elements are permitted and there is a commented out bit in this page source, but the tags mentioned there doesn&#039;t seem to apply (at least, the &lt;code&gt; seems to have the character data completely removed).]]></description>
+			<content:encoded><![CDATA[<p>btw, it would be good to have a link describing how to insert markup into your comments system, or maybe support comment preview? I&#8217;ve tried three different ways (this will be the fourth) and still haven&#8217;t worked it out, but then maybe I&#8217;m just lucky like that! Other WordPress installations tend to state which XHTML elements are permitted and there is a commented out bit in this page source, but the tags mentioned there doesn&#8217;t seem to apply (at least, the <code> seems to have the character data completely removed).</code></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: James		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-558</link>
+
+		<dc:creator><![CDATA[James]]></dc:creator>
+		<pubDate>Fri, 05 Jan 2007 08:26:08 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-558</guid>
+
+					<description><![CDATA[David, thanks for clarifying. I wasn&#039;t thinking about the problems faced by an author; just that XSLT does support a similar syntax and that you don&#039;t need to use &lt;code&gt;&lt;/code&gt; most of the time:
+
+&lt;code&gt;&lt;/code&gt;
+
+which can be used for the majority of my use cases (and XSLT 2.0 with XPath 2.0 probably deals with the occasions when I did need to use &lt;code&gt;&lt;/code&gt;.]]></description>
+			<content:encoded><![CDATA[<p>David, thanks for clarifying. I wasn&#8217;t thinking about the problems faced by an author; just that XSLT does support a similar syntax and that you don&#8217;t need to use <code></code> most of the time:</p>
+<p><code></code></p>
+<p>which can be used for the majority of my use cases (and XSLT 2.0 with XPath 2.0 probably deals with the occasions when I did need to use <code></code>.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-557</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Wed, 03 Jan 2007 13:41:47 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-557</guid>
+
+					<description><![CDATA[James:
+
+There&#039;s nothing wrong with xsl:attribute, except that it&#039;s even more verbose than the Smarty or straight-PHP options.  On the bright side, it&#039;s guaranteed to be well-formed (the PHP example cannot be well-formed XML, and the Smarty example can be, but is not guaranteed to be).
+
+On a separate note, xsl:attribute is one place that XSLT does a poorer job than Smarty of helping the author write a template that will produce well-formed XML.  If I&#039;m editing a Smarty template in an XML editor, this would cause a well-formedness error in the editor itself, at design time:
+
+&lt;pre&gt;
+&#060;foo bar=&quot;{$a}&quot; bar=&quot;{$b}&quot;/&#062;
+&lt;/pre&gt;
+
+This, on the other hand, would be caught only during actual XSLT processing at test or production time, because the template itself is still well-formed XML even though the output document will not be:
+
+&lt;pre&gt;
+&#060;foo&#062;
+&#060;xsl:attribute name=&quot;bar&quot;&#062;&#060;xsl:value-of select=&quot;//a&quot;/&#062;&#060;/xsl:attribute&#062;
+&#060;xsl:attribute name=&quot;bar&quot;&#062;&#060;xsl:value-of select=&quot;//b&quot;/&#062;&#060;/xsl:attribute&#062;
+&#060;/foo&#062;
+&lt;/pre&gt;
+
+In other areas, though, XSLT does a better job of enforcing well-formedness on the output document, and I certainly prefer it for general purpose XML templating (vs. simply web pages in a web app).]]></description>
+			<content:encoded><![CDATA[<p>James:</p>
+<p>There&#8217;s nothing wrong with xsl:attribute, except that it&#8217;s even more verbose than the Smarty or straight-PHP options.  On the bright side, it&#8217;s guaranteed to be well-formed (the PHP example cannot be well-formed XML, and the Smarty example can be, but is not guaranteed to be).</p>
+<p>On a separate note, xsl:attribute is one place that XSLT does a poorer job than Smarty of helping the author write a template that will produce well-formed XML.  If I&#8217;m editing a Smarty template in an XML editor, this would cause a well-formedness error in the editor itself, at design time:</p>
+<pre>
+&lt;foo bar="{$a}" bar="{$b}"/&gt;
+</pre>
+<p>This, on the other hand, would be caught only during actual XSLT processing at test or production time, because the template itself is still well-formed XML even though the output document will not be:</p>
+<pre>
+&lt;foo&gt;
+&lt;xsl:attribute name="bar"&gt;&lt;xsl:value-of select="//a"/&gt;&lt;/xsl:attribute&gt;
+&lt;xsl:attribute name="bar"&gt;&lt;xsl:value-of select="//b"/&gt;&lt;/xsl:attribute&gt;
+&lt;/foo&gt;
+</pre>
+<p>In other areas, though, XSLT does a better job of enforcing well-formedness on the output document, and I certainly prefer it for general purpose XML templating (vs. simply web pages in a web app).</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: James		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-556</link>
+
+		<dc:creator><![CDATA[James]]></dc:creator>
+		<pubDate>Sun, 31 Dec 2006 11:48:33 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-556</guid>
+
+					<description><![CDATA[Sorry, that should have read &#038;ltxsl:attribute/&#038;gt, but it got stripped out.]]></description>
+			<content:encoded><![CDATA[<p>Sorry, that should have read &amp;ltxsl:attribute/&amp;gt, but it got stripped out.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: James		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-555</link>
+
+		<dc:creator><![CDATA[James]]></dc:creator>
+		<pubDate>Sun, 31 Dec 2006 11:47:25 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-555</guid>
+
+					<description><![CDATA[What&#039;s the problem with attribute values in XSLT?
+
+http://www.w3.org/TR/xslt#attribute-value-templates
+
+That covers me for most of my use-cases, and it&#039;s only occasionally that I have to use .]]></description>
+			<content:encoded><![CDATA[<p>What&#8217;s the problem with attribute values in XSLT?</p>
+<p><a href="http://www.w3.org/TR/xslt#attribute-value-templates" rel="nofollow ugc">http://www.w3.org/TR/xslt#attribute-value-templates</a></p>
+<p>That covers me for most of my use-cases, and it&#8217;s only occasionally that I have to use .</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-554</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Wed, 27 Dec 2006 15:50:14 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-554</guid>
+
+					<description><![CDATA[Mark:
+
+I use straight PHP for trival web sites (just a few pages), but I do find myself reverting back to MVC for larger sites to keep maintenance easy.  I know that it&#039;s possible to use PHP in an MVC way, but I prefer Smarty for the templates because (a) it&#039;s simpler and shorter, and (b) it allows my templates to be well-formed XML and be edited and syntax-checked by XML tools (I know that &#039;b&#039; won&#039;t matter to most developers, but it&#039;s big for me).  Smarty is considerably simpler than PHP even if you use all the features, but in an MVC approach, I keep as much logic as possible out of my templates (I stick to value insertion, looping, and very rare display-oriented conditionals), and it takes, maybe, 15 minutes to learn those parts of Smarty.
+
+Finally, on a purely subjective level, I find
+
+&lt;pre&gt;
+&#060;a href=&quot;{$url&#124;escape}&quot;&#062;link&#060;/a&#062;
+&lt;/pre&gt;
+
+considerably more pleasant than
+
+&lt;pre&gt;
+&#060;a href=&quot;&#060;?php echo(htmlspecialchars($url)); ?&#062;&quot;&#062;link&#060;/a&#062;
+&lt;/pre&gt;
+
+but I recognize that that&#039;s purely a matter of taste.]]></description>
+			<content:encoded><![CDATA[<p>Mark:</p>
+<p>I use straight PHP for trival web sites (just a few pages), but I do find myself reverting back to MVC for larger sites to keep maintenance easy.  I know that it&#8217;s possible to use PHP in an MVC way, but I prefer Smarty for the templates because (a) it&#8217;s simpler and shorter, and (b) it allows my templates to be well-formed XML and be edited and syntax-checked by XML tools (I know that &#8216;b&#8217; won&#8217;t matter to most developers, but it&#8217;s big for me).  Smarty is considerably simpler than PHP even if you use all the features, but in an MVC approach, I keep as much logic as possible out of my templates (I stick to value insertion, looping, and very rare display-oriented conditionals), and it takes, maybe, 15 minutes to learn those parts of Smarty.</p>
+<p>Finally, on a purely subjective level, I find</p>
+<pre>
+&lt;a href="{$url|escape}"&gt;link&lt;/a&gt;
+</pre>
+<p>considerably more pleasant than</p>
+<pre>
+&lt;a href="&lt;?php echo(htmlspecialchars($url)); ?&gt;"&gt;link&lt;/a&gt;
+</pre>
+<p>but I recognize that that&#8217;s purely a matter of taste.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mark		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-553</link>
+
+		<dc:creator><![CDATA[Mark]]></dc:creator>
+		<pubDate>Wed, 27 Dec 2006 07:43:12 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-553</guid>
+
+					<description><![CDATA[Smarty? How about PHP? Smarty is about 80% as hard to learn as PHP, and PHP can do anything Smarty can. Why learn both?
+
+If Smarty is chosen, then at this rate it will become a full-blown programming language like PHP did, and people will be clammering for a new templating language to use over Smarty. It will never end.]]></description>
+			<content:encoded><![CDATA[<p>Smarty? How about PHP? Smarty is about 80% as hard to learn as PHP, and PHP can do anything Smarty can. Why learn both?</p>
+<p>If Smarty is chosen, then at this rate it will become a full-blown programming language like PHP did, and people will be clammering for a new templating language to use over Smarty. It will never end.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Ryan Tomayko		</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comment-552</link>
+
+		<dc:creator><![CDATA[Ryan Tomayko]]></dc:creator>
+		<pubDate>Sun, 24 Dec 2006 18:23:57 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/#comment-552</guid>
+
+					<description><![CDATA[&quot;where we don’t need all the extra benefits of heavy-duty transformation standards like XSLT&quot;
+
+What&#039;s your feeling on XML based templating languages like Kid and Genshi? They try to preserve the simplicity of text based template languages but generate infoset (are we still using that term?) instead of text providing some of the benefits of XSLT.
+
+I&#039;d be interested to hear your take on the general concept as I&#039;ve received mixed opinions from people who I&#039;d consider to be highly knowledgeable about XML.]]></description>
+			<content:encoded><![CDATA[<p>&#8220;where we don’t need all the extra benefits of heavy-duty transformation standards like XSLT&#8221;</p>
+<p>What&#8217;s your feeling on XML based templating languages like Kid and Genshi? They try to preserve the simplicity of text based template languages but generate infoset (are we still using that term?) instead of text providing some of the benefits of XSLT.</p>
+<p>I&#8217;d be interested to hear your take on the general concept as I&#8217;ve received mixed opinions from people who I&#8217;d consider to be highly knowledgeable about XML.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

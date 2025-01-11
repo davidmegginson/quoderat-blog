@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>Data &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/category/data/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Mon, 20 Oct 2014 22:27:40 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>Data &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>A different kind of data standard</title>
+		<link>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/</link>
+					<comments>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 20 Oct 2014 22:26:42 +0000</pubDate>
+				<category><![CDATA[Aid]]></category>
+		<category><![CDATA[Data]]></category>
+		<category><![CDATA[hxl]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=866</guid>
+
+					<description><![CDATA[HXL is a different, simpler kind of data standard for use during humanitarian crises, using spreadsheets and hashtags. <a href="https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>This year, the UN gave me the chance to bring people together to work on data standards for humanitarian crises (like the Ebola or Syria crisis). We put together a working group from <a href="http://hxlstandard.org/questions/working-group/">multiple humanitarian agencies and NGOs</a> and got to work in February.  The result is the alpha version of the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL, pronounced /HEX-el/), a very different kind of data standard.</p>
+<section id="whats-wrong">
+<h2>What&#8217;s wrong with data standards these days?</h2>
+<p>Unlike most data standards, HXL is <i>cooperative</i> rather than <i>competitive</i>. A competitive standard typically considers the way you currently work to be a problem, and starts by presenting you with a list of demands:</p>
+<ul>
+<li><b>Switch</b> to a different data format (and acquire and learn new software tools).</li>
+<li><b>Change</b> the information you share (and the way your organisation collects and uses that information).</li>
+<li><b>Abandon</b> what is valuable and unique about your organisation’s data (and conform to the common denominator).</li>
+</ul>
+<p>For HXL, we reversed the process and started by asking humanitarian responders how they&#8217;re actually working right now, then thought out how we could build a cooperative standard to enhance what they already do.</p>
+</section>
+<section id="not-json">
+<h2>Not JSON or XML</h2>
+<p>Given the conditions under which humanitarian responders work in the field (iffy connectivity, time pressure, lots to do besides putting together data reports), we realised that an XML-, JSON-, or RDF-based standard wasn&#8217;t going to work. </p>
+<p>The one data tool people already know is the infamous spreadsheet program, so HXL would have to work with spreadsheets.  But it also had to be able to accommodate local naming conventions (e.g. we couldn&#8217;t force everyone to use &#8220;ADM1&#8221; as a header for what is a province in Guinea, a <i>departamento</i> in Colombia, or a governorate in Syria). So in the end, we decided to come up to add a row of <a href="http://hxlstandard.org/standard/dictionary/">hashtags</a> below the human-readable headers to signal the common meaning of the columns and the start of the actual data. It looks a bit like this:</p>
+<table>
+<thead>
+<tr>
+<th>Location name</th>
+<th>Location code</th>
+<th>People affected</th>
+</tr>
+<tr style="background:#eeeeee;">
+<th>#loc</th>
+<th>#loc_id</th>
+<th>#aff_num</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Town A</td>
+<td>01000001</td>
+<td>2000</td>
+</tr>
+<tr>
+<td>Town B</td>
+<td>01000002</td>
+<td>750</td>
+</tr>
+<tr>
+<td>Town C</td>
+<td>01000003</td>
+<td>1920</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="http://hxlstandard.org/standard/tagging/">tagging conventions</a> are slightly more-sophisticated than that, also including special support for repeated fields, multiple languages, and compact-disaggregated data (e.g. time-series data).</p>
+</section>
+<section id="uptake">
+<h2>HXL in action</h2>
+<p>While HXL is still in the alpha stage, the <a href="http://blog.standbytaskforce.com/">Standby Task Force</a> is already using it as part of the international Ebola response, and we&#8217;re running informal interoperability trials with the <a href="http://www.aidtransparency.net/">International Aid Transparency</a> initiative, with planned more-formal trials with <a href="http://www.unhcr.org/">UNHCR</a> and <a href="http://www.iom.int/">IOM</a>.</p>
+<p>We also have an interactive <a href="http://demo.hxlstandard.org">HXL showcase</a> demo site, and a collection of public-domain HXL libraries <a href="https://github.com/HXLStandard">available on GitHub</a>.  More news soon.</p>
+</section>
+<section id="credits">
+<h2>Credits</h2>
+<p>Thanks to the <a href="http://docs.hdx.rwlabs.org/">Humanitarian Data Exchange</a> project (managed by Sarah Telford) at the UN&#8217;s <a href="http://unocha.org">Office for the Coordination of Humanitarian Affairs</a> for giving me the opportunity and support to do this kind of work, to the <a href="http://www.humanitarianinnovation.org/">Humanitarian Innovation Fund</a> for backing it financially, to the <a href="http://hxlstandard.org/questions/working-group/">HXL Working Group</a> for coming together to figure this stuff out, and especially to <a href="https://twitter.com/cj_hendrix">CJ Hendrix</a> and <a href="https://twitter.com/carstenkessler">Carsten Keßler</a> for their excellent work on an earlier incarnation of HXL and for their ongoing support.</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Community data, Ebola, and the UN</title>
+		<link>https://quoderat.megginson.com/2014/10/14/community-ebola-and-the-un/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 14 Oct 2014 14:53:19 +0000</pubDate>
+				<category><![CDATA[Aid]]></category>
+		<category><![CDATA[Data]]></category>
+		<category><![CDATA[Transparency]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=860</guid>
+
+					<description><![CDATA[The humanitarian community&#8217;s response to the Ebola crisis is more transparent than many responses in the past, and that transparency includes data. The core datasets from the UN and humanitarian partners are starting to appear here: https://data.hdx.rwlabs.org/ebola If you do anything potentially helpful with the &#8230; <a href="https://quoderat.megginson.com/2014/10/14/community-ebola-and-the-un/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>The humanitarian community&#8217;s response to the Ebola crisis is more transparent than many responses in the past, and that transparency includes data. The core datasets from the UN and humanitarian partners are starting to appear here:</p>
+<p><a href="https://data.hdx.rwlabs.org/ebola">https://data.hdx.rwlabs.org/ebola</a></p>
+<p>If you do anything potentially helpful with the data (visualisations, combining with other data, etc.) please let the UN&#8217;s HDX project know, so that they can share it around.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>REST &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/category/rest/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 23 Aug 2014 17:05:38 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>REST &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>Netflix, Philips, and the fragility of APIs</title>
+		<link>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/</link>
+					<comments>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 20 Mar 2014 14:16:11 +0000</pubDate>
+				<category><![CDATA[Integration]]></category>
+		<category><![CDATA[REST]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=811</guid>
+
+					<description><![CDATA[Update: Either Philips or Netflix has now fixed the problem described below (2014-03-29). I bought an inexpensive 29&#8243; Philips 4000 series TV for the basement, and its built-in Netflix app isn&#8217;t working. Why doesn&#8217;t Netflix work on my TV? Time &#8230; <a href="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><i><b>Update:</b> Either Philips or Netflix has now fixed the problem described below (2014-03-29).</i></p>
+<p><a href="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg"><img data-attachment-id="820" data-permalink="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/philips-tv/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" data-orig-size="225,225" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Philips 4000 series TV" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" src="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=640" alt="Philips 4000 series TV"   class="alignright size-full wp-image-820" srcset="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg 225w, https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=150&amp;h=150 150w" sizes="(max-width: 225px) 100vw, 225px" /></a></p>
+<p>I bought an inexpensive 29&#8243; <a href="http://www.p4c.philips.com/cgi-bin/dcbint/cpindex.pl?slg=en&amp;scy=us&amp;ctn=29PFL4908/F7">Philips 4000 series</a> TV for the basement, and its built-in Netflix app isn&#8217;t working.</p>
+<h2 style="clear:none;">Why doesn&#8217;t Netflix work on my TV?</h2>
+<p>Time to head for the online support chats.  What does Philips have to say?</p>
+<blockquote><p>
+Unfortunately at this time Netflix is not working on any of our units at this time.  Netflix processed an update without informing our company.  With all smart TVs, when an app maker processes an update, their API will change.  This essentially locks our entire unit out of Netflix until we can process a software update for our units by individual model.  We are working on this issue as fast as possible. Unfortunately there is no ETA on the update.
+</p></blockquote>
+<p>OK, then what does Netflix have to say?</p>
+<blockquote><p>
+I just checked on this issue and yes indeed there is an issue. Our tech geeks over here are working on the matter and we don&#8217;t have an ETA as suggested by the guys at Phillips for sure, but no worries with the help of them I can assure you that it will be fixed, 2 heads are better than 1 huh&#8230;
+</p></blockquote>
+<p>Thanks to both companies for giving me honest answers fast.  So it just turns out that Netflix had one idea of the API, Philips had another, there was no management/communication mechanism before deployment, and the consumer experience broke.</p>
+<h2>Approaching O(n²) complexity</h2>
+<p>This is a good example of a growing systemic problem in the world of API-based integration, and one that will apply far beyond just consumer devices: ever since the <a href="http://en.wikipedia.org/wiki/Web_2.0">Web 2.0</a> fad of the past decade, people have pushed the idea of APIs as a <a href="http://en.wikipedia.org/wiki/No_silver_bullet">silver bullet</a> for integrating information and services from separate organisations.  APIs are a huge step forward from scraping, but if you have <i>m</i> service providers with APIs and <i>n</i> service consumers using the API, how do you keep the <i>m*n</i> dependencies all in sync?  What happens when your business depends on an API <a href="http://www.pcworld.com/article/2104603/metrotwit-vanishes-as-twitter-restrictions-claim-another-victim.html">whose terms of use change</a>?  As shown above, change management is not easy, even for big, consumer-facing companies (and especially not for someone like Netflix, who tries to work on so many different devices from so many companies).</p>
+<h2>Closing rant</h2>
+<p>While we&#8217;re on the topic of APIs, please don&#8217;t use the nonsense term &#8220;RESTful API&#8221; — the whole point of <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> is that it&#8217;s <em>not</em> an API (or rather, that its API is HTTP, and most of the semantic burden gets switched from API to payload).</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" medium="image">
+			<media:title type="html">Philips 4000 series TV</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Mobile web app or web site?</title>
+		<link>https://quoderat.megginson.com/2014/03/17/mobile-web-app-or-web-site/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 17 Mar 2014 14:15:46 +0000</pubDate>
+				<category><![CDATA[Design]]></category>
+		<category><![CDATA[Mobile]]></category>
+		<category><![CDATA[REST]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=805</guid>
+
+					<description><![CDATA[If you&#8217;re creating an HTML5 mobile web application, this is the minimum you need to give your users what Google calls a &#8220;homescreen launch experience&#8221; on an iOS or Android mobile device: &#60;!doctype html&#62; &#60;html&#62; &#60;head&#62; &#60;title&#62;Awesome app&#60;/title&#62; &#60;meta name="viewport" &#8230; <a href="https://quoderat.megginson.com/2014/03/17/mobile-web-app-or-web-site/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>If you&#8217;re creating an HTML5 mobile web application, this is the minimum you need to give your users what Google calls a &ldquo;<a href="https://developers.google.com/chrome/mobile/docs/installtohomescreen">homescreen launch experience</a>&rdquo; on an iOS or Android mobile device:</p>
+<pre>
+&lt;!doctype html&gt;
+&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;Awesome app&lt;/title&gt;
+  &lt;meta name="viewport" content="width=device-width"&gt;
+  &lt;meta name="mobile-web-app-capable" content="yes"&gt;
+  &lt;link rel="shortcut icon" sizes="196x196" href="/icon.png"&gt;
+ &lt;/head&gt;
+ &lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>The &#8220;shortcut icon&#8221; <var>link</var> element is pretty straight-forward: it simply provides a pretty, app-style icon to save to the iOS homescreen or Android launcher. The &#8220;mobile-web-app-capable&#8221; <var>meta</var> element, on the other hand, strikes right to the core of what you&#8217;re doing: are you creating a web <em>app</em>, or a web <em>site</em>?</p>
+<h2>I&#8217;m a web <em>app</em></h2>
+<p>Here&#8217;s what Chrome for Android gives me if I save a web app to the homescreen (launcher), then tap on that icon:</p>
+<ul>
+<li>The app gets its own entry in the task switcher.</li>
+<li>All the browser chrome is hidden, and there&#8217;s no way to add a new tab, create a bookmark, change options, etc.</li>
+<li>If the user chooses a link outside my domain, Chrome will animate a normal browser launching, to warn me that I&#8217;m outside the app.</li>
+</ul>
+<h2>I&#8217;m a web <em>site</em></h2>
+<p>If I don&#8217;t include &ldquo;mobile-web-app-capable,&rdquo; then Chrome for Android will still let me create an icon on the homescreen, but when I tap on it, I&#8217;ll see my regular browser launch, with all its chrome, tabs, bookmarking, etc.</p>
+<h2>So which am I?</h2>
+<p>A web <em>app</em> is a loner. It has several advantages over a native mobile app (cross-OS/-device compatibility, avoiding app-store bottlenecks and censorship, more-flexible security model, linkable, etc.) and several disadvantages (can&#8217;t handle an Android Intent, weaker notification support), but its plan is clearly to stand on its own, like a native mobile app.  A web app is designed around <strong>actions</strong>: with a clever combination of HTML5, CSS, JavaScript, and newer stuff like <a href="http://en.m.wikipedia.org/wiki/Cache_manifest_in_HTML5">AppCache</a> and <a href="http://en.m.wikipedia.org/wiki/Web_storage"> LocalStore</a>, you could create (e.g.) a Twitter web <em>app</em> that was very similar to the Twitter native app (<a href="http://alistapart.com/article/application-cache-is-a-douchebag">important caveats</a>).  The web app designer doesn&#8217;t want her app open in one browser tab with a different site open in another, while the user switches back and forth. Online video games, interactive edit/design tools, and anything that is supposed to feel a bit like a MacOS or Windows program installed from a CD-ROM 15 years ago is likely an <em>app</em>.</p>
+<p>A web <em>site</em> is a social creature.  It&#8217;s orthogonal to a native mobile app, because it inhabits a different universe.  A web site is <a href="http://en.m.wikipedia.org/wiki/Representational_state_transfer">RESTful</a>, designed around <strong>pages</strong> (more generally, &ldquo;resources&rdquo;), most of which contain either information a user wants to see with links for navigating to related information, or a means to create/change/delete that information (there&#8217;s also typically a search feature). Unlike web apps, web sites <em>embrace</em> the browser chrome, which provides an important part of the user experience: because the browser allows a user to search for text within a page or bookmark any page, the web site itself doesn&#8217;t have to provide that support; similarly, the browser lets a user open multiple views into the same site using different tabs by default (so that a user can view two pages at the same time), while an app <em>treated as an app</em> has to have that support built in.  Wikipedia, blogs, tutorials, newspapers and magazines, most online discussion forums, and my own <a href="http://ourairports.com">OurAirports</a> are all examples of things that are most naturally web <em>sites</em>.</p>
+<h2>Last thoughts</h2>
+<p>I&#8217;m starting the process of making OurAirports responsive and otherwise mobile-friendly, and one of the first things I tried was adding &ldquo;mobile-web-app-capable&rdquo; and then saving the icon to my Android desktop. It worked exactly as advertised &mdash; it was cool having the site open up as if it were a phone app, appear in the task switcher, etc., but it took me only minutes to realise that I&#8217;d crippled it: a user launching OurAirports that way could no longer bookmark a specific airport page to come back to it later; could no longer open two airports in different tabs; and could no longer search for text in a long comment stream.  I removed it and let the browser chrome come back, because really, that browser chrome is a lot of what makes a web <em>site</em> useful.</p>
+<p>So when you&#8217;re designing your next web thingy, ask yourself a few questions:</p>
+<ul>
+<li>Is it valuable for users to be able to search for text within a page, bookmark pages, and open multiple tabs (site)?</li>
+<li>Is it mainly about manipulating an external resource, such as a picture or diagram (app)?</li>
+<li>Does it have lots of pages with relatively stable URLs (site)?</li>
+<li>Can it potentially provide a reasonably-complete offline experience using only a small number of files containing markup, code, and data (app)?</li>
+<li>Is it designed as part of a bigger web, linking out and receiving inbound links (site)?</li>
+<li>Would browser chrome distract rather than help the user (app)?</li>
+<li>Is it something that Google should index and make searchable (site)?</li>
+</ul>
+<p>Over the past few years, I think, too many people have been taking things that are more-naturally sites (e.g. newspapers) and trying to force them to behave like apps by forcing in <a href="http://en.m.wikipedia.org/wiki/Ajax_(programming)">AJAX</a>, <a href="http://www.webmonkey.com/2011/02/gawker-learns-the-hard-way-why-hash-bang-urls-are-evil/">hashbang URL syntax</a>, etc.: the result is typically impressive and flashy, but a crappy user experience. On the other hand, the greatest advance in the Web over the past ~10 years has been its growing ability to support activities like creating spreadsheets or editing photos that really don&#8217;t fit the REST/web-site model.  So by all means, if you have an app, let it be an app, but don&#8217;t try to force <em>everything</em> into app world; REST is still the web&#8217;s heartbeat.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>REST: the quick pitch</title>
+		<link>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/</link>
+					<comments>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 16 Feb 2007 02:47:31 +0000</pubDate>
+				<category><![CDATA[REST]]></category>
+		<category><![CDATA[architecture]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/02/15/rest-the-quick-pitch/</guid>
+
+					<description><![CDATA[Now that the Java world is noticing REST, the low-pain alternative to RPC standards like WS-*, people are starting to blog about it again. Gossip with other IT folks also tells me that people&#8217;s customers are actually asking for REST &#8230; <a href="https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Now that <a href="http://jcp.org/en/jsr/detail?id=311">the Java world is noticing REST</a>, the low-pain alternative to <a href="http://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a> standards like <a href="http://en.wikipedia.org/wiki/List_of_Web_service_specifications">WS-*</a>, people are starting to <a href="http://www.cafeaulait.org/oldnews/news2007February14.html">blog about it</a> again.  Gossip with other IT folks also tells me that people&#8217;s customers are actually <em>asking</em> for <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> explicitly (rather than having to be convinced to use it).  With that in mind, I&#8217;m going to try to explain what I think matters about REST, and what you can safely ignore.</p>
+<div id="elevator">
+<h2>The elevator pitch</h2>
+<blockquote><p>
+With REST, every piece of information has its own URL.
+</p></blockquote>
+<p>If you just do that and nothing else, you&#8217;ve got 90%+ of REST&#8217;s benefits right off the bat.  You can <strong>cache</strong>, <strong>bookmark</strong>, <strong>index</strong>, and <strong>link</strong> your information into a giant, well, web.  It works &mdash; you&#8217;re reading this, after all, aren&#8217;t you?  Betcha got here by following a link somewhere, not by parsing a WSDL to find what ports and services were available.</p>
+</div>
+<div id="best">
+<h2>Real best practices</h2>
+<p>If you want to do REST well (rather than just doing REST), you can spend 2-3 minutes after your elevator ride learning a few very simple best practices to get most of the remaining 10% of REST&#8217;s benefits:</p>
+<p><strong>Use HTTP POST to <em>update</em> information.</strong>  Here&#8217;s the simple rule: GET to read, POST to change. That way, no body deletes or modifies something by accident when trying to read it.</p>
+<p><strong>Make sure your information contains links (URLs) for retrieving related information.</strong>  That&#8217;s how search engines index the web, and it can work for other kinds of information (XML, PDF, JSON, etc.) as well.  Once you have one thing, you can follow links to find just about everything else (assuming that you understand the file format).</p>
+<p><strong>Try to avoid request parameters (the stuff after the question mark).</strong>  It&#8217;s much better to have a URL like</p>
+<blockquote><p>
+<code>http://www.example.org/systems/foo/components/bar/</code>
+</p></blockquote>
+<p>than</p>
+<blockquote><p>
+<code>http://www.example.org/get-component.asp?system=foo&amp;component=bar</code>
+</p></blockquote>
+<p>Search engines are more likely to index it, you&#8217;re less likely to end up with duplicates in caches and hash tables (e.g. if someone lists the request parameters in a different order), URLs won&#8217;t change when you refactor your code or switch to a different web framework, and you can always switch to static, pregenerated files for efficiency if you want to.  <strong>Exceptions:</strong> searches (<code>http://www.example.org/search?q=foo</code>) and paging through long lists (<code>http://www.example.org/systems/?start=1000&amp;max=200</code>) &mdash; in both of these cases, it&#8217;s really OK to use the request parameters instead of tying yourself in a knot trying to avoid them.</p>
+<p><strong>Avoid scripting-language file extensions.</strong> If your URLs end with &#8220;.php&#8221;, &#8220;.asp&#8221;, &#8220;.jsp&#8221;, &#8220;.pl&#8221;, &#8220;.py&#8221;, etc., (a) you&#8217;re telling every cracker in the world what exploits to use against you, and (b) the URLs will change when your code does.  Use Apache <a href="http://en.wikipedia.org/wiki/Rewrite_engine">mod-rewrite</a> or equivalent to make your resources look like static files, ending in &#8220;.html&#8221;, &#8220;.xml&#8221;, etc.</p>
+<p><strong>Avoid cookies and URL rewriting.</strong> Well, maybe you can&#8217;t, but the idea of REST is that the state is in the thing the server has returned to you (an HTML or XML file, for example) rather than in a session object on the server.  This can be tricky with authentication, so you won&#8217;t always pull it off, but HTTP authentication (which doesn&#8217;t require cookies or session IDs tacked onto URLs) will work surprisingly often.  Do what you have to do to make your app work, but don&#8217;t use sessions just because your web framework tells you to (they also tie up a lot of resources on your server).</p>
+</div>
+<div id="speculative">
+<h2>Speculative stuff (skip this)</h2>
+<p>The strength of REST is that it&#8217;s been proven through almost two decades of use on the Web, but not everything that some of the hard-core RESTafarians (and others) try to make us do has been part of that trial.  Stop reading now if you just want to go ahead and do something useful with REST.  Really, stop!  Some of this stuff is moderately interesting, but it won&#8217;t really help you, and will probably just mess up your project, or at least make it slower and more expensive.</p>
+<p>[maybe some day] <strong>Use HTTP PUT to create a resource, and DELETE to get rid of one.</strong> These sound like great ideas, and they add a nice symmetry to REST, but they&#8217;re just not used enough for us to know if they&#8217;d really work on a web scale, and firewalls often block them anyway.  In real-life REST applications, rightly or wrongly, people just use POST for creation, modification, <em>and</em> deletion.  It&#8217;s not as elegant, but we know it works.</p>
+<p>[don&#8217;t bother] <strong>Use URLs to point to <em>resources</em> rather than <em>representations</em>.</strong> Huh?  OK, a <em>resource</em> is a sort-of <a href="http://en.wikipedia.org/wiki/Platonic_idealism">Platonic ideal</a> of something (e.g. &#8220;a picture of Cairo&#8221;), while a <em>representation</em> is the resource&#8217;s physical manifestation (e.g. &#8220;an 800&#215;600 24-bit RGB picture of Cairo in JPEG format&#8221;).  Yes, as you&#8217;d guess, it was people with or working on Ph.D.&#8217;s who thought of that.  For a long time, the W3C pushed the idea of URLs like &#8220;<code>http://www.example.org/pics/cairo</code>&#8221; instead of &#8220;<code>http://www.example.org/pics/cairo.jpg</code>&#8220;, under the assumption that web clients and servers could use <a href="http://en.wikipedia.org/wiki/Content_negotiation">content negotiation</a> to decide on the best format to deliver.  I guess that people hated the fact that HTTP was so simple, and wanted to find ways to make it more complicated.  Fortunately, there were very few nibbles, and this is not a common practice on the web.  Screw Plato!  Viva materialism!  Go ahead and put &#8220;.xml&#8221; at the end of your URLs.</p>
+<p>[blech] <strong>Use <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Name">URN</a>s instead of URLs.</strong>  I think even the hard-core URN lovers have given up on this now &mdash; it&#8217;s precisely the kind of excessive abstraction that sent people running screaming from WS-* into REST&#8217;s arms in the first place (see also &#8220;content negotiation&#8221;, above), and it would be a shame to scare them away from REST as well.  URLs are fine, as long as you make some minore efforts to ensure that they <a href="http://www.w3.org/Provider/Style/URI">don&#8217;t change</a>.</p>
+<p>[n/a] <strong>REST needs security, reliable messaging, etc.</strong> The RESTafarians don&#8217;t say this, but I&#8217;m worried that the JSR (the Java REST group) will.  We already have a secure version of HTTP <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">TLS/SSL</a>, and it works fine for hundreds of thousands or millions of web sites.  Reliable messaging can be handled fine in the application layer, since everyone&#8217;s requirements are different anyway, or maybe we want a reliable-messaging spec for HTTP in general.  In either case, please don&#8217;t pile this stuff on REST.</p>
+<p>So to sum up, just give every piece of information its own URL, then have fun.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/feed/</wfw:commentRss>
+			<slash:comments>19</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

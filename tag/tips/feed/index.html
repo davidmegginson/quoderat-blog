@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>tips &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/tag/tips/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 23 Aug 2014 17:05:38 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>tips &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>MySQL wrapper script: variables from the command line</title>
+		<link>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/</link>
+					<comments>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 21 Jun 2011 19:30:59 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[databases]]></category>
+		<category><![CDATA[mysql]]></category>
+		<category><![CDATA[perl]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=528</guid>
+
+					<description><![CDATA[There&#8217;s a lot I like about PostgreSQL, and I&#8217;ll probably switch eventually, but for now, I&#8217;m still more comfortable with MySQL, especially its ability to update huge amounts of existing data in-place very quickly. I do have some technical gripes &#8230; <a href="https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>There&#8217;s a lot I like about <a href="http://www.postgresql.org/">PostgreSQL</a>, and I&#8217;ll probably switch eventually, but for now, I&#8217;m still more comfortable with <a href="http://www.mysql.com/">MySQL</a>, especially its ability to update huge amounts of existing data in-place very quickly.</p>
+<p>I do have some technical gripes with MySQL, though:</p>
+<ul>
+<li>InnoDB doesn&#8217;t support fulltext indexes, so I&#8217;ve forced to give up referential integrity for any table that needs fulltext searching.</li>
+<li>The <code>mysql(1)</code> command-line tool doesn&#8217;t allow setting user variables on the command line when invoking a script.</li>
+</ul>
+<p>The first is too big a problem for me to take on right now, but the second looked like it just needed a bit of perl magic, so I wrote a wrapper script:</p>
+<blockquote><p>
+<a href="http://www.megginson.com/downloads/runmysql.gz">runmysql</a>
+</p></blockquote>
+<p>This script scans each command-line option for a string beginning with &#8220;@&#8221;, and pulls it out of the arguments before passing the rest on to mysql.  Any option in the format <var>@name=value</var> will be converted to a SQL variable declaration and passed to mysql; any other option gets passed through unmodified.</p>
+<h2>Example</h2>
+<p>Let&#8217;s say that you have a SQL script named <code>getstuff.sql</code>:</p>
+<pre>
+use mydatabase;
+
+select * from Stuff where type=@type;
+</pre>
+<p>You can invoke this script like this:</p>
+<pre>
+runmysql @type=foo -X &lt; getstuff.sql
+</pre>
+<p>The script will run the command &#8220;mysql -X&#8221; (the &#8220;-X&#8221; means XML output &#8212; it&#8217;s just there to demonstrate how other options get passed through), and prepend a declaration to the SQL script, so that MySQL actually sees this:</p>
+<pre>
+set @type = 'foo';
+use mydatabase;
+
+select * from Stuff where type=@type;
+</pre>
+<p>That&#8217;s it, really.  Of course, it&#8217;s not that useful in a trivial script like this, but for scripts that load data from many different files (for example), it makes life much simpler.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>SQL and simple polymorphism</title>
+		<link>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/</link>
+					<comments>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 25 Sep 2010 22:36:23 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[databases]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=403</guid>
+
+					<description><![CDATA[SQL is about tables and sets. Object-oriented programing is about types, subtypes, and polymorphism. There are nasty, nasty frameworks available to try to move between the two worlds (say, by serializing and deserializing Java objects) &#8212; this posting, however, is &#8230; <a href="https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><a href="http://en.wikipedia.org/wiki/SQL">SQL</a> is about tables and sets.  Object-oriented programing is about types, subtypes, and <a href="http://en.wikipedia.org/wiki/Type_polymorphism">polymorphism</a>. There are nasty, nasty frameworks available to try to move between the two worlds (say, by serializing and deserializing Java objects) &mdash; this posting, however, is not about those.  Instead, it&#8217;s about how to make SQL support the basic benefits of polymorphism in what we might call a SQL-y way, independent of any programming language.</p>
+<h3 id="similar">Similar entities</h3>
+<p>Imagine that you want to deal with a set of geographical entities, similar to what I handle in <a href="http://www.ourairports.com/">OurAirports</a>:</p>
+<ul>
+<li>cities</li>
+<li>airports</li>
+<li>navigation transmitters</li>
+<li>points of interest (e.g. buildings, etc.)</li>
+</ul>
+<p>The normal object-oriented approach would be to create a base class such as &#8220;Location&#8221; with all the properties these have in common (unique id, latitude, longitude, elevation, name, description, etc.) and then create subclasses adding additional information for each one (such as frequencies for the navigation transmitters, or identifiers for the airport).  The <del>normal</del> <ins>naive</ins> SQL approach, on the other hand, is to repeat the information in four separate tables.</p>
+<h3 id="base">The base table</h3>
+<p>SQL can, however, handle polymorphism in a fairly elegant way &mdash; I think database people call these &#8220;disjoint subtypes&#8221;, but feel free to ignore that term.  Instead of a base class, we create a base table (I&#8217;m using the MySQL dialect, but most SQLs should have similar capabilities):</p>
+<pre>
+create table Locations (
+  id bigint primary key auto_increment,
+  type enum ('airport', 'city', 'poi', 'navaid') not null,
+  latitude_deg double not null,
+  longitude_deg double not null,
+  elevation_m int not null,
+  title varchar(128) not null,
+  description text not null,
+  # add indices as needed
+);
+</pre>
+<p>(A purer implementation would use a separate <var>LocationTypes</var> table for flexibility, rather than the enum value &mdash; I&#8217;ll probably do that in OurAirports, but it would make these examples a bit more verbose.)</p>
+<h3 id="subtype">The subtype tables</h3>
+<p>Next, create a table for each of your subtypes, where the primary key is also a foreign key pointing to the Locations table:</p>
+<pre>
+create table Airports (
+  id bigint primary key,
+  iati_code char(3),
+  icao_code char(4),
+  local_code varchar(4),
+  # etc.
+  foreign key id references Locations(id)
+);
+</pre>
+<p>Using the same id for the base and derived table ensures that each entity has an id that is unique across all subtables, and simplifies SQL statements for accessing and modifying the tables.</p>
+<h3 id="polymorphism">Polymorphism</h3>
+<p>Now, when you want to deal with locations in general, regardless of subtype, simply query the Locations table:</p>
+<pre>
+select L.* from Locations L where latitude_deg &gt; 60;
+</pre>
+<p>You can update base information without even knowing the subtype:</p>
+<pre>
+update Locations set latitude_deg=45.5 where id=111;
+</pre>
+<p>When you want to deal with a specific kind of location, do a simple join:</p>
+<pre>
+select L.*, A.* from Locations L 
+join Airports A on L.id=A.id
+where A.latitude_deg &gt; 60;
+</pre>
+<h3 id="views">Views</h3>
+<p>To make this even easier, define a view containing the join:</p>
+<pre>
+drop view if exists AirportsView;
+create view AirportsView as
+select * from Locations L 
+join Airports A on L.id=A.id;
+</pre>
+<p>Now you can simply query AirportsView as if it were a single table:</p>
+<pre>
+select * from AirportsView where latitude_deg&gt;60;
+</pre>
+<h3 id="crud">Inserting and deleting</h3>
+<p>Inserting is slightly more complex, because it involves two steps: first, create the base entry, then link to it from the derived entry:</p>
+<pre>
+insert into Locations 
+ (latitude_deg, longitude_deg, elevation_m, name) 
+values
+ (45.5, -75.5, 100, 'Sample Airport');
+
+insert into Airports (id, iata_code) values
+(last_insert_id(), 'AAA');
+</pre>
+<p>Stored procedures and/or triggers can automate this fairly nicely, if you don&#8217;t want to have to embed too much database logic in application code.  Deletion similarly requires two steps:</p>
+<pre>
+delete from Airports where id=111;
+
+delete from Locations where id=111;
+</pre>
+<p>A simple post-deletion trigger for Airports, though, could automate this and avoid the risk of mistakes in source code.</p>
+<h3 id="ourairports">Eating the dogfood</h3>
+<p>Unfortunately, I didn&#8217;t design OurAirports this way from the start, so I have a bit of refactoring to do.  When I&#8217;m finished, however, I expect mapping to be much simpler, since I will no longer have to execute 5 or 6 separate queries to find all the icons to display on a map.  If anyone has any better ideas, please let me know; otherwise, stay tuned.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2010/09/25/sql-and-simple-polymorphism/feed/</wfw:commentRss>
+			<slash:comments>8</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Customer Problem Checklist</title>
+		<link>https://quoderat.megginson.com/2009/02/27/customer-problem-checklist/</link>
+					<comments>https://quoderat.megginson.com/2009/02/27/customer-problem-checklist/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 27 Feb 2009 23:13:13 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[business]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=241</guid>
+
+					<description><![CDATA[Whether you&#8217;re writing a business plan for your personal startup (the tech equivalent of the Great American Novel that every hack journalist plans to write), a report for your customers, or a proposal for your managers, sooner or later you&#8217;re &#8230; <a href="https://quoderat.megginson.com/2009/02/27/customer-problem-checklist/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Whether you&#8217;re writing a business plan for your personal startup (the tech equivalent of the <em>Great American Novel</em> that every hack journalist plans to write), a report for your customers, or a proposal for your managers, sooner or later you&#8217;re going to have to describe a <strong>customer problem</strong> — the justification for creating a product or launching a project.</p>
+<p>Frankly, the majority of customer problem descriptions I&#8217;ve seen and heard — including those I&#8217;ve been involved in — have been either poorly thought out or complete B.S.  I know I won&#8217;t always be allowed to use this, but as a consultant and as a poor fool who still dreams of his own startup, I&#8217;ve written a checklist of six criteria that a <em>real</em> customer problem must meet:</p>
+<ol>
+<li>It uses the <strong>customer&#8217;s language</strong>, not yours — if any words or ideas need to be defined or explained, then it&#8217;s probably not really a customer problem.</li>
+<li>It describes a <strong>business need</strong> — it should not mention the proposed technical solution (such as a social network, CMS, etc.).</li>
+<li>It is <strong>recognizable</strong> — the customer is already familiar with the problem or with a very similar one, and doesn&#8217;t need to be convinced that the problem exists (though she might not be aware of its severity).</li>
+<li>It is <strong>quantifiable</strong> — even if you can&#8217;t assign a number yet, it is the kind of problem that has a cost expressed in <em>concrete</em> units such as money, time, subscriptions, support calls, page views, etc.</li>
+<li>It is <strong>compelling</strong> — you can demonstrate potential benefits, savings, etc. that justify the time, cost, and effort for the customer to try to solve it.</li>
+<li>It is <strong>succinct</strong> — you can <del>describe</del> <ins>summarize</ins> the problem meaningfully in a single, short sentence (of course, you&#8217;re always free to elaborate it somewhere else).</li>
+</ol>
+<p>The passing grade on this checklist is 100%. If only one checklist item is missing, the problem is likely just wishful thinking — if your product or project succeeds, it will be despite your idea of the problem, not because of it.</p>
+<p><strong>Note:</strong> It&#8217;s actually easy to come up with problem descriptions that meet all six criteria; what&#8217;s hard is coming up with problem descriptions that meet all six criteria <em>and</em> have credible technical solutions.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2009/02/27/customer-problem-checklist/feed/</wfw:commentRss>
+			<slash:comments>3</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Ready for Prime Time?</title>
+		<link>https://quoderat.megginson.com/2008/05/10/ready-for-prime-time/</link>
+					<comments>https://quoderat.megginson.com/2008/05/10/ready-for-prime-time/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 10 May 2008 22:44:46 +0000</pubDate>
+				<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=216</guid>
+
+					<description><![CDATA[I bought a cheap HP C4280 printer-scanner-copier today, since my old HP 1210 finally gave up the ghost. Installing the printer in Windows Vista Installing the printer in Windows Vista wasn&#8217;t too difficult. I followed the instruction not to plug &#8230; <a href="https://quoderat.megginson.com/2008/05/10/ready-for-prime-time/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I bought a cheap HP C4280 printer-scanner-copier today, since my old HP 1210 finally gave up the ghost.</p>
+<h2>Installing the printer in Windows Vista</h2>
+<p>Installing the printer in Windows Vista wasn&#8217;t too difficult.  I followed the instruction not to plug in the USB cable until asked, then inserted the supplied CD-ROM and authorized Vista to run the setup.exe program.  I had a click through a few screens, then I plugged in the the USB cable, let it autodetect the printer, and left it running over supper.  The whole process took less than 15 minutes. When I came back in, it was finished, and I just had to dodge the ads attached to the end of the installation program.  I think my non-computer-literate older relatives could have managed fine without any help from me.</p>
+<h2>Installing the printer in Ubuntu Linux</h2>
+<p>I turned on the computer.  The HP C4280 appeared in the printer list.</p>
+<h2>Prime time</h2>
+<p>So who&#8217;s not ready for Prime Time on the desktop?  No TV show on Prime Time is without flaws, and no OS is without flaws &mdash; Ubuntu still has trouble with some wireless networking cards, and pretty-much 100% of the tech support calls we made at XML 2007 were for Mac notebooks (Windows and Linux notebooks just worked, every time) &mdash; but Ubuntu makes it hard to argue that somehow Windows and Mac are good enough for the desktop, while Linux isn&#8217;t.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2008/05/10/ready-for-prime-time/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Strange web exploit attempt (?)</title>
+		<link>https://quoderat.megginson.com/2008/02/04/strange-web-exploit-attempt/</link>
+					<comments>https://quoderat.megginson.com/2008/02/04/strange-web-exploit-attempt/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 04 Feb 2008 12:52:17 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[exploits]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2008/02/04/strange-web-exploit-attempt/</guid>
+
+					<description><![CDATA[In the search logs for OurAirports, I noticed a series of searches for URLs: http://www.feliciano.de/Webgalerie/bilder/Italy/une/yiwul/ http://www.unduetretoccaate.it/codice/aseje/wocobo/ http://www.altaiseer-eg.com/ar/articles/jed/umut/ At first, I thought they might be a kind of link spam — some sites display recent searches — but when I checked &#8230; <a href="https://quoderat.megginson.com/2008/02/04/strange-web-exploit-attempt/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>In the search logs for <a href="http://www.ourairports.com/">OurAirports</a>, I noticed a series of searches for URLs:</p>
+<pre>http://www.feliciano.de/Webgalerie/bilder/Italy/une/yiwul/
+http://www.unduetretoccaate.it/codice/aseje/wocobo/
+http://www.altaiseer-eg.com/ar/articles/jed/umut/</pre>
+<p>At first, I thought they might be a kind of link spam — some sites display recent searches — but when I checked one of the URLs, I found something totally unexpected:</p>
+<pre>php echo md5("just_a_test");?&gt;</pre>
+<p>They&#8217;re all the same.  This is almost certainly related to passwords: is there a known flaw in a PHP content-management system like Drupal, or in the PHP API for a search engine like Lucene, where this would do some damage, or is it just a test probing for weaknesses?  Is the PHP code supposed to be served up literally like that, or should I be seeing the MD5 instead?</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2008/02/04/strange-web-exploit-attempt/feed/</wfw:commentRss>
+			<slash:comments>4</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>LAMP stack stability</title>
+		<link>https://quoderat.megginson.com/2008/01/10/lamp-stack-stability/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 10 Jan 2008 18:53:43 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2008/01/10/lamp-stack-stability/</guid>
+
+					<description><![CDATA[I&#8217;m using a single dedicated server to host ourairports.com, megginson.com, and a couple of minor domains. OurAirports is a database-heavy application using (currently) a MySQL v.5 database hosted on the same server. I&#8217;ll offload the database to a separate server &#8230; <a href="https://quoderat.megginson.com/2008/01/10/lamp-stack-stability/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I&#8217;m using a single dedicated server to host <a href="http://www.ourairports.com/">ourairports.com</a>, <a href="http://www.megginson.com/">megginson.com</a>, and a couple of minor domains.  OurAirports is a database-heavy application using (currently) a MySQL v.5 database hosted on the same server.  I&#8217;ll offload the database to a separate server if traffic keeps increasing, but as long as I&#8217;m getting compliments from tech people for my fast response times (mainly thanks to MySQL&#8217;s built-in <a href="http://dev.mysql.com/doc/refman/5.0/en/query-cache.html">query caching</a>), there&#8217;s no point paying for extra hardware.</p>
+<h3>Uptime</h3>
+<p>My ISP set up the server for me last summer with a bare-bones Ubuntu distro, then I installed the extra packages I needed using aptitude over ssh.  Since then, I&#8217;ve done many Ubuntu in-place upgrades, rolled out hundreds of changes and upgrades to the web apps and dozens to the database schema (some very significant), and upgraded WordPress n-teen times.  Check this out:</p>
+<pre>$ <a href="http://en.wikipedia.org/wiki/Uptime">uptime</a>
+ 13:08:31 up 175 days, 10:02,  1 user,  load average: 0.23, 0.06, 0.02</pre>
+<p>That&#8217;s right — since my ISP first set up the server with a basic Ubuntu system, I&#8217;ve <em>never</em> had to restart it.  In fact, if <a href="http://en.wikipedia.org/wiki/Apache_HTTP_Server">Apache</a> and mod_php (<a href="http://en.wikipedia.org/wiki/PHP">PHP5</a>) had &#8216;uptime&#8217; commands, they&#8217;d show almost the same amount of time, since I restarted them only to make configuration changes in the first few days of setting up the server (unless apt stopped them to install a newer version during one of my upgrades).  I&#8217;ve restarted MySQL more recently, but again, only to experiment with configuration changes (especially for fulltext).</p>
+<h3>-1 for being cool, +10 for having a life</h3>
+<p>Using reliable old technologies like Linux, Apache, MySQL, and PHP doesn&#8217;t win any cool points, but it certainly makes maintaining a web server and its applications easy.  I can go on vacation, for example, without worrying about being able to get online to fix or restart my server every couple of days.  I don&#8217;t have to stay up until 3:00 am on Sunday night so that I can take the server offline to roll out new software versions or bug fixes (<a href="http://en.wikipedia.org/wiki/Aptitude_(program)">aptitude</a> installs any security fixes in place).  I spend lots of time with my family.  I go to my kids&#8217; school concerts.  I learned banjo and mandolin (why not, since I have the free time?).</p>
+<h3>It&#8217;s the developer, not the language</h3>
+<p>And yes, my PHP web app <em>is</em> easy to maintain and extend, because I designed it to be that way (I can often implement, test and roll out new features in a matter of minutes, even when they require database schema changes) — it&#8217;s the developer, not the programming language, that determines the quality and maintainability of an app.  A lot of newbies use PHP, so there&#8217;s a lot of bad PHP out there, but the same can be said for any language, <a href="http://www.zedshaw.com/rants/rails_is_a_ghetto.html">even Ruby</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Two problems with Google Maps for aviation</title>
+		<link>https://quoderat.megginson.com/2007/08/29/two-problems-with-google-maps/</link>
+					<comments>https://quoderat.megginson.com/2007/08/29/two-problems-with-google-maps/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 29 Aug 2007 13:12:11 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/08/29/two-problems-with-google-maps/</guid>
+
+					<description><![CDATA[I love Google Maps and their API, and am using it extensively in my new web site OurAirports. However, there are two problems that keep coming up for using Google Maps with an aviation application: Google Maps uses a Mercator &#8230; <a href="https://quoderat.megginson.com/2007/08/29/two-problems-with-google-maps/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I love Google Maps and their API, and am using it extensively in my new web site <a href="http://www.ourairports.com/">OurAirports</a>. However, there are two problems that keep coming up for using Google Maps with an aviation application:</p>
+<p><img src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/thumb/6/62/Usgs_map_mercator.svg/413px-Usgs_map_mercator.svg.png" alt="[Diagram of Mercator projection]" /></p>
+<ol>
+<li>Google Maps uses a <a href="http://en.wikipedia.org/wiki/Mercator_projection">Mercator Projection</a>, grossly distorting the northern and southern parts of the world, and cutting off the area near the poles so that a few of the Antarctic airports don&#8217;t show up on my maps at all.  I can understand the reasons for their choice, with simple panning and tile paging and a rectangular area, but it can make things look pretty silly sometimes (such as Greenland and Africa appearing the same size).</li>
+<li>Google Maps does not provide an API call to draw a great-circle path.  This seems to me to be almost a no-brainer, and it&#8217;s especially important in a Mercator projection, where the apparently straight paths drawn by the API are anything but (especially east-west).  After messing with some out-of-date third-party libraries, I finally found some JavaScript at one site that does a good job on efficient, approximate great-circle paths, and am waiting to hear from the author about terms for reuse.  Google might want to just go ahead and add this, though.</li>
+</ol>
+<p><img src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/6/62/Usgs_map_lambert_conformal_conic.PNG" alt="[Diagram of Mercator projection]" /></p>
+<p>Aviation charts mostly use a <a href="http://en.wikipedia.org/wiki/Lambert_conformal_conic_projection">Lambert conformal conic projection</a>, which ensures that distances are preserved (any two points the same distance apart on the chart are the same distance apart in the real world); however, by definition this projection can&#8217;t show more than half the world at once, and generally shows much less than that, so it wouldn&#8217;t work for something like Google Maps.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/08/29/two-problems-with-google-maps/feed/</wfw:commentRss>
+			<slash:comments>4</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Usgs_map_mercator.svg/413px-Usgs_map_mercator.svg.png" medium="image">
+			<media:title type="html">[Diagram of Mercator projection]</media:title>
+		</media:content>
+
+		<media:content url="http://upload.wikimedia.org/wikipedia/commons/6/62/Usgs_map_lambert_conformal_conic.PNG" medium="image">
+			<media:title type="html">[Diagram of Mercator projection]</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>[not] Protecting web sites and services from DNS rebinding attacks</title>
+		<link>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/</link>
+					<comments>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 01 Aug 2007 21:45:58 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/</guid>
+
+					<description><![CDATA[Update: Nope, my solution won&#8217;t work. As Christian Matthies points out in the comments, it is possible to spoof the HTTP Host header as well (his link in the comment is broken because of an extra comma, but this one &#8230; <a href="https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote style="background:yellow;"><p><strong>Update:</strong> Nope, my solution won&#8217;t work.  As Christian Matthies points out in the comments, it is possible to spoof the HTTP Host header as well (his link in the comment is broken because of an extra comma, but <a href="http://christ1an.blogspot.com/2007/07/dns-pinning-explained.html">this one</a> works).  As a kludge, browsers could be modified to prevent Host header spoofing, but (a) it would take a long time to deploy to the world at large, and (b) it would be only a bandaid for a much bigger problem.</p></blockquote>
+<blockquote><p><em><strong>Summary:</strong> While there&#8217;s no way to protect browsers against the DNS rebinding attack, you can protect web sites and web services by forcing them to check the HTTP <code>Host</code> header with every request.  This is easy to do for RESTful services going through a regular web server like Apache &mdash; you get it by default with virtual hosts &mdash; but might be trickier for WS-* services.</em></p></blockquote>
+<p>If you or your company is using HTTP-based web services (either WS-* or REST), you might be in trouble &mdash; a new exploit allows a web site from outside your firewall to use a web browser as a proxy to read any web site or service <em>inside</em> your firewall.</p>
+<p>Artur Bergman at O&#8217;Reilly has <a href="http://radar.oreilly.com/archives/2007/08/your_web_browse.html">a posting</a> on the <a href="http://www.darkreading.com/document.asp?doc_id=129880">DNS rebinding</a> (aka anti-DNS-pinning) attack that works against all major browsers, including all versions of Firefox and MSIE.  There&#8217;s no obvious general fix for this, though there&#8217;s a <a href="http://databasement.net/labs/localrodeo/">Firefox extension</a> that helps a tiny bit.</p>
+<div id="attack">
+<h2>The attack</h2>
+<p>In a DNS-rebinding attack, the attacker is able to force your browser to read data from any IP address that <em>your browser</em> has access to, even if you&#8217;re behind a router/firewall, by changing the IP address associated with a domain name you&#8217;ve connected to.  That means that given an IP address, an outside attacker can read your local website (at 127.0.0.1), anything behind your corporate firewall (such as an Intranet accounting page or a web service), or &mdash; I think (haven&#8217;t tested yet) &mdash; a website that you&#8217;re logged into using a cookie (HTTP authentication will force a popup, since the browser will see a different domain name, even if you&#8217;re logged into the site in another tab/window).  If you run a local web server on your computer (say, at 127.0.0.1), you can go to <a href="http://www.jumperz.net/index.php?i=2&amp;a=1&amp;b=7">http://www.jumperz.net/index.php?i=2&amp;a=1&amp;b=7</a>, type in the local address, and see jumperz.net use the exploit display the source of your home page.</p>
+</div>
+<div id="defence">
+<h2>The defence</h2>
+<p>There&#8217;s no way to protect the browser yet, but you can protect your HTTP-based sites and services from this attack very easily &mdash; in fact, many sites on the web are already unknowingly protected, though I don&#8217;t know if most enterprise web services are.</p>
+<p>The trick is in the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23">HTTP <code>Host</code> header</a>.  While the DNS rebinding attack can associate a new IP address with a hostname, <del>it cannot change the hostname itself, so the browser will still send the original hostname to the new host</del>.  Nearly all shared-hosting servers &mdash; and many servers at dedicated hosts as well &mdash; will check the <code>Host</code> header to decide what pages to serve out.  As long as the site does something harmless when it gets an unrecognized hostname (such as returning a &#8220;501 Not implemented&#8221; HTTP status code), the site will be safe the attack.  In Apache, for example, you use the ServerName directive for each virtual host, and just make sure that there&#8217;s a default virtual host that returns an error or at least does nothing harmful.</p>
+<p>For Web Services, the same thing applies.  It&#8217;s often tempting to use IP addresses instead of hostnames for web services (including RESTful services), especially during development, but doing so opens you right up to a DNS-rebinding attack, which could be very harmful if you&#8217;re using real data for development and testing.  To protect your HTTP-based services from this attack, you need to make sure that <em>every</em> web service is accessed via a hostname rather than a raw IP address, and that every service checks its hostname.  For RESTful services, this is trivially easy (since you&#8217;re probably going through Apache or something similar anyway, just as with a web site); for WS-* services, I don&#8217;t know the implementations well enough to be sure, but it should be possible to force them to check the <code>Host</code> header somehow.</p>
+<p>Even if you&#8217;re not building web services, managing an enterprise intranet, or running a public web site, don&#8217;t forget to protect the web server on your local computer, if you have one.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/08/01/protecting-web-sites-and-services-from-dns-rebinding-attacks/feed/</wfw:commentRss>
+			<slash:comments>8</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Three simple tips for LAMP web site developers</title>
+		<link>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/</link>
+					<comments>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 22 Jul 2007 01:25:37 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/07/21/three-simple-tips-for-lamp-web-site-developers/</guid>
+
+					<description><![CDATA[You&#8217;ve learned to write some basic HTML, CSS, PHP/Python/Perl and SQL, found a hosting service, and are ready to create your first LAMP web application. You&#8217;ve already read a bit about security (you know always to escape user-supplied parameters, etc.). &#8230; <a href="https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>You&#8217;ve learned to write some basic HTML, CSS, PHP/Python/Perl and SQL, found a hosting service, and are ready to create your first LAMP web application. You&#8217;ve already read a bit about security (you know always to escape user-supplied parameters, etc.).  Here are a three very simple tips that will help you along right at the start, without getting caught up in religious wars about frameworks, MVC, REST, abstraction, object orientation, etc.:</p>
+<ol>
+<li>
+<p><strong>Keep all the database code together.</strong> Put all your database calls into a single source file if you can &mdash; functions like <code>mysqli_query</code> (PHP) should never appear anywhere else but in this file &mdash; and create neutral functions like <code>get_member()</code> or <code>delete_cart()</code> for the rest of your code to call.  The reason for this is <em>not</em> so that you can switch databases in the future (that&#8217;s easy enough to fix), but so that you can easily do a search/replace when you rename or modify tables.  If all your database code is in the same place, your application will be orders of magnitude easier to maintain and upgrade a few months from now. Seriously.</p>
+</li>
+<li>
+<p><strong>Make an extra database for junk.</strong> If your hosting account allows more than one database, create at least two, say &#8220;foo&#8221; and &#8220;foo_cache&#8221;  &mdash; put all the tables you need to back up into the first one, and all the stuff you don&#8217;t need to back up (views, caching tables, session states, etc.) into the second.  Write a SQL script to automatically regenerate any required tables in &#8220;foo_cache&#8221; when you restore.  That way, you won&#8217;t waste time and bandwidth every day backing up megabytes or gigabytes of stuff you don&#8217;t need and can easily regenerate.</p>
+</li>
+<li>
+<p><strong>Make GET harmless.</strong> If you use HTTP GET (e.g. <code>$_GET</code> in PHP) to do things like deleting or modifying records, bad things will happen to your application &mdash; search engines will start randomly changing your database by following links (<code>robots.txt</code> might not be enough to protect you), browsers will delete records by trying to precache pages, etc.  Always use POST (normally from a form button) for anything that can make a change.  <a href="http://www.megginson.com/blogs/quoderat/2007/02/15/rest-the-quick-pitch/">More here</a>.</p>
+</li>
+</ol>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/07/21/three-simple-tips-for-lamp-web-site-developers/feed/</wfw:commentRss>
+			<slash:comments>3</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Coding lessons from university</title>
+		<link>https://quoderat.megginson.com/2007/06/27/coding-lessons-from-university/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 27 Jun 2007 21:25:26 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/06/27/coding-lessons-from-university/</guid>
+
+					<description><![CDATA[Dare Obasanjo, smart code guy and occasional punching bag for the anti-Microsoft people, is collecting lists of Three Things I Learned About Software In College. I posted mine in a comment on his blog, but decided to reproduce them here. &#8230; <a href="https://quoderat.megginson.com/2007/06/27/coding-lessons-from-university/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote><p><em><strong>Dare Obasanjo</strong>, smart code guy and occasional punching bag for the anti-Microsoft people, is collecting lists of <a href="http://www.25hoursaday.com/weblog/2007/06/27/ThreeThingsILearnedAboutSoftwareInCollege.aspx">Three Things I Learned About Software In College</a>.  I posted mine in a comment on his blog, but decided to reproduce them here.  Note that these are not lessons you learned 10 or 20 years later, but what you discovered back then.</em></p></blockquote>
+<p>I coded a lot in university &mdash; some of it for pay &mdash; but fortunately, I didn&#8217;t study computer science or engineering. Here are my major lessons:</p>
+<ol>
+<li>
+<p>Readable code goes further and survives longer than optimized code, especially once you&#8217;re no longer the one maintaining it (or if you have to come back to it two years later).</p>
+</li>
+<li>
+<p>If you write code that makes you feel like a genius, throw it out &mdash; you&#8217;ll realize later that it&#8217;s crap. If you write code that makes you feel like a competent tradesman, you&#8217;re on the right track.</p>
+</li>
+<li>
+<p>No matter how smart you are, everyone &mdash; even the most incompetent loser of a coder &mdash; knows at least one thing you don&#8217;t. It&#8217;s a good idea to listen.</p>
+</li>
+</ol>
+<p><strong>Note:</strong> If you want to record your own list of three things, please leave it as a comment to <a href="http://www.25hoursaday.com/weblog/2007/06/27/ThreeThingsILearnedAboutSoftwareInCollege.aspx">Dare&#8217;s original posting</a>, not here.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>My biggest problem with Wikipedia</title>
+		<link>https://quoderat.megginson.com/2007/06/22/my-biggest-problem-with-wikipedia/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 23 Jun 2007 00:33:38 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/06/22/my-biggest-problem-with-wikipedia/</guid>
+
+					<description><![CDATA[Summary: You can&#8217;t partition a web site&#8217;s users into discrete groups by language. I don&#8217;t worry much about Wikipedia&#8217;s objectivity or reliability &#8212; no sources (especially not newspapers or Britannica) are objective or reliable, and at least Wikipedia preserves its &#8230; <a href="https://quoderat.megginson.com/2007/06/22/my-biggest-problem-with-wikipedia/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote><p><em><br />
+<strong>Summary:</strong> You can&#8217;t partition a web site&#8217;s users into discrete groups by language.<br />
+</em></p></blockquote>
+<p>I don&#8217;t worry much about Wikipedia&#8217;s objectivity or reliability &mdash; no sources (especially not newspapers or <cite>Britannica</cite>) are objective or reliable, and at least Wikipedia preserves its conflicts and controversies in comments and edit history &mdash; but I do have one bit problem with the project: <strong>WHY THE *^%*&amp; DON&#8221;T THEY HAVE SINGLE-SIGNON?</strong></p>
+<p>I usually edit in English, but I can also make at least minor contributions to Wikipedia in French, German, Spanish, Italian, and Latin, and sometimes also contribute to Wikimedia.  <em>Every one of those requires me to create a separate account!</em>  It is absurd that my username and password for <code>en.wikipedia.org</code> won&#8217;t work for <code>fr.wikipedia.org</code>.</p>
+<p>Don&#8217;t make this mistake with your own webapps, kids.  Lots of people in the world are comfortable working in more than one language, even if they&#8217;re not fluent in all.  It&#8217;s good to make a site available in more than one language, but don&#8217;t expect language to partition your users into discrete groups.  Don&#8217;t lock them into a single language with a cookie, or limit their accounts to one language domain &mdash; multilingualism is extremely common around the world, even in the U.S. (how many American users would want to be able to use a site in English <em>and</em> Spanish if given the opportunity?)</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>REST, the Lost Update Problem, and the Sneakernet Test</title>
+		<link>https://quoderat.megginson.com/2007/06/09/rest-the-lost-update-problem-and-the-sneakernet-test/</link>
+					<comments>https://quoderat.megginson.com/2007/06/09/rest-the-lost-update-problem-and-the-sneakernet-test/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 09 Jun 2007 22:57:41 +0000</pubDate>
+				<category><![CDATA[architecture]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/06/09/rest-the-lost-update-problem-and-the-sneakernet-test/</guid>
+
+					<description><![CDATA[Dare Obasanjo is giving a bit of pushback on the Atom Publishing Protocol, but the part that caught my attention was the section on the Lost Update Problem. This doesn&#8217;t have to do with REST per se as much as &#8230; <a href="https://quoderat.megginson.com/2007/06/09/rest-the-lost-update-problem-and-the-sneakernet-test/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Dare Obasanjo is <a href="http://www.25hoursaday.com/weblog/2007/06/09/WhyGDataAPPFailsAsAGeneralPurposeEditingProtocolForTheWeb.aspx">giving a bit of pushback</a> on the <a href="http://ietfreport.isoc.org/idref/draft-ietf-atompub-protocol/">Atom Publishing Protocol</a>, but the part that caught my attention was the section on the <em>Lost Update Problem</em>. This doesn&#8217;t have to do with REST per se as much as with the choice not to use resource locking, but since REST people tend to like their protocols lightweight, the odds are that you won&#8217;t see exclusive locks on RESTful resources all that often (it also applies to some kinds of POST updates as well as PUT).</p>
+<div id="example">
+<h3>How to lose a REST update</h3>
+<ul>
+<li>I check out a resource about &#8220;John Smith&#8221; (as a web form or an XML document, for example), and correct the first name field to &#8220;Jon&#8221;.</li>
+<li>You check out the same resource, and correct the last name field to &#8220;Smyth&#8221;.</li>
+<li>I check in my changes.</li>
+<li>You check in your changes.</li>
+</ul>
+<p>You have corrected the last name to &#8220;Smyth&#8221;, but have inadvertently overwritten my correction of the first name with the old value &#8220;John&#8221;, because you never saw my update.</p>
+</div>
+<div id="detection">
+<h3>Detection, not avoidance</h3>
+<p>Without exclusive locks, there&#8217;s no way to <em>avoid</em> this problem, but it is possible to <em>detect</em> it.  What happens after detection depends on the application &mdash; if it&#8217;s interactive, for example, you might redisplay the form with both versions side by side.  I don&#8217;t mean to diminish the difficulty of dealing with check-in conflicts and merges &mdash; it&#8217;s a brutally hard problem &mdash; but it&#8217;s one that you&#8217;ll have whenever you chose not to use exclusive resource locks (and even with resource locks, the problem still comes if someone&#8217;s lock expires or is overridden).  Managing multi-user resource locks properly can require a lot of extra infrastructure, and they have all kinds of other problems (ask an enterprise developer about the stale lock problem), so there are often good reasons to avoid them.</p>
+</div>
+<div id="state">
+<h3>State goes in the resource, not the HTTP header</h3>
+<p>Dare points to <a href="http://www.w3.org/1999/04/Editing/">an old W3C doc</a> that talks about doing lost-update detection using all kinds of HTTP-header magic, requiring built-in support in the client (such as a web browser). That doesn&#8217;t make sense to me. A better alternative is to include version information directly in the resource itself.  For example, if I check out the record as XML, why not just send me something like this?</p>
+<pre>
+&lt;record version="18"&gt;
+  &lt;given-name&gt;John&lt;/given-name&gt;
+  &lt;family-name&gt;Smith&lt;/family-name&gt;
+&lt;/record&gt;
+</pre>
+<p>If  I check it out as an HTML form, my browser should get something like this:</p>
+<pre>
+&lt;form method="post" action="/actions/update"&gt;
+  &lt;div&gt;
+    &lt;input type="hidden" name="version" value="18" /&gt;
+    Given name: &lt;input name="given-name" value="John" /&gt;
+    Family name: &lt;input name="family-name" value="Smith" /&gt;
+    &lt;button&gt;Save changes&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+</pre>
+<p>When you check out the resource, you&#8217;ll also get version 18.  However, when I check in my changes (using PUT or POST), the server will bump the resource version to 19.  When you try to check in your copy  (still at version 18), the server will detect the conflict and reject the check-in.  Again, what happens after that depends on your application.</p>
+</div>
+<div id="sneakernet">
+<h3>The Sneakernet Test</h3>
+<p>I think that this is far better than the old W3C solution, because it (1) it&#8217;s already compatible with existing browsers, and (2) it passes what I call the <strong>Sneakernet Test</strong> &mdash; I can take a copy of the  XML (or JSON, or CSV, or whatever) version of the resource to a machine that&#8217;s <em>not</em> connected to the net, edit it (say, on the plane), then check it back in from a different computer &mdash; I can copy it onto a USB stick, take it to the beach, edit it on my laptop, then take it back to work and check it back in &mdash; all the state is in the resource, not hidden away in cryptic HTTP headers.</p>
+<p>By the way, if you don&#8217;t trust programmers to be honest when designing their clients, you can use a non-serial, pseudo-random version so that they can&#8217;t just guess the next version and avoid the merge problem, but serial version numbers should be fine most of the time.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/06/09/rest-the-lost-update-problem-and-the-sneakernet-test/feed/</wfw:commentRss>
+			<slash:comments>11</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Anonymity and freedom</title>
+		<link>https://quoderat.megginson.com/2007/04/09/anonymity-and-freedom/</link>
+					<comments>https://quoderat.megginson.com/2007/04/09/anonymity-and-freedom/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 09 Apr 2007 20:52:41 +0000</pubDate>
+				<category><![CDATA[blogging]]></category>
+		<category><![CDATA[rights]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/04/09/anonymity-and-freedom/</guid>
+
+					<description><![CDATA[Elliotte Rusty Harold is right that anonymity goes together with freedom, and I was happy to read his excellent posting How to Blog Anonymously. Rusty distinguishes three different kinds of anonymity &#8212; roughly &#8220;I don&#8217;t want to be embarrassed&#8221;, &#8220;I &#8230; <a href="https://quoderat.megginson.com/2007/04/09/anonymity-and-freedom/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Elliotte Rusty Harold is right that anonymity goes together with freedom, and I was happy to read his excellent posting <a href="http://cafe.elharo.com/web/how-to-blog-anonymously/">How to Blog Anonymously</a>.  Rusty distinguishes three different kinds of anonymity &mdash; roughly &#8220;I don&#8217;t want to be embarrassed&#8221;, &#8220;I don&#8217;t want to be fired&#8221;, and &#8220;I don&#8217;t want to be hauled out of my bed by the secret police and shot&#8221; &mdash; and talks about the steps necessary to achieve each one.</p>
+<p>Granted, anonymity has its ugly sides, like the disgusting <a href="http://www.docuverse.com/blog/donpark/2007/03/26/simply-awful">online threats against Kathy Sierra</a> and <a href="http://www.docuverse.com/blog/donpark/2007/03/27/how-awful">online abuse of Maryam Scoble</a>, but it&#8217;s also sometimes the only conduit around the abusive authority of a government, employer, or even one&#8217;s peer group.  As even Western democratic governments have become more authoritarian since 9/11, keeping these conduits open is more important than ever.</p>
+<p>Granted, 99% or more of anonymous information is simply stupid or malicious, but if that&#8217;s the cost of freedom, it&#8217;s a relatively small cost to pay compared to the sacrifices our ancestors made to win us the freedoms in the first place.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/04/09/anonymity-and-freedom/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>REST: the quick pitch</title>
+		<link>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/</link>
+					<comments>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 16 Feb 2007 02:47:31 +0000</pubDate>
+				<category><![CDATA[REST]]></category>
+		<category><![CDATA[architecture]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/02/15/rest-the-quick-pitch/</guid>
+
+					<description><![CDATA[Now that the Java world is noticing REST, the low-pain alternative to RPC standards like WS-*, people are starting to blog about it again. Gossip with other IT folks also tells me that people&#8217;s customers are actually asking for REST &#8230; <a href="https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Now that <a href="http://jcp.org/en/jsr/detail?id=311">the Java world is noticing REST</a>, the low-pain alternative to <a href="http://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a> standards like <a href="http://en.wikipedia.org/wiki/List_of_Web_service_specifications">WS-*</a>, people are starting to <a href="http://www.cafeaulait.org/oldnews/news2007February14.html">blog about it</a> again.  Gossip with other IT folks also tells me that people&#8217;s customers are actually <em>asking</em> for <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> explicitly (rather than having to be convinced to use it).  With that in mind, I&#8217;m going to try to explain what I think matters about REST, and what you can safely ignore.</p>
+<div id="elevator">
+<h2>The elevator pitch</h2>
+<blockquote><p>
+With REST, every piece of information has its own URL.
+</p></blockquote>
+<p>If you just do that and nothing else, you&#8217;ve got 90%+ of REST&#8217;s benefits right off the bat.  You can <strong>cache</strong>, <strong>bookmark</strong>, <strong>index</strong>, and <strong>link</strong> your information into a giant, well, web.  It works &mdash; you&#8217;re reading this, after all, aren&#8217;t you?  Betcha got here by following a link somewhere, not by parsing a WSDL to find what ports and services were available.</p>
+</div>
+<div id="best">
+<h2>Real best practices</h2>
+<p>If you want to do REST well (rather than just doing REST), you can spend 2-3 minutes after your elevator ride learning a few very simple best practices to get most of the remaining 10% of REST&#8217;s benefits:</p>
+<p><strong>Use HTTP POST to <em>update</em> information.</strong>  Here&#8217;s the simple rule: GET to read, POST to change. That way, no body deletes or modifies something by accident when trying to read it.</p>
+<p><strong>Make sure your information contains links (URLs) for retrieving related information.</strong>  That&#8217;s how search engines index the web, and it can work for other kinds of information (XML, PDF, JSON, etc.) as well.  Once you have one thing, you can follow links to find just about everything else (assuming that you understand the file format).</p>
+<p><strong>Try to avoid request parameters (the stuff after the question mark).</strong>  It&#8217;s much better to have a URL like</p>
+<blockquote><p>
+<code>http://www.example.org/systems/foo/components/bar/</code>
+</p></blockquote>
+<p>than</p>
+<blockquote><p>
+<code>http://www.example.org/get-component.asp?system=foo&amp;component=bar</code>
+</p></blockquote>
+<p>Search engines are more likely to index it, you&#8217;re less likely to end up with duplicates in caches and hash tables (e.g. if someone lists the request parameters in a different order), URLs won&#8217;t change when you refactor your code or switch to a different web framework, and you can always switch to static, pregenerated files for efficiency if you want to.  <strong>Exceptions:</strong> searches (<code>http://www.example.org/search?q=foo</code>) and paging through long lists (<code>http://www.example.org/systems/?start=1000&amp;max=200</code>) &mdash; in both of these cases, it&#8217;s really OK to use the request parameters instead of tying yourself in a knot trying to avoid them.</p>
+<p><strong>Avoid scripting-language file extensions.</strong> If your URLs end with &#8220;.php&#8221;, &#8220;.asp&#8221;, &#8220;.jsp&#8221;, &#8220;.pl&#8221;, &#8220;.py&#8221;, etc., (a) you&#8217;re telling every cracker in the world what exploits to use against you, and (b) the URLs will change when your code does.  Use Apache <a href="http://en.wikipedia.org/wiki/Rewrite_engine">mod-rewrite</a> or equivalent to make your resources look like static files, ending in &#8220;.html&#8221;, &#8220;.xml&#8221;, etc.</p>
+<p><strong>Avoid cookies and URL rewriting.</strong> Well, maybe you can&#8217;t, but the idea of REST is that the state is in the thing the server has returned to you (an HTML or XML file, for example) rather than in a session object on the server.  This can be tricky with authentication, so you won&#8217;t always pull it off, but HTTP authentication (which doesn&#8217;t require cookies or session IDs tacked onto URLs) will work surprisingly often.  Do what you have to do to make your app work, but don&#8217;t use sessions just because your web framework tells you to (they also tie up a lot of resources on your server).</p>
+</div>
+<div id="speculative">
+<h2>Speculative stuff (skip this)</h2>
+<p>The strength of REST is that it&#8217;s been proven through almost two decades of use on the Web, but not everything that some of the hard-core RESTafarians (and others) try to make us do has been part of that trial.  Stop reading now if you just want to go ahead and do something useful with REST.  Really, stop!  Some of this stuff is moderately interesting, but it won&#8217;t really help you, and will probably just mess up your project, or at least make it slower and more expensive.</p>
+<p>[maybe some day] <strong>Use HTTP PUT to create a resource, and DELETE to get rid of one.</strong> These sound like great ideas, and they add a nice symmetry to REST, but they&#8217;re just not used enough for us to know if they&#8217;d really work on a web scale, and firewalls often block them anyway.  In real-life REST applications, rightly or wrongly, people just use POST for creation, modification, <em>and</em> deletion.  It&#8217;s not as elegant, but we know it works.</p>
+<p>[don&#8217;t bother] <strong>Use URLs to point to <em>resources</em> rather than <em>representations</em>.</strong> Huh?  OK, a <em>resource</em> is a sort-of <a href="http://en.wikipedia.org/wiki/Platonic_idealism">Platonic ideal</a> of something (e.g. &#8220;a picture of Cairo&#8221;), while a <em>representation</em> is the resource&#8217;s physical manifestation (e.g. &#8220;an 800&#215;600 24-bit RGB picture of Cairo in JPEG format&#8221;).  Yes, as you&#8217;d guess, it was people with or working on Ph.D.&#8217;s who thought of that.  For a long time, the W3C pushed the idea of URLs like &#8220;<code>http://www.example.org/pics/cairo</code>&#8221; instead of &#8220;<code>http://www.example.org/pics/cairo.jpg</code>&#8220;, under the assumption that web clients and servers could use <a href="http://en.wikipedia.org/wiki/Content_negotiation">content negotiation</a> to decide on the best format to deliver.  I guess that people hated the fact that HTTP was so simple, and wanted to find ways to make it more complicated.  Fortunately, there were very few nibbles, and this is not a common practice on the web.  Screw Plato!  Viva materialism!  Go ahead and put &#8220;.xml&#8221; at the end of your URLs.</p>
+<p>[blech] <strong>Use <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Name">URN</a>s instead of URLs.</strong>  I think even the hard-core URN lovers have given up on this now &mdash; it&#8217;s precisely the kind of excessive abstraction that sent people running screaming from WS-* into REST&#8217;s arms in the first place (see also &#8220;content negotiation&#8221;, above), and it would be a shame to scare them away from REST as well.  URLs are fine, as long as you make some minore efforts to ensure that they <a href="http://www.w3.org/Provider/Style/URI">don&#8217;t change</a>.</p>
+<p>[n/a] <strong>REST needs security, reliable messaging, etc.</strong> The RESTafarians don&#8217;t say this, but I&#8217;m worried that the JSR (the Java REST group) will.  We already have a secure version of HTTP <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">TLS/SSL</a>, and it works fine for hundreds of thousands or millions of web sites.  Reliable messaging can be handled fine in the application layer, since everyone&#8217;s requirements are different anyway, or maybe we want a reliable-messaging spec for HTTP in general.  In either case, please don&#8217;t pile this stuff on REST.</p>
+<p>So to sum up, just give every piece of information its own URL, then have fun.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/02/15/rest-the-quick-pitch/feed/</wfw:commentRss>
+			<slash:comments>19</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>XML 2006 pickled and preserved</title>
+		<link>https://quoderat.megginson.com/2007/01/19/xml-2006-pickled-and-preserved/</link>
+					<comments>https://quoderat.megginson.com/2007/01/19/xml-2006-pickled-and-preserved/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 19 Jan 2007 20:45:23 +0000</pubDate>
+				<category><![CDATA[conferences]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2007/01/19/xml-2006-pickled-and-preserved/</guid>
+
+					<description><![CDATA[The XML 2006 site is now pickled and preserved for long-term storage. Almost all of the presenters got their papers or slides in for the proceedings, if not on time, at least in time. Unfortunately, if you want to see &#8230; <a href="https://quoderat.megginson.com/2007/01/19/xml-2006-pickled-and-preserved/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>The <a href="http://2006.xmlconference.org/">XML 2006 site</a> is now pickled and preserved for long-term storage.  Almost all of the presenters got their papers or slides in for the proceedings, if not on time, at least <em>in</em> time.  Unfortunately, if you want to see a paper or slides from one of the few who didn&#8217;t send us anything, you&#8217;ll now have to pester them directly.</p>
+<div id="recipe">
+<h2>Recipe for pickling a web site</h2>
+<p>The original site was a hand-rolled <a href="http://en.wikipedia.org/wiki/LAMP_%28software_bundle%29">LAMP</a> implementation, but it was designed from the start to be amenable to a static copy.  To pickle it, I started by doing a recursive slurp of the live site using <a href="http://en.wikipedia.org/wiki/Wget">wget</a> (with the <code>-m</code> option) &#8212; that generated permanent, static HTML copies of the dynamic, database-driven pages on the site.  At that point, I had an almost, but not <em>quite</em> perfect static copy of the site, because there were two things that wget missed:</p>
+<ol>
+<li>Images referred to only in CSS stylesheets (such as the banner).</li>
+<li>CSS stylesheets referred to by other CSS stylesheets.</li>
+</ol>
+<p>It took only a few minutes to add all of that by hand, and the site was ready to go.</p>
+</div>
+<div id="reasons">
+<h2>Why it worked</h2>
+<p>This will be old news to a lot of people reading, but a few simple advance steps (during site design) made later static preservation easy.  Here&#8217;s what I did:</p>
+<ul>
+<li>Every page has its own URL, period, end of discussion.  No AJAX, no POST.</li>
+<li>Every page (or at least, every page that we want to archive) is reachable, directly or indirectly, from the home page.</li>
+<li>Script names are not shown to the public, so there are no URLs ending in &#8220;php&#8221; (hint: exposed script extensions like &#8220;php&#8221;, &#8220;asp&#8221;, or &#8220;jsp&#8221; are signs of gross incompetence in web design).
+<li>
+<li>No web pages rely on exposed GET request parameters: for example, the URLs looked like <code>/programme/presentations/123.html</code>, not <code>/programme/presentation?code=123</code>, or even worse, <code>/show-presentation.php?code=123</code>.</li>
+</ul>
+<p>And that&#8217;s it.  Of course, if the site had included live forms, I would have had to remove those as well (and any links to them), but that wouldn&#8217;t have been much extra work.</p>
+<p>On a final note, while the live site was hosted on an Apache server (the &#8220;A&#8221; in &#8220;LAMP&#8221;), the pickled site is hosted on a Microsoft IIS server.  It made no difference at all &#8212; that&#8217;s the way Web standards are supposed to work.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2007/01/19/xml-2006-pickled-and-preserved/feed/</wfw:commentRss>
+			<slash:comments>5</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Templating languages and XML</title>
+		<link>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/</link>
+					<comments>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sun, 24 Dec 2006 02:56:59 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/2006/12/23/templating-languages-and-xml/</guid>
+
+					<description><![CDATA[Erich Schubert is talking about web templating languages. He&#8217;s looking for a pure-XML templating solution, but that might not be necessary for simple web-page design, where we don&#8217;t need all the extra benefits of heavy-duty transformation standards like XSLT. Keeping &#8230; <a href="https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Erich Schubert is <a href="http://blog.drinsama.de/erich/en/xml/2006122401-website-meta-languages">talking about web templating languages</a>.  He&#8217;s looking for a pure-XML templating solution, but that might not be necessary for simple web-page design, where we don&#8217;t need all the extra benefits of heavy-duty transformation standards like XSLT.</p>
+<div id="kiss">
+<h2>Keeping it simple</h2>
+<p>For PHP-driven web sites, I&#8217;m a big fan of <a href="http://smarty.php.net/">Smarty</a>, which uses braces (&#8220;{&#8221; and &#8220;}&#8221;) to delimit template constructions.  Braces have no special meaning to XML parsers (they&#8217;re just character data), so it&#8217;s possible to put a template expression inside an attribute value (for example), while keeping the template itself as well-formed XML and not requiring the elaborate paraphrastic expressions you need to set up attribute values in XSLT:</p>
+<pre>
+&lt;p id="x-{$myvalue|escape}"&gt;Hello, world!&lt;/p&gt;
+</pre>
+</div>
+<div id="concur">
+<h2>Concurrent markup resurrected</h2>
+<p>Really, Smarty adds a second set of <em>concurrent</em> markup on top of the XHTML.  Smarty constructs don&#8217;t have to balance with XML element boundaries, and with only a little care, I&#8217;ve never ended up with a Smarty template that wasn&#8217;t well-formed.  JSP&#8217;s mistake was using something that looks like XML but isn&#8217;t quite, messing up parsers.  Even the old SGML CONCUR feature would not have allowed markup inside attribute values. Sometimes there&#8217;s something to be said for using two different syntaxes when you&#8217;re trying to represent two different things.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/12/23/templating-languages-and-xml/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How not to suck at your presentation</title>
+		<link>https://quoderat.megginson.com/2006/11/21/how-not-to-suck-at-your-presentation/</link>
+					<comments>https://quoderat.megginson.com/2006/11/21/how-not-to-suck-at-your-presentation/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 21 Nov 2006 13:57:07 +0000</pubDate>
+				<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/11/21/how-not-to-suck-at-your-presentation/</guid>
+
+					<description><![CDATA[So you&#8217;re going to speak at a conference. Congratulations! I cannot help you much with making your presentation interesting, but at a minimum, you want it not to suck &#8212; &#8220;suck&#8221; is what happens when you annoy dozens or hundreds &#8230; <a href="https://quoderat.megginson.com/2006/11/21/how-not-to-suck-at-your-presentation/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>So you&#8217;re going to speak at a conference.  Congratulations!</p>
+<p>I cannot help you much with making your presentation interesting, but at a minimum, you want it not to suck &#8212; &#8220;suck&#8221; is what happens when you annoy dozens or hundreds of people by making them wait 15 minutes while you deal with easily-avoidable technical problems.  Incompatibilities between laptop computers and projectors are still common with all types of hardware and operating systems, so it is never safe to assume that your computer will work this time, even if it has in the past: I&#8217;ve seen Linux, Windows, <em>and</em> Mac users, in roughly equal proportions, all fall flat on their posteriors muttering phrases like &#8220;but it&#8217;s always worked before&#8230;&#8221; Things <em>will</em> go wrong, but you can minimize the damage by following some simple guidelines:</p>
+<ul>
+<li>Carry an extra copy of your presentation on a CD-ROM or USB memory stick. If you have a last-minute technical problem, you can always borrow another computer and finish your presentation after only a very brief delay. Mailing a copy to yourself at a webmail address is also a good idea.</li>
+<li>A screen resolution of 1024&#215;768 is usually safe. Higher resolutions may or may not work, depending on the projector, so know how to change your resolution quickly if you need to.  Seriously: practice changing your resolution at home.</li>
+<li>Disabling screensavers and screen blanking will improve your chances of a successful presentation.</li>
+<li>Have a backup plan if network connectivity slows down or fails (e.g. a local demo) &#8212; even if it tests OK beforehand, it might not work when there are 100 other people in the same room, using the same hub, during your presentation.</li>
+<li>Start all programs (web browsers, editors, live demos, etc.) and open all windows you need before you start, and then switch to them as you need them. Murphy&#8217;s law clearly states that trying to launch a program during your presentation will fail in the worst possible way.</li>
+<li>If you are using programs other than a slide presentation (such as a text editor with source code, or a web browser), set the fonts to a much larger size than normal so that the audience can read them. 18 point text is the absolute minimum, and 24 point is generally better; 12 point text or smaller is completely unreadable, especially for audience members near the back.</li>
+<li>Make sure that your battery is fully charged, even if you plan to plug in your notebook during the presentation.</li>
+<li>Create a separate profile or account on your computer for presentations, so that all your regular icons, bookmarks, etc. are not sitting on the screen in public view, an IM window doesn&#8217;t pop open in the middle of the presentation, etc.</li>
+</ul>
+<p>I know that this is obvious, but almost every failed presentation I&#8217;ve seen failed because the presenter didn&#8217;t follow one of these steps.  Go figure.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/11/21/how-not-to-suck-at-your-presentation/feed/</wfw:commentRss>
+			<slash:comments>7</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Gap buffers</title>
+		<link>https://quoderat.megginson.com/2006/06/07/gap-buffers/</link>
+					<comments>https://quoderat.megginson.com/2006/06/07/gap-buffers/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 07 Jun 2006 20:23:21 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/06/07/gap-buffers/</guid>
+
+					<description><![CDATA[Tim Bray updated an old piece on binary search this morning &#8212; I missed it the first time around, so I was glad that it popped up in my blog reader. Tim&#8217;s taking some flak about data abstraction from people &#8230; <a href="https://quoderat.megginson.com/2006/06/07/gap-buffers/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Tim Bray updated an <a href="http://www.tbray.org/ongoing/When/200x/2003/03/22/Binary">old piece on binary search</a> this morning &#8212; I missed it the first time around, so I was glad that it popped up in my blog reader.  Tim&#8217;s <a href="http://www.tbray.org/ongoing/When/200x/2006/06/07/Abstract-Numbers">taking some flak</a> about data abstraction from people who don&#8217;t have his experience in high-performance environments, but what got my attention most was his mention of using gaps in a long array to provide efficient updates.</p>
+<p>It turns out that this technique, called a <a href="http://en.wikipedia.org/wiki/Gap_buffer">gap buffer</a> [wikipedia], is one of the cornerstones of text editors like Gnu Emacs.  I&#8217;ve been using Emacs for 20 years and have contributed to the main distribution (see <code>derived.el</code>), but never bothered to look at the C code long enough to discover this particular technique.  There&#8217;s surprisingly little information online &#8212; if anyone&#8217;s ever bothered to do testing for the optimum gap size, etc., it&#8217;s not showing up in Google &#8212; but it&#8217;s still nice to experience the joy and excitement of a new (to me), simple algorithm that solves a common problem well.</p>
+<p>Does anyone have pointers to more detailed research on gap buffers? It seems to me that they&#8217;d have applications far beyond text editing, including (perhaps) storing compiled tree data (aka <em>binary xml</em>) on disk.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/06/07/gap-buffers/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How many environments?</title>
+		<link>https://quoderat.megginson.com/2006/05/02/how-many-environments/</link>
+					<comments>https://quoderat.megginson.com/2006/05/02/how-many-environments/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 02 May 2006 12:15:51 +0000</pubDate>
+				<category><![CDATA[programming]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/05/02/how-many-environments/</guid>
+
+					<description><![CDATA[Assume that you are a lone developer, maintaining a small web site in a shared hosting account. How many software environments do you need from development to production? One environment On the simplest level, you could develop directly in your &#8230; <a href="https://quoderat.megginson.com/2006/05/02/how-many-environments/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Assume that you are a lone developer, maintaining a small web site in a shared hosting account. How many software environments do you need from development to production?</p>
+<div id="one-environment">
+<h2>One environment</h2>
+<p>On the simplest level, you could develop directly in your ISP account, loading and saving files remotely via SFTP, WebDav, etc. &#8212; in other words, your development and production environment would be the same. For anything non-trivial, that&#8217;s a pretty hairy way to work, since you have no way to test changes before they&#8217;re rolled out into the world.</p>
+</div>
+<div id="two-environments">
+<h2>Two environments</h2>
+<p>I normally use the two-environment approach that (I suspect) is the most common one for single-developer <a href="http://en.wikipedia.org/wiki/LAMP_%28software_bundle%29">LAMP</a> sites: I maintain a development environment on my notebook, and periodically upload changes to the production environment at the ISP. I try to run roughly the same version of Apache, PHP, MySQL, etc. as my ISP, but otherwise, I take no special steps to replicate the production environment. On my notebook, I set up the development directory as its own virtual host (e.g. <a href="http://localhost:8001/" rel="nofollow">http://localhost:8001/</a>, etc.) so that I can test changes literally as I type.</p>
+</div>
+<div id="three-environments">
+<h2>Three environments?</h2>
+<p>Even though there are no other developers working with me right now, I sometimes wonder if it would make sense to start using a third environment between development and production (a separate directory and virtual host on my notebook). A third development would allow me to run major experiments and restructuring in the development code, while still making small bug fixes, typo corrections, etc. in the stable code before uploading them to my ISP production environment.</p>
+<p>While this sounds like a good idea initially, there is a major coordination problem involved in backporting fixes from the middle environment to the development environment, and the middle environment will still become unstable while new changes are rolled out into it, tempting me to create <em>another</em> environment &#8212; complexity is, sadly, highly contagious. Have any other lone developers had success (or failure) with this approach?</p>
+</div>
+<div id="more">
+<h2>More</h2>
+<p>Big organizations use an enormous number of environments to build and roll-out a system:</p>
+<ul>
+<li>Each developer&#8217;s desktop, where code generally lives for a few hours.</li>
+<li>The development server, typically a single server running database, application server, etc. as well as version control unit/regression tests.</li>
+<li>One or more test environments, covering integration testing, system testing, user-acceptance testing, etc. (these can range from single servers to small clusters to near-duplicates of the full production environment).</li>
+<li>The staging environment, which is typically very similar or identical to the production environment.</li>
+<li>The production environment, where the system runs.</li>
+</ul>
+<p>I&#8217;m still undecided about whether enterprises help or hurt themselves by making things so complicated &#8212; coordinating a lot of people on a big system <em>is</em> hard, it&#8217;s even harder to imagine an <a>agile</a> process functioning under so many layers of pain.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/05/02/how-many-environments/feed/</wfw:commentRss>
+			<slash:comments>7</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Two small, useful Nautilus shell scripts</title>
+		<link>https://quoderat.megginson.com/2006/03/29/two-small-useful-nautilus-shell-scripts/</link>
+					<comments>https://quoderat.megginson.com/2006/03/29/two-small-useful-nautilus-shell-scripts/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 29 Mar 2006 14:17:13 +0000</pubDate>
+				<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/29/two-small-useful-nautilus-shell-scripts/</guid>
+
+					<description><![CDATA[If you use a Unix-family operating system with the Gnome desktop and its default Nautilus file browser, you might know that you can extend Nautilus using simple shell scripts. Here two short and simple scripts. Terminal window This script, which &#8230; <a href="https://quoderat.megginson.com/2006/03/29/two-small-useful-nautilus-shell-scripts/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>If you use a Unix-family operating system with the <a href="http://en.wikipedia.org/wiki/GNOME">Gnome desktop</a> and its default <a href="http://en.wikipedia.org/wiki/Nautilus_file_manager">Nautilus</a> file browser, you might know that you can extend Nautilus using simple shell scripts.  Here two short and simple scripts.</p>
+<div>
+<h2>Terminal window</h2>
+<p>This script, which I saved in my <code>~/.gnome2/nautilus-scripts/</code> directory as <var>Shell</var>, pops up a terminal window already set to the directory you&#8217;re browsing.  If you want to do anything too complicated for Nautilus (or too tedious to do using a mouse), this is much more convenient than manually opening a shell window and changing the directory you&#8217;re already browsing:</p>
+<pre>
+#!/bin/sh
+
+/usr/bin/gnome-terminal
+</pre>
+</div>
+<div>
+<h2>Software build</h2>
+<p>This script, which I saved in my <code>~/.gnome2/nautilus-scripts/</code> directory as <var>Make</var>, builds a <a href="http://en.wikipedia.org/wiki/Make">Makefile</a>-based application inside <a href="http://en.wikipedia.org/wiki/Emacs">Gnu Emacs</a>, so that you can easily step through any errors in the source files (it would be easy to modify this to use <a href="http://en.wikipedia.org/wiki/Apache_Ant">Apache Ant</a> or something similar):</p>
+<pre>
+#!/bin/sh
+
+/usr/bin/emacs --eval '(compile "/usr/bin/make")'
+</pre>
+<p>It wouldn&#8217;t be too hard to rig up a variant of this to do well-formedness checking and validation of XML documents.</p>
+</div>
+<div>
+<h2>Simple is beautiful</h2>
+<p>I wasn&#8217;t lying when I wrote that these are short and simple scripts &#8212; it&#8217;s hard to believe how useful they are until you actually use them for a couple of days.  It&#8217;s possible to do much more elaborate things with Nautilus and shell scripts, including operating on files selected in the GUI window, but as usual in tech, the biggest benefit comes from the lowest-hanging fruit.</p>
+<p>Does anyone else have any nice 1- or 2-liners?  I assume that <a href="http://en.wikipedia.org/wiki/KDE">KDE</a>&#8216;s file browser has similar functionality, so scripts from there would also be interesting.</p>
+</div>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2006/03/29/two-small-useful-nautilus-shell-scripts/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

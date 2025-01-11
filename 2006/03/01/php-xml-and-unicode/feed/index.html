@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: PHP, XML, and Unicode	</title>
+	<atom:link href="https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Sat, 04 Mar 2006 01:46:04 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-422</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Sat, 04 Mar 2006 01:46:04 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-422</guid>
+
+					<description><![CDATA[Thanks Aristotle -- WordPress&#039;s new GUI editor was mangling my postings badly, and I figured out how to disable it halfway through making the posting.  I have no idea why it changed by hrefs, but I fixed them by hand.]]></description>
+			<content:encoded><![CDATA[<p>Thanks Aristotle &#8212; WordPress&#8217;s new GUI editor was mangling my postings badly, and I figured out how to disable it halfway through making the posting.  I have no idea why it changed by hrefs, but I fixed them by hand.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Aristotle Pagaltzis		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-421</link>
+
+		<dc:creator><![CDATA[Aristotle Pagaltzis]]></dc:creator>
+		<pubDate>Fri, 03 Mar 2006 23:23:55 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-421</guid>
+
+					<description><![CDATA[Meta note: for some reason, most of your links have &lt;code&gt;xhref&lt;/code&gt; instead of &lt;code&gt;href&lt;/code&gt; attributes, and in the one tag where the attribute is spelled &lt;code&gt;href&lt;/code&gt; its value is empty.]]></description>
+			<content:encoded><![CDATA[<p>Meta note: for some reason, most of your links have <code>xhref</code> instead of <code>href</code> attributes, and in the one tag where the attribute is spelled <code>href</code> its value is empty.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-420</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 22:48:29 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-420</guid>
+
+					<description><![CDATA[Thanks for the info, Jirka.  phpinfo() shows versions for both libxml and expat with PHP4, and libxml and libxml2 for PHP5.]]></description>
+			<content:encoded><![CDATA[<p>Thanks for the info, Jirka.  phpinfo() shows versions for both libxml and expat with PHP4, and libxml and libxml2 for PHP5.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Jirka Kosek		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-419</link>
+
+		<dc:creator><![CDATA[Jirka Kosek]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 22:46:04 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-419</guid>
+
+					<description><![CDATA[And one additional note. If you are using XML under PHP5 it is possible to read documents in any encoding supported by libxml2. AFAIK libxml2 uses iconv for encoding handling, so you can load documents in virtually any encoding, including iso-8859-x, windows-125x and so on.]]></description>
+			<content:encoded><![CDATA[<p>And one additional note. If you are using XML under PHP5 it is possible to read documents in any encoding supported by libxml2. AFAIK libxml2 uses iconv for encoding handling, so you can load documents in virtually any encoding, including iso-8859-x, windows-125x and so on.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Jirka Kosek		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-418</link>
+
+		<dc:creator><![CDATA[Jirka Kosek]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 22:42:38 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-418</guid>
+
+					<description><![CDATA[[2] You can see which XML library is actually used in phpinfo() output in &quot;xml&quot; section.
+
+Authors of XML extensions in PHP5 carefully modelled behaviour of xml_ functions using new underlying library. This is good for backward compatibility, OTOH some problems were transfered to the new API (e.g. see http://www.codecomments.com/archive222-2005-9-598406.html).]]></description>
+			<content:encoded><![CDATA[<p>[2] You can see which XML library is actually used in phpinfo() output in &#8220;xml&#8221; section.</p>
+<p>Authors of XML extensions in PHP5 carefully modelled behaviour of xml_ functions using new underlying library. This is good for backward compatibility, OTOH some problems were transfered to the new API (e.g. see <a href="http://www.codecomments.com/archive222-2005-9-598406.html" rel="nofollow ugc">http://www.codecomments.com/archive222-2005-9-598406.html</a>).</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-417</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 20:17:51 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-417</guid>
+
+					<description><![CDATA[No multi-byte UTF-8 sequence can contain an ASCII character -- that&#039;s one of the design points of UTF-8.  So you are taking precautions against a problem that doesn&#039;t exist.  (It does exist in UTF-16, however.)]]></description>
+			<content:encoded><![CDATA[<p>No multi-byte UTF-8 sequence can contain an ASCII character &#8212; that&#8217;s one of the design points of UTF-8.  So you are taking precautions against a problem that doesn&#8217;t exist.  (It does exist in UTF-16, however.)</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-416</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 18:30:24 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-416</guid>
+
+					<description><![CDATA[Are you certain, Jirka, that the old xml_parser_create() interface isn&#039;t still using Expat?  If not, then I&#039;m especially impressed that my script gives byte-for-byte identical output with PHP4 and PHP5.]]></description>
+			<content:encoded><![CDATA[<p>Are you certain, Jirka, that the old xml_parser_create() interface isn&#8217;t still using Expat?  If not, then I&#8217;m especially impressed that my script gives byte-for-byte identical output with PHP4 and PHP5.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Jirka Kosek		</title>
+		<link>https://quoderat.megginson.com/2006/03/01/php-xml-and-unicode/#comment-415</link>
+
+		<dc:creator><![CDATA[Jirka Kosek]]></dc:creator>
+		<pubDate>Wed, 01 Mar 2006 18:00:24 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/03/01/php-xml-and-unicode/#comment-415</guid>
+
+					<description><![CDATA[XML support in PHP5 is completely reworked and it is using libxml2 as its base, not expat.
+
+If you want to work with XML seriously in PHP, you need at least version 5.1. Former versions were missing critical features like ability to bind prefixes to namespaces for XPath evaluation and so on.
+
+PHP doesn&#039;t support Unicode, it treats strings as a sequence of bytes. So you are responsible for correct string operations. This can be overcome using mb_string library. This library can make many PHP functions utf-8 aware.
+
+Even in PHP 5.1 there are some unresolved issues:
+
+SAX like parser -- doesn&#039;t report all XML events (compared to original Java SAX2); doesn&#039;t have OO interface -- handlers are just plain functions
+
+SimpleXML (simple XML2OO mapping) -- doesn&#039;t support mixed content; namespaces are supported in a very inconvenient way
+
+XMLReader (pull parser) -- is missing several critical methods, including readString()
+
+Due to missing Unicode support and some problems in XML APIs PHP is still far beyond Java and .NET in XML support.]]></description>
+			<content:encoded><![CDATA[<p>XML support in PHP5 is completely reworked and it is using libxml2 as its base, not expat.</p>
+<p>If you want to work with XML seriously in PHP, you need at least version 5.1. Former versions were missing critical features like ability to bind prefixes to namespaces for XPath evaluation and so on.</p>
+<p>PHP doesn&#8217;t support Unicode, it treats strings as a sequence of bytes. So you are responsible for correct string operations. This can be overcome using mb_string library. This library can make many PHP functions utf-8 aware.</p>
+<p>Even in PHP 5.1 there are some unresolved issues:</p>
+<p>SAX like parser &#8212; doesn&#8217;t report all XML events (compared to original Java SAX2); doesn&#8217;t have OO interface &#8212; handlers are just plain functions</p>
+<p>SimpleXML (simple XML2OO mapping) &#8212; doesn&#8217;t support mixed content; namespaces are supported in a very inconvenient way</p>
+<p>XMLReader (pull parser) &#8212; is missing several critical methods, including readString()</p>
+<p>Due to missing Unicode support and some problems in XML APIs PHP is still far beyond Java and .NET in XML support.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

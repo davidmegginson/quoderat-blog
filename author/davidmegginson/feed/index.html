@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>David Megginson &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/author/davidmegginson/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 12 Apr 2016 19:47:41 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>David Megginson &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>Wellesley&#8217;s Law</title>
+		<link>https://quoderat.megginson.com/2016/04/12/wellesleys-law/</link>
+					<comments>https://quoderat.megginson.com/2016/04/12/wellesleys-law/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 12 Apr 2016 19:43:47 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=1036</guid>
+
+					<description><![CDATA[&#8220;As discussion of a failure grows longer, the probability of a comparison involving my action at Waterloo approaches 1—​​that is, if such discourse should persist for a sufficient period, be assured that some self-styled wit will compare someone or something &#8230; <a href="https://quoderat.megginson.com/2016/04/12/wellesleys-law/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><img style="float:left;width:300px;padding:1ex;" src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.png" alt="Portrait of Sir Arthur Wellesley, 1st Duke of Wellington" /> &ldquo;As discussion of a failure grows longer, the probability of a comparison involving my action at Waterloo approaches 1—​​that is, if such discourse should persist for a sufficient period, be assured that some self-styled wit will compare someone or something to the second fall of the Corsican Tyrant.&rdquo;</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2016/04/12/wellesleys-law/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://upload.wikimedia.org/wikipedia/commons/8/83/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.png" medium="image">
+			<media:title type="html">Portrait of Sir Arthur Wellesley, 1st Duke of Wellington</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Testing webdev on mobile devices from my laptop</title>
+		<link>https://quoderat.megginson.com/2016/01/29/testing-webdev-on-mobile-devices-from-my-laptop/</link>
+					<comments>https://quoderat.megginson.com/2016/01/29/testing-webdev-on-mobile-devices-from-my-laptop/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 29 Jan 2016 18:54:30 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=1009</guid>
+
+					<description><![CDATA[While I&#8217;m developing the new UI for OurAirports.com on my laptop, I want to be able to test on various mobile devices easily, including other people&#8217;s devices (where it&#8217;s rude to root and mess around with /etc/hosts). Here&#8217;s what I &#8230; <a href="https://quoderat.megginson.com/2016/01/29/testing-webdev-on-mobile-devices-from-my-laptop/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>While I&#8217;m developing the <a href="http://beta.ourairports.com">new UI for OurAirports.com</a> on my laptop, I want to be able to test on various mobile devices easily, including other people&#8217;s devices (where it&#8217;s rude to root and mess around with <code><a href="https://en.wikipedia.org/wiki/Hosts_(file)">/etc/hosts</a></code>). Here&#8217;s what I did:</p>
+<ul>
+<li>Assign my laptop a static IP address of 192.168.0.5 whenever it&#8217;s connected to my home WiFi (I&#8217;ve configured DHCP not to assign addresses under .11).</li>
+<li>Go to my DNS provider, and create an A record for <code>dev.ourairports.com</code> pointing to 192.168.0.5.</li>
+<li>In my laptop&#8217;s own <code>/etc/hosts</code> file, hard-code <code>dev.ourairports.com</code> to point to a 127.0.0.* IP address.</li>
+</ul>
+<p>With these steps, the domain <code>dev.ourairports.com</code> will always work from my laptop, wherever it&#8217;s connected, and it will work from other devices <i>when I am on my home WiFi</i> (anywhere else, it will probably bring up something strange, like a router or printer login page).</p>
+<p>I&#8217;ve played around with <a href="https://docker.com">Docker</a> a fair bit, but I&#8217;m still happy just running a bunch of VHOSTs for different webdev projects, and so far, it hasn&#8217;t caused me any grief.  </p>
+<p>Does anyone have better suggestions? Any gotchas I&#8217;ve missed?</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2016/01/29/testing-webdev-on-mobile-devices-from-my-laptop/feed/</wfw:commentRss>
+			<slash:comments>4</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Content providers vs their audience, in two acts</title>
+		<link>https://quoderat.megginson.com/2015/09/23/content-providers-vs-their-audience-in-two-acts/</link>
+					<comments>https://quoderat.megginson.com/2015/09/23/content-providers-vs-their-audience-in-two-acts/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 23 Sep 2015 16:52:13 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=954</guid>
+
+					<description><![CDATA[or &#8230; It&#8217;s always been a struggle for control Act I Time: 1980s Place: TV Network I want you to sit still and watch these commercials. Viewer When the commercials come on, I get up to go to the kitchen &#8230; <a href="https://quoderat.megginson.com/2015/09/23/content-providers-vs-their-audience-in-two-acts/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>or &#8230; <i>It&#8217;s always been a struggle for control</i></p>
+<section id="1980s">
+<h2>Act I</h2>
+<p><i><br />
+Time: 1980s<br />
+Place: TV<br />
+</i></p>
+<dl>
+<dt>Network</dt>
+<dd>I want you to sit still and watch these commercials.</dd>
+<dt>Viewer</dt>
+<dd>When the commercials come on, I get up to go to the kitchen or washroom.</dd>
+<dt>Network</dt>
+<dd>I&#8217;m making the commercials louder so that you&#8217;ll still hear them.</dd>
+<dt>Viewer</dt>
+<dd>I just bought a new remote with a mute button.</dd>
+<dt>Network</dt>
+<dd>I&#8217;m grouping commercials more randomly, so that you won&#8217;t know how long you can leave the room without missing something</dd>
+<dt>Viewer</dt>
+<dd>Have I shown you my new VCR, with pause and fast-forward?</dd>
+<dt>Network</dt>
+<dd>If you fast-forward through commercials, there will <em>be</em> no more TV in 10 years.  You&#8217;ll be sorry then.</dd>
+</dl>
+</section>
+<section id="2010s">
+<h2>Act II</h2>
+<p><i><br />
+Time: 2010s<br />
+Place: the Web<br />
+</i></p>
+<dl>
+<dt>Publisher</dt>
+<dd>You must always start on our home page and navigate from there. We want you to see the photo of our CEO in a hard hat patronisingly glad-handing workers before you get the information you want.</dd>
+<dt>User</dt>
+<dd>I&#8217;m bookmarking the pages I find useful and deep-linking to them. And your CEO is a twit.</dd>
+<dt>Publisher</dt>
+<dd>Ha! We&#8217;re blocking deep-linking.</dd>
+<dt>User</dt>
+<dd>Look!  Google&#8217;s not indexing most of your site any more.</dd>
+<dt>Publisher</dt>
+<dd>I want you to view the site exactly the way I intend, with 9-pt fonts, grey on a purple background, and 800 pixels wide.</dd>
+<dt>User</dt>
+<dd>That looks horrible on my screen, and worse on my smartphone, and besides, my aunt can&#8217;t even read it. I&#8217;m going to my browser accessibility settings (or maybe I&#8217;ll just use Pocket).</dd>
+<dt>Publisher</dt>
+<dd>How <em>dare</em> Google News show headlines from our site? We&#8217;re sending them a court order to stop.</dd>
+<dt>User</dt>
+<dd>Funny, I&#8217;m not seeing headlines from your site any more.  I guess I&#8217;ll follow the links to stories on other sites.</dd>
+<dt>Publisher</dt>
+<dd>Our ads from ad networks and hidden tracking cookies allow us to monetize you by collecting personal data and selling it to marketing databases.</dd>
+<dt>User</dt>
+<dd>AdBlock.</dd>
+<dt>Publisher</dt>
+<dd>If you block all our ads and tracking cookies, there will <em>be</em> no more web sites in 10 years.  You&#8217;ll be sorry then.</dd>
+</dt>
+<p>(To be continued &hellip;)</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2015/09/23/content-providers-vs-their-audience-in-two-acts/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Web unusability</title>
+		<link>https://quoderat.megginson.com/2015/09/02/web-unusability/</link>
+					<comments>https://quoderat.megginson.com/2015/09/02/web-unusability/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 02 Sep 2015 11:23:42 +0000</pubDate>
+				<category><![CDATA[Design]]></category>
+		<category><![CDATA[Web]]></category>
+		<category><![CDATA[business]]></category>
+		<category><![CDATA[design]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=947</guid>
+
+					<description><![CDATA[Sometimes, like in this FedEx Canada form, companies decide #usability is a bad thing. <a href="https://quoderat.megginson.com/2015/09/02/web-unusability/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><a href="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png"><img data-attachment-id="951" data-permalink="https://quoderat.megginson.com/2015/09/02/web-unusability/fedex-refund-form/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png" data-orig-size="948,567" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="FedEx Canada refund form" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=300" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=640" src="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=300&#038;h=179" alt="FedEx Canada refund form" width="300" height="179" class="alignright size-medium wp-image-951" srcset="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=300 300w, https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=600 600w, https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=150 150w" sizes="(max-width: 300px) 100vw, 300px" /></a><br />
+When might a company decide that web usability is a bad thing?</p>
+<p>If I were a conspiracy theorist, I&#8217;d suggest that companies deliberately sabotage forms for tasks like refund requests, to discourage user conversion.  Practically speaking, however, I think it&#8217;s more a matter of just not bothering to invest in them past the alpha stage.  Consider FedEx Canada&#8217;s refund form:</p>
+<p><a href="https://www.fedex.com/ca_english/services/moneyback-claimform.html" rel="nofollow">https://www.fedex.com/ca_english/services/moneyback-claimform.html</a></p>
+<p>Every field on this form is required, even though many of them won&#8217;t apply (e.g. you might not have your own invoice number associated with the shipment, and you almost certainly won&#8217;t have a fax number), and some are actually contradictory (you will have <i>either</i> a FedEx Express Air waybill number <i>or</i> a FedEx Ground Tracking ID, but not both).</p>
+<p>On a higher level, nothing in the form makes it clear whether you&#8217;re filling in your address or the address to which you were sending the package. Flip a coin!</p>
+<p>Fortunately, the form also doesn&#8217;t bother with data-type validation, so I was able to put &#8220;n/a&#8221; in all the fields that didn&#8217;t apply (1995 called and took away my fax machine), and I was able to guess that they wanted my address, based on the presence of a picklist for Canadian provinces.</p>
+<p>If you&#8217;re an enterprising soul, you might consider setting up shop as a Web Unusability consultant, to help companies find ways to keep customers from filling out unwelcome forms.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2015/09/02/web-unusability/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2015/09/fedex-refund-form.png?w=300" medium="image">
+			<media:title type="html">FedEx Canada refund form</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Update: running Emacs in Android L (Lollipop)</title>
+		<link>https://quoderat.megginson.com/2015/05/26/update-running-emacs-in-android-l-lollipop/</link>
+					<comments>https://quoderat.megginson.com/2015/05/26/update-running-emacs-in-android-l-lollipop/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 26 May 2015 11:42:32 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=936</guid>
+
+					<description><![CDATA[Update from Dustin DeWeese: &#8220;A working Emacs 25 package is available in Termux: https://termux.com $ apt install emacs&#8221; — this is probably a better solution than the outdated distro below. In February 2014, I posted instructions for installing Gnu Emacs &#8230; <a href="https://quoderat.megginson.com/2015/05/26/update-running-emacs-in-android-l-lollipop/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<blockquote style="border:1px, solid;background:FFFF00;"><p><b>Update from Dustin DeWeese:</b> <i>&#8220;A working Emacs 25 package is available in Termux: <a href="https://termux.com">https://termux.com</a><br />
+$ apt install emacs&#8221;</i> — this is probably a better solution than the outdated distro below.</b></p></blockquote>
+<p><img src="https://i0.wp.com/www.emacswiki.org/pics/official%2520gnu.svg" alt="Emacs logo." width="250" height="250" align="left" /> In February 2014, I posted <a href="https://quoderat.megginson.com/2014/02/17/how-to-install-a-usable-emacs-in-android-feb-2014/">instructions for installing Gnu Emacs</a> in older versions of Android. These instructions no longer work in Android L (Lollipop), because of a new requirement that all executables be compiled with a position-independent (PIE) flag. I have managed to create a new binary from Michał Zieliński&#8217;s admittedly now out-of-date patched Emacs version, and have made it available <a href="https://github.com/davidmegginson/android-emacs-binaries">on GitHub.</a></p>
+<section id="installation">
+<h3>Installation instructions</h3>
+<p>Since TerminalIDE also fails to run under Lollipop (lacking PIE), the instructions for installation are now somewhat different.</p>
+<ol>
+<li>Install some kind of a terminal emulator (JuiceSSH currently crashes, but others seem to work) in your Android. If you&#8217;re not rooted, then you must choose a terminal emulator that has its own home directory under <code>/data/</code>, where you can make a file executable and run it (you cannot normally make a file executable under <code>/sdcard/</code>).</li>
+<li>Create a new directory <code>/sdcard/emacs/</code> to hold your non-executable files, such as eLISP files (you may choose a different location, but you&#8217;ll need to set some extra environment variables so that Emacs can find your files; that&#8217;s outside the scope of this posting).</li>
+<li>₣rom my GitHub repo, download <a href="https://github.com/davidmegginson/android-emacs-binaries/raw/master/emacs.bin">emacs.bin</a>, copy it somewhere not on your <code>/sdcard/</code> (your terminal emulator&#8217;s &#8220;home&#8221; directory if not rooted, or somewhere like <code>/data/local/bin/</code> if rooted) and make it executable:
+<pre>chmod 755 emacs.bin</pre>
+</li>
+<li>From my GitHub repo, download <a href="https://github.com/davidmegginson/android-emacs-binaries/raw/master/etc.tlzma">etc.tlzma</a>, <a href="https://github.com/davidmegginson/android-emacs-binaries/raw/master/terminfo.tlzma">terminfo.tlzma</a>, and <a href="https://github.com/davidmegginson/android-emacs-binaries/raw/master/lisp.tlzma">lisp.tlzma</a>, and unpack them all into your <code>/sdcard/emacs/</code> directory — you may need BusyBox installed to get the <i>unlzma</i> and <i>tar</i> utilities required for unpacking, e.g.
+<pre>unlzma -c lisp.tlzma | tar xvf -</pre>
+</li>
+<li>Somewhere on your executable path (perhaps /system/xbin/), create a new shell script called &#8220;emacs&#8221; containing a command like this:
+<pre>#!/system/bin/sh
+HOME=/sdcard TERMINFO=/sdcard/emacs/terminfo /data/local/bin/emacs.bin "$*"</pre>
+<p>If your chosen terminal emulator already has TERMINFO installed, then don&#8217;t set it in the script. You may choose any home directory you want, but it must be writeable (Emacs will want to create a <code>$HOME/.emacs.d/</code> directory to save settings).</li>
+<li>Make the new script executable (and make sure it&#8217;s on your execution $PATH):
+<pre>chmod 755 emacs</pre>
+</li>
+</ol>
+</section>
+<section id="issues">
+<h3>Known issues</h3>
+<ul>
+<li>If your terminal type is unrecognised, you might need to add additional terminal types to emacs/terminfo; conversely, if your terminal emulator is already using a TERMINFO database somewhere, then don&#8217;t set the TERMINFO environment variable in your shell script.</li>
+<li>Crashes in a local shell under JuiceSSH — don&#8217;t know why yet (use a different terminal emulator). <i><b>Update:</b> only when the font is too large — seems related to screen width.</i></li>
+<li>Dates on <code>*.elc</code> files are earlier than dates on <code>*.el</code> files after running Michał&#8217;s build scripts; you should probably fix that with something like this:
+<pre>find /sdcard/emacs/lisp -name '*.elc' -print0 | xargs -0 touch</pre>
+</li>
+<li>Starts with the message &#8220;WARNING: linker: /data/local/bin/emacs.bin has text relocations. This is wasting memory and prevents security hardening. Please fix.&#8221; &#8212; this seems to be a common problem in Android L, and I have not yet found the right combination of GCC flags to fix it.</li>
+</ul>
+</section>
+<section id="help">
+<h3>Help wanted</h3>
+<p>Any volunteers to package all this up neatly, perhaps with some terminal emulator, for distribution in the Google Play Store?</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2015/05/26/update-running-emacs-in-android-l-lollipop/feed/</wfw:commentRss>
+			<slash:comments>12</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://www.emacswiki.org/pics/official%20gnu.svg" medium="image">
+			<media:title type="html">Emacs logo.</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Technology design, in two comics</title>
+		<link>https://quoderat.megginson.com/2014/12/18/technology-design-in-two-comics/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 18 Dec 2014 23:02:38 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=898</guid>
+
+					<description><![CDATA[I refer to these two comics constantly when I&#8217;m doing technology architecture and design work. Affordance (From The Far Side, 1980s IIRC.) Coverage (http://xkcd.com/773/)]]></description>
+										<content:encoded><![CDATA[<p>I refer to these two comics constantly when I&#8217;m doing technology architecture and design work.</p>
+<section>
+<h2>Affordance</h2>
+<p><img src="https://i0.wp.com/www.defordmusic.com/wp-content/uploads/what-site-changes-do.jpg" alt="Far Side comic: wings stay on / wings fall off" /></p>
+<p>(From <i>The Far Side</i>, 1980s IIRC.)<br />
+</section>
+<section>
+<h2>Coverage</h2>
+<p><img src="https://i0.wp.com/imgs.xkcd.com/comics/university_website.png" alt="xkcd comic: University Website" /></p>
+<p>(<a href="http://xkcd.com/773/" rel="nofollow">http://xkcd.com/773/</a>)</p>
+</section>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://www.defordmusic.com/wp-content/uploads/what-site-changes-do.jpg" medium="image">
+			<media:title type="html">Far Side comic: wings stay on / wings fall off</media:title>
+		</media:content>
+
+		<media:content url="http://imgs.xkcd.com/comics/university_website.png" medium="image">
+			<media:title type="html">xkcd comic: University Website</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>A different kind of data standard</title>
+		<link>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/</link>
+					<comments>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 20 Oct 2014 22:26:42 +0000</pubDate>
+				<category><![CDATA[Aid]]></category>
+		<category><![CDATA[Data]]></category>
+		<category><![CDATA[hxl]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=866</guid>
+
+					<description><![CDATA[HXL is a different, simpler kind of data standard for use during humanitarian crises, using spreadsheets and hashtags. <a href="https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>This year, the UN gave me the chance to bring people together to work on data standards for humanitarian crises (like the Ebola or Syria crisis). We put together a working group from <a href="http://hxlstandard.org/questions/working-group/">multiple humanitarian agencies and NGOs</a> and got to work in February.  The result is the alpha version of the <a href="http://hxlstandard.org">Humanitarian Exchange Language</a> (HXL, pronounced /HEX-el/), a very different kind of data standard.</p>
+<section id="whats-wrong">
+<h2>What&#8217;s wrong with data standards these days?</h2>
+<p>Unlike most data standards, HXL is <i>cooperative</i> rather than <i>competitive</i>. A competitive standard typically considers the way you currently work to be a problem, and starts by presenting you with a list of demands:</p>
+<ul>
+<li><b>Switch</b> to a different data format (and acquire and learn new software tools).</li>
+<li><b>Change</b> the information you share (and the way your organisation collects and uses that information).</li>
+<li><b>Abandon</b> what is valuable and unique about your organisation’s data (and conform to the common denominator).</li>
+</ul>
+<p>For HXL, we reversed the process and started by asking humanitarian responders how they&#8217;re actually working right now, then thought out how we could build a cooperative standard to enhance what they already do.</p>
+</section>
+<section id="not-json">
+<h2>Not JSON or XML</h2>
+<p>Given the conditions under which humanitarian responders work in the field (iffy connectivity, time pressure, lots to do besides putting together data reports), we realised that an XML-, JSON-, or RDF-based standard wasn&#8217;t going to work. </p>
+<p>The one data tool people already know is the infamous spreadsheet program, so HXL would have to work with spreadsheets.  But it also had to be able to accommodate local naming conventions (e.g. we couldn&#8217;t force everyone to use &#8220;ADM1&#8221; as a header for what is a province in Guinea, a <i>departamento</i> in Colombia, or a governorate in Syria). So in the end, we decided to come up to add a row of <a href="http://hxlstandard.org/standard/dictionary/">hashtags</a> below the human-readable headers to signal the common meaning of the columns and the start of the actual data. It looks a bit like this:</p>
+<table>
+<thead>
+<tr>
+<th>Location name</th>
+<th>Location code</th>
+<th>People affected</th>
+</tr>
+<tr style="background:#eeeeee;">
+<th>#loc</th>
+<th>#loc_id</th>
+<th>#aff_num</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Town A</td>
+<td>01000001</td>
+<td>2000</td>
+</tr>
+<tr>
+<td>Town B</td>
+<td>01000002</td>
+<td>750</td>
+</tr>
+<tr>
+<td>Town C</td>
+<td>01000003</td>
+<td>1920</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="http://hxlstandard.org/standard/tagging/">tagging conventions</a> are slightly more-sophisticated than that, also including special support for repeated fields, multiple languages, and compact-disaggregated data (e.g. time-series data).</p>
+</section>
+<section id="uptake">
+<h2>HXL in action</h2>
+<p>While HXL is still in the alpha stage, the <a href="http://blog.standbytaskforce.com/">Standby Task Force</a> is already using it as part of the international Ebola response, and we&#8217;re running informal interoperability trials with the <a href="http://www.aidtransparency.net/">International Aid Transparency</a> initiative, with planned more-formal trials with <a href="http://www.unhcr.org/">UNHCR</a> and <a href="http://www.iom.int/">IOM</a>.</p>
+<p>We also have an interactive <a href="http://demo.hxlstandard.org">HXL showcase</a> demo site, and a collection of public-domain HXL libraries <a href="https://github.com/HXLStandard">available on GitHub</a>.  More news soon.</p>
+</section>
+<section id="credits">
+<h2>Credits</h2>
+<p>Thanks to the <a href="http://docs.hdx.rwlabs.org/">Humanitarian Data Exchange</a> project (managed by Sarah Telford) at the UN&#8217;s <a href="http://unocha.org">Office for the Coordination of Humanitarian Affairs</a> for giving me the opportunity and support to do this kind of work, to the <a href="http://www.humanitarianinnovation.org/">Humanitarian Innovation Fund</a> for backing it financially, to the <a href="http://hxlstandard.org/questions/working-group/">HXL Working Group</a> for coming together to figure this stuff out, and especially to <a href="https://twitter.com/cj_hendrix">CJ Hendrix</a> and <a href="https://twitter.com/carstenkessler">Carsten Keßler</a> for their excellent work on an earlier incarnation of HXL and for their ongoing support.</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/10/20/a-different-kind-of-data-standard/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Community data, Ebola, and the UN</title>
+		<link>https://quoderat.megginson.com/2014/10/14/community-ebola-and-the-un/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 14 Oct 2014 14:53:19 +0000</pubDate>
+				<category><![CDATA[Aid]]></category>
+		<category><![CDATA[Data]]></category>
+		<category><![CDATA[Transparency]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=860</guid>
+
+					<description><![CDATA[The humanitarian community&#8217;s response to the Ebola crisis is more transparent than many responses in the past, and that transparency includes data. The core datasets from the UN and humanitarian partners are starting to appear here: https://data.hdx.rwlabs.org/ebola If you do anything potentially helpful with the &#8230; <a href="https://quoderat.megginson.com/2014/10/14/community-ebola-and-the-un/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>The humanitarian community&#8217;s response to the Ebola crisis is more transparent than many responses in the past, and that transparency includes data. The core datasets from the UN and humanitarian partners are starting to appear here:</p>
+<p><a href="https://data.hdx.rwlabs.org/ebola">https://data.hdx.rwlabs.org/ebola</a></p>
+<p>If you do anything potentially helpful with the data (visualisations, combining with other data, etc.) please let the UN&#8217;s HDX project know, so that they can share it around.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>RCIM — Right-Click-Incognito-Mode</title>
+		<link>https://quoderat.megginson.com/2014/10/13/rcim-right-click-incognito-mode/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 13 Oct 2014 14:54:45 +0000</pubDate>
+				<category><![CDATA[Web]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=853</guid>
+
+					<description><![CDATA[#RCIM (right-click-incognito-mode) on links is an easy way to bypass the web's nastiness. <a href="https://quoderat.megginson.com/2014/10/13/rcim-right-click-incognito-mode/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>If you&#8217;re a technically-oriented person (like most of my readers), you already know this magic spell, but I suspect it&#8217;s not obvious to most of the world: <b>RCIM</b> — <i>right-click-incognito-mode</i> (or <b>LPIM</b> — <i>long-press-incognito-mode</i> in mobile) lets you open a link without persistent cookies. That does a couple of pretty-magical things:</p>
+<ul>
+<li>It blocks tracking cookies (so Facebook&#8217;s database, for example, doesn&#8217;t know that you&#8217;re reading a piece on Unicorn herpes on another site if you didn&#8217;t follow the link from FB), and</li>
+<li>It circumvents many (most?) quota-based paywalls (e.g. newspapers and magazines).</li>
+</ul>
+<p>I&#8217;ve been reluctant to share links from sites like economist.com because of their quota wall (if I share a link, I want everyone to be able to read it). Browser extensions like AdBlock+ and Disconnect can solve at least the first problem, but I&#8217;m looking for something easy-enough for everyone to use (or at least, everyone using a browser with a incognito/anonymous-browsing mode, which describes most of us in 2014).</p>
+<p>So #RCIM and enjoy a web with fewer barriers.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Breadcrumbs: yes or no?</title>
+		<link>https://quoderat.megginson.com/2014/08/23/breadcrumbs/</link>
+					<comments>https://quoderat.megginson.com/2014/08/23/breadcrumbs/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 23 Aug 2014 17:00:15 +0000</pubDate>
+				<category><![CDATA[Design]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=824</guid>
+
+					<description><![CDATA[In web design, Breadcrumbs are those little navigational links you see across the top of some web pages, like Home → Canada → Ontario → Ottawa or Media»Music»Classical»Beethoven Good idea? Breadcrumbs let you can see where you are in a &#8230; <a href="https://quoderat.megginson.com/2014/08/23/breadcrumbs/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>In web design, <a href="https://en.wikipedia.org/wiki/Breadcrumb_(navigation)">Breadcrumbs</a> are those little navigational links you see across the top of some web pages, like</p>
+<blockquote style="font-size:90%;">
+<p>Home → Canada → Ontario → Ottawa</p>
+</blockquote>
+<p>or</p>
+<blockquote style="font-size:90%;">
+<p>Media»Music»Classical»Beethoven</p>
+</blockquote>
+<section id="good">
+<h2>Good idea?</h2>
+<p>Breadcrumbs let you can see where you are in a web site&#8217;s information hierarchy, and let click to climb up to a more-abstract level. As of 2014-06-13, I use geographical breadcrumbs on OurAirports to let users climb up from looking at a specific airport to looking at the list of all airports in an administrative subdivision (e.g. province/state/governorate), country, or continent. I have haven&#8217;t changed the site design by the time you&#8217;re reading this article, you can try it out for <a href="http://ourairports.com/airports/HECA/">Cairo International Airport</a>.</p>
+<p>I like breadcrumbs, because they reflect the way I think. I tend to organise information hierarchically, like a librarian, and breadcrumbs let me find my way around an e-commerce site (for example) without wasting time on frustrating searches. The article “<a href="http://www.hongkiat.com/blog/breadcrumb-navigation-examined-best-practices-examples/">Breadcrumb Navigation Examined: Best Practices &amp; Examples</a>” goes into great detail on different types of breadcrumbs and their benefits.</p>
+</section>
+<section id="bad">
+<h2>Bad idea?</h2>
+<p>While I love breadcrumbs, I notice that not many people use them on OurAirports. People almost never click up to see all airports in the same province or country; they really just want to look at a specific airport. Are my breadcrumbs just wasting screen space?</p>
+<p>Back in 2008, Jared M. Spool posted an article “<a href="http://www.uie.com/articles/breadcrumbs/">Design Cop-out #2: Breadcrumbs</a>” suggesting that breadcrumbs represent a design failure:</p>
+<blockquote>
+<p>The biggest problem is the lack of scent for the other areas of the site. If a user is in need of breadcrumbs because they are in the wrong part of the information tree, what they need most is good scent to the right part of the tree. However, the breadcrumbs only communicate the branch they&#8217;re on — not the branch they need to be on.</p>
+</blockquote>
+<p>In 2011, Shanshan Ma wrote in “<a href="http://www.uxmatters.com/mt/archives/2011/03/10-ways-mobile-sites-are-different-from-desktop-web-sites.php">10 Ways Mobile Sites Are Different from Desktop Web Sites</a>” that even if breadcrumbs belong on desktop web sites, they don&#8217;t belong on mobile ones:</p>
+<blockquote>
+<p>However, breadcrumbs rarely appear on mobiles sites, and there is usually no necessity for them. Limited space is one reason breadcrumbs are uncommon on mobile sites. But the main factor is that the design of mobile sites prevents users from having to go too deep into a hierarchy to find what they are looking for.</p>
+</blockquote>
+</section>
+<section id="conclusion">
+<h2>What do you think?</h2>
+<p>Do breadcrumbs perform an important function in modern web design, or are they just a crutch for bad design?</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/08/23/breadcrumbs/feed/</wfw:commentRss>
+			<slash:comments>5</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>It&#8217;s never the end of history</title>
+		<link>https://quoderat.megginson.com/2014/08/23/its-never-the-end-of-history/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 23 Aug 2014 16:46:48 +0000</pubDate>
+				<category><![CDATA[Design]]></category>
+		<category><![CDATA[Mobile]]></category>
+		<category><![CDATA[design]]></category>
+		<category><![CDATA[web]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=845</guid>
+
+					<description><![CDATA[Remember when we thought the web was stuck in a rut, with IE, Flash preroll, fixed-width layouts, and endless browser incompatibilities? <a href="https://quoderat.megginson.com/2014/08/23/its-never-the-end-of-history/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><strong>Link: </strong><a href="http://alistapart.com/article/fluidgrids/">http://alistapart.com/article/fluidgrids/</a></p>
+<p>Ten years ago, circa 2004, it felt like the web had found its rut and would never get out: XML and XHTML had failed to fix the browser-incompatibility mess, the horrid Internet Explorer had achieved almost total browser-market dominance, and web designers were focussing on animated pre-rolls and big screens. Even in 2009, when the rise of mobile was impossible to ignore, Ethan Marcotte still sounded like an Isaiah shouting from the wilderness when he pleaded with us to think differently:</p>
+<blockquote><p>Instead of exploring the benefits of flexible web design, we rely on a little white lie: “minimum screen resolution.” These three words contain a powerful magic, under the cover of which we churn out fixed-width layout after fixed-width layout, perhaps revisiting a design every few years to “bump up” the width once it’s judged safe enough to do so. “Minimum screen resolution” lets us design for a contrived subset of users who see our design as god and Photoshop intended.</p>
+</blockquote>
+<p>It turns out that we weren&#8217;t at the end of web history, but just finishing the first act. After a decade-long intermission of stagnation, things started changing even faster than they had in the optimistic early days of the mid 1990s. IE has become so irrelevant that it&#8217;s barely necessary to test against it any more (unless your audience is big industry or government office workers using obsolescent desktop computers), HTML5 and CSS3 have exploded, the Javascript ecosystem has matured, the majority of page views happen on small-screen mobile devices, and those devices ensure that most users always have the latest version of their browsers (a vain hope in 2004 or 2009).</p>
+<p>Five years after Marcotte&#8217;s article, any so-called web designer proposing to work with a fixed &#8220;minimum screen resolution&#8221; would &#8230; and <strong>should</strong> &#8230; be fired. </p>
+<p>Except maybe in government and big industry.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Hashtags and data standards</title>
+		<link>https://quoderat.megginson.com/2014/08/21/hashtags-and-data-standards/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 21 Aug 2014 20:39:38 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=837</guid>
+
+					<description><![CDATA[Could #hashtags help us share data during a humanitarian crisis? <a href="https://quoderat.megginson.com/2014/08/21/hashtags-and-data-standards/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><strong>Link:</strong> <a href="http://docs.hdx.rwlabs.org/introducing-hxl-hashtags-for-humanitarian-data/">Introducing HXL hashtags for humanitarian data</a></p>
+<p>In my 16 years working with data standards, I&#8217;ve found that standards almost always ask for too much and end up getting little or nothing. If we asked for less, might we get more? Do data standards have to be tightly-managed and dirigiste, or could we learn from the success of hashtags and other simple, collaborative approaches?</p>
+<p>The blog post linked above describes the approach we&#8217;re taking in the multi-agency <em>Humanitarian Exchange Language </em>(HXL) initiative to help improve data-sharing during humanitarian crises — please take a look and let us know what you think. You can also visit our<a href="http://demo.hxlstandard.org"> HXL Showcase</a> site to see interactive examples of how you can analyse and visualise examples of real humanitarian datasets with HXL tags added (the public-domain source code is available <a href="https://github.com/HXLStandard/hxl-showcase">on GitHub</a>).</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Advertising and the startup</title>
+		<link>https://quoderat.megginson.com/2014/08/16/advertising-and-the-startup/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Sat, 16 Aug 2014 17:15:24 +0000</pubDate>
+				<category><![CDATA[Business]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=835</guid>
+
+					<description><![CDATA[What if people will pay a subscription fee for something they really want (like Netflix), but almost everything on the net is stuff people don't actually want much? <a href="https://quoderat.megginson.com/2014/08/16/advertising-and-the-startup/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><em>Simon St-Laurent originally shared this link on Facebook, and I left a comment. At his request, I&#8217;m reposting my unresearched, unedited rant here so that it can be found and held against me in the future (disclaimer: my OurAirports open-data web site uses as revenue to pay its hosting costs).</em></p>
+<p><em>Article: <a href="http://theatlantic.com/technology/archive/2014/08/advertising-is-the-internets-original-sin/376041/">Advertising is the Internet&#8217;s Original Sin</a> (The Atlantic)</em></p>
+<p><em>My original comment:</em></p>
+<p>Good article. </p>
+<p>I&#8217;m going to propose another angle: what if people will pay a subscription fee for something they really want (like Netflix), but almost everything on the net is stuff people don&#8217;t actually want much (even sites that happen to have tens of millions of users)? </p>
+<p>That means that when you&#8217;re thinking up your new web startup, you&#8217;re actually asking the question &#8220;how do I get people to make a habit of using something they don&#8217;t actually want or need, and won&#8217;t mourn when it&#8217;s gone?&#8221; The best hope is that they&#8217;ll be bored enough to hang around (like watching a reality show because you&#8217;re too lazy to change the channel), but that can happen only as long as it&#8217;s not too much hassle and doesn&#8217;t cost anything up front. Then you fund your site by spying on those users and selling their info to advertisers.</p>
+<p>The point is that such a site might have no other possible business model — if advertising weren&#8217;t possible, the site could never exist. So the problem wouldn&#8217;t be that we&#8217;re not finding ways to fund web sites other than subscription, but that we shouldn&#8217;t be launching so many web startups.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Netflix, Philips, and the fragility of APIs</title>
+		<link>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/</link>
+					<comments>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Thu, 20 Mar 2014 14:16:11 +0000</pubDate>
+				<category><![CDATA[Integration]]></category>
+		<category><![CDATA[REST]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=811</guid>
+
+					<description><![CDATA[Update: Either Philips or Netflix has now fixed the problem described below (2014-03-29). I bought an inexpensive 29&#8243; Philips 4000 series TV for the basement, and its built-in Netflix app isn&#8217;t working. Why doesn&#8217;t Netflix work on my TV? Time &#8230; <a href="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><i><b>Update:</b> Either Philips or Netflix has now fixed the problem described below (2014-03-29).</i></p>
+<p><a href="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg"><img data-attachment-id="820" data-permalink="https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/philips-tv/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" data-orig-size="225,225" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Philips 4000 series TV" data-image-description="" data-image-caption="" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=225" src="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=640" alt="Philips 4000 series TV"   class="alignright size-full wp-image-820" srcset="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg 225w, https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg?w=150&amp;h=150 150w" sizes="(max-width: 225px) 100vw, 225px" /></a></p>
+<p>I bought an inexpensive 29&#8243; <a href="http://www.p4c.philips.com/cgi-bin/dcbint/cpindex.pl?slg=en&amp;scy=us&amp;ctn=29PFL4908/F7">Philips 4000 series</a> TV for the basement, and its built-in Netflix app isn&#8217;t working.</p>
+<h2 style="clear:none;">Why doesn&#8217;t Netflix work on my TV?</h2>
+<p>Time to head for the online support chats.  What does Philips have to say?</p>
+<blockquote><p>
+Unfortunately at this time Netflix is not working on any of our units at this time.  Netflix processed an update without informing our company.  With all smart TVs, when an app maker processes an update, their API will change.  This essentially locks our entire unit out of Netflix until we can process a software update for our units by individual model.  We are working on this issue as fast as possible. Unfortunately there is no ETA on the update.
+</p></blockquote>
+<p>OK, then what does Netflix have to say?</p>
+<blockquote><p>
+I just checked on this issue and yes indeed there is an issue. Our tech geeks over here are working on the matter and we don&#8217;t have an ETA as suggested by the guys at Phillips for sure, but no worries with the help of them I can assure you that it will be fixed, 2 heads are better than 1 huh&#8230;
+</p></blockquote>
+<p>Thanks to both companies for giving me honest answers fast.  So it just turns out that Netflix had one idea of the API, Philips had another, there was no management/communication mechanism before deployment, and the consumer experience broke.</p>
+<h2>Approaching O(n²) complexity</h2>
+<p>This is a good example of a growing systemic problem in the world of API-based integration, and one that will apply far beyond just consumer devices: ever since the <a href="http://en.wikipedia.org/wiki/Web_2.0">Web 2.0</a> fad of the past decade, people have pushed the idea of APIs as a <a href="http://en.wikipedia.org/wiki/No_silver_bullet">silver bullet</a> for integrating information and services from separate organisations.  APIs are a huge step forward from scraping, but if you have <i>m</i> service providers with APIs and <i>n</i> service consumers using the API, how do you keep the <i>m*n</i> dependencies all in sync?  What happens when your business depends on an API <a href="http://www.pcworld.com/article/2104603/metrotwit-vanishes-as-twitter-restrictions-claim-another-victim.html">whose terms of use change</a>?  As shown above, change management is not easy, even for big, consumer-facing companies (and especially not for someone like Netflix, who tries to work on so many different devices from so many companies).</p>
+<h2>Closing rant</h2>
+<p>While we&#8217;re on the topic of APIs, please don&#8217;t use the nonsense term &#8220;RESTful API&#8221; — the whole point of <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> is that it&#8217;s <em>not</em> an API (or rather, that its API is HTTP, and most of the semantic burden gets switched from API to payload).</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/03/20/netflix-philips-and-the-fragility-of-apis/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2014/03/philips-tv.jpg" medium="image">
+			<media:title type="html">Philips 4000 series TV</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Mobile web app or web site?</title>
+		<link>https://quoderat.megginson.com/2014/03/17/mobile-web-app-or-web-site/</link>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 17 Mar 2014 14:15:46 +0000</pubDate>
+				<category><![CDATA[Design]]></category>
+		<category><![CDATA[Mobile]]></category>
+		<category><![CDATA[REST]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=805</guid>
+
+					<description><![CDATA[If you&#8217;re creating an HTML5 mobile web application, this is the minimum you need to give your users what Google calls a &#8220;homescreen launch experience&#8221; on an iOS or Android mobile device: &#60;!doctype html&#62; &#60;html&#62; &#60;head&#62; &#60;title&#62;Awesome app&#60;/title&#62; &#60;meta name="viewport" &#8230; <a href="https://quoderat.megginson.com/2014/03/17/mobile-web-app-or-web-site/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>If you&#8217;re creating an HTML5 mobile web application, this is the minimum you need to give your users what Google calls a &ldquo;<a href="https://developers.google.com/chrome/mobile/docs/installtohomescreen">homescreen launch experience</a>&rdquo; on an iOS or Android mobile device:</p>
+<pre>
+&lt;!doctype html&gt;
+&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;Awesome app&lt;/title&gt;
+  &lt;meta name="viewport" content="width=device-width"&gt;
+  &lt;meta name="mobile-web-app-capable" content="yes"&gt;
+  &lt;link rel="shortcut icon" sizes="196x196" href="/icon.png"&gt;
+ &lt;/head&gt;
+ &lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>The &#8220;shortcut icon&#8221; <var>link</var> element is pretty straight-forward: it simply provides a pretty, app-style icon to save to the iOS homescreen or Android launcher. The &#8220;mobile-web-app-capable&#8221; <var>meta</var> element, on the other hand, strikes right to the core of what you&#8217;re doing: are you creating a web <em>app</em>, or a web <em>site</em>?</p>
+<h2>I&#8217;m a web <em>app</em></h2>
+<p>Here&#8217;s what Chrome for Android gives me if I save a web app to the homescreen (launcher), then tap on that icon:</p>
+<ul>
+<li>The app gets its own entry in the task switcher.</li>
+<li>All the browser chrome is hidden, and there&#8217;s no way to add a new tab, create a bookmark, change options, etc.</li>
+<li>If the user chooses a link outside my domain, Chrome will animate a normal browser launching, to warn me that I&#8217;m outside the app.</li>
+</ul>
+<h2>I&#8217;m a web <em>site</em></h2>
+<p>If I don&#8217;t include &ldquo;mobile-web-app-capable,&rdquo; then Chrome for Android will still let me create an icon on the homescreen, but when I tap on it, I&#8217;ll see my regular browser launch, with all its chrome, tabs, bookmarking, etc.</p>
+<h2>So which am I?</h2>
+<p>A web <em>app</em> is a loner. It has several advantages over a native mobile app (cross-OS/-device compatibility, avoiding app-store bottlenecks and censorship, more-flexible security model, linkable, etc.) and several disadvantages (can&#8217;t handle an Android Intent, weaker notification support), but its plan is clearly to stand on its own, like a native mobile app.  A web app is designed around <strong>actions</strong>: with a clever combination of HTML5, CSS, JavaScript, and newer stuff like <a href="http://en.m.wikipedia.org/wiki/Cache_manifest_in_HTML5">AppCache</a> and <a href="http://en.m.wikipedia.org/wiki/Web_storage"> LocalStore</a>, you could create (e.g.) a Twitter web <em>app</em> that was very similar to the Twitter native app (<a href="http://alistapart.com/article/application-cache-is-a-douchebag">important caveats</a>).  The web app designer doesn&#8217;t want her app open in one browser tab with a different site open in another, while the user switches back and forth. Online video games, interactive edit/design tools, and anything that is supposed to feel a bit like a MacOS or Windows program installed from a CD-ROM 15 years ago is likely an <em>app</em>.</p>
+<p>A web <em>site</em> is a social creature.  It&#8217;s orthogonal to a native mobile app, because it inhabits a different universe.  A web site is <a href="http://en.m.wikipedia.org/wiki/Representational_state_transfer">RESTful</a>, designed around <strong>pages</strong> (more generally, &ldquo;resources&rdquo;), most of which contain either information a user wants to see with links for navigating to related information, or a means to create/change/delete that information (there&#8217;s also typically a search feature). Unlike web apps, web sites <em>embrace</em> the browser chrome, which provides an important part of the user experience: because the browser allows a user to search for text within a page or bookmark any page, the web site itself doesn&#8217;t have to provide that support; similarly, the browser lets a user open multiple views into the same site using different tabs by default (so that a user can view two pages at the same time), while an app <em>treated as an app</em> has to have that support built in.  Wikipedia, blogs, tutorials, newspapers and magazines, most online discussion forums, and my own <a href="http://ourairports.com">OurAirports</a> are all examples of things that are most naturally web <em>sites</em>.</p>
+<h2>Last thoughts</h2>
+<p>I&#8217;m starting the process of making OurAirports responsive and otherwise mobile-friendly, and one of the first things I tried was adding &ldquo;mobile-web-app-capable&rdquo; and then saving the icon to my Android desktop. It worked exactly as advertised &mdash; it was cool having the site open up as if it were a phone app, appear in the task switcher, etc., but it took me only minutes to realise that I&#8217;d crippled it: a user launching OurAirports that way could no longer bookmark a specific airport page to come back to it later; could no longer open two airports in different tabs; and could no longer search for text in a long comment stream.  I removed it and let the browser chrome come back, because really, that browser chrome is a lot of what makes a web <em>site</em> useful.</p>
+<p>So when you&#8217;re designing your next web thingy, ask yourself a few questions:</p>
+<ul>
+<li>Is it valuable for users to be able to search for text within a page, bookmark pages, and open multiple tabs (site)?</li>
+<li>Is it mainly about manipulating an external resource, such as a picture or diagram (app)?</li>
+<li>Does it have lots of pages with relatively stable URLs (site)?</li>
+<li>Can it potentially provide a reasonably-complete offline experience using only a small number of files containing markup, code, and data (app)?</li>
+<li>Is it designed as part of a bigger web, linking out and receiving inbound links (site)?</li>
+<li>Would browser chrome distract rather than help the user (app)?</li>
+<li>Is it something that Google should index and make searchable (site)?</li>
+</ul>
+<p>Over the past few years, I think, too many people have been taking things that are more-naturally sites (e.g. newspapers) and trying to force them to behave like apps by forcing in <a href="http://en.m.wikipedia.org/wiki/Ajax_(programming)">AJAX</a>, <a href="http://www.webmonkey.com/2011/02/gawker-learns-the-hard-way-why-hash-bang-urls-are-evil/">hashbang URL syntax</a>, etc.: the result is typically impressive and flashy, but a crappy user experience. On the other hand, the greatest advance in the Web over the past ~10 years has been its growing ability to support activities like creating spreadsheets or editing photos that really don&#8217;t fit the REST/web-site model.  So by all means, if you have an app, let it be an app, but don&#8217;t try to force <em>everything</em> into app world; REST is still the web&#8217;s heartbeat.</p>
+]]></content:encoded>
+					
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How to install a usable Emacs in Android (Feb 2014)</title>
+		<link>https://quoderat.megginson.com/2014/02/17/how-to-install-a-usable-emacs-in-android-feb-2014/</link>
+					<comments>https://quoderat.megginson.com/2014/02/17/how-to-install-a-usable-emacs-in-android-feb-2014/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 17 Feb 2014 19:17:14 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=795</guid>
+
+					<description><![CDATA[Update: these instructions no longer work for Android L (Lollipop). For a first pass at installing Gnu Emacs in Lollipop, see this update. Since I mentioned in a review that I&#8217;m using Emacs on my Android Nexus 7 tablet, I&#8217;ve &#8230; <a href="https://quoderat.megginson.com/2014/02/17/how-to-install-a-usable-emacs-in-android-feb-2014/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p><i><b>Update:</b> these instructions no longer work for Android L (Lollipop). For a first pass at installing Gnu Emacs in Lollipop, see <a href="https://quoderat.megginson.com/2015/05/26/update-running-emacs-in-android-l-lollipop/">this update</a>.</i></p>
+<p><img src="https://i0.wp.com/www.emacswiki.org/pics/official%2520gnu.svg" align="left" width="250" height="250" alt="Emacs logo." /> Since I mentioned in a review that I&#8217;m using Emacs on my Android Nexus 7 tablet, I&#8217;ve received several requests for information about how I set it up.  There is a <a href="https://play.google.com/store/apps/details?id=com.zielm.emacs">prepackaged Emacs app</a> in the Google Play store, but it does not work as distributed, because it bundles a broken terminal application.  The Emacs binary itself is fine, though, and with a bit of manual work, you can install it to run inside a different terminal application (I use Terminal IDE below).</p>
+<p><i><b>Note:</b> Emacs needs a full-featured PC-style keyboard.  I usually run Emacs on my tablet with an external Bluetooth keyboard; if you want to use a soft keyboard, consider installing the <a href="https://play.google.com/store/apps/details?id=org.pocketworkstation.pckeyboard">Hacker&#8217;s Keyboard</a>, which has all of the modifier keys Emacs expects.</i></p>
+<p><i><b>Request:</b> Would anyone be willing to rebundle Emacs in an easily-installable form for Terminal IDE, and make this blog posting obsolete?</i></p>
+<h2>Installing Emacs for Terminal IDE</h2>
+<ol>
+<li>
+<p>Install the <a href="https://play.google.com/store/apps/details?id=com.spartacusrex.spartacuside">Terminal IDE</a> app on your Android device.</p>
+</li>
+<li>
+<p>In your Android browser, go to <a href="http://emacs.zielm.com/data/">http://emacs.zielm.com/data/</a> and download the files <code>emacs.lzma</code>, <code>etc.tlzma</code>, and <code>lisp.tlzma</code>, then copy them to your Terminal IDE home directory.</p>
+</li>
+<li>
+<p>Launch a shell in Terminal IDE and run the following commands:</p>
+<pre>$ unlzma emacs.lzma
+$ chmod 755 emacs</pre>
+</li>
+<li>
+<p>At this point, you should already be able to run emacs by typing</p>
+<pre>$ ./emacs</pre>
+<p>(though it will fail because it can&#8217;t find its etc directory).  If you want, just put it somewhere on your executable path, like you would in any Linux installation.</p>
+</li>
+<li>
+<p>Create a directory <code>/sdcard/emacs/</code> (or make it somewhere different, if you&#8217;re willing to set environment variables to tell Emacs to look somewhere else).</p>
+</li>
+<li>
+<p>Copy the downloaded files <code>etc.tlzma</code> and <code>lisp.tlzma</code> to <code>/sdcard/emacs/etc.tar.lzma</code> and <code>/sdcard/emacs/lisp.tar.tzlma</code></p>
+</li>
+<li>
+<p>Change to the <code>/sdcard/emacs/</code> directory and run the following commands:</p>
+<pre>$ unlzma etc.tar.lzma
+$ tar xvf etc.tar
+$ unlzma lisp.tar.lzma
+$ tar xvf lisp.tar</pre>
+</li>
+<li>
+<p>Test that emacs starts up OK now (run from wherever you installed the binary):</p>
+<pre>$ ~/emacs</pre>
+</li>
+<li>
+<p>If all is well, you can optionally delete the tar files to save space:</p>
+<pre>$ rm /sdcard/emacs/etc.tar /sdcard/emacs/lisp.tar</pre>
+</li>
+<li>
+<p>Enjoy Emacs in Android!  You might consider doing an <code>C-u 0 M-x byte-recompile-directory</code> on <code>/sdcard/emacs/lisp/</code> (and any other lisp directories) to make sure you&#8217;re up to date.</p>
+</li>
+</ol>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2014/02/17/how-to-install-a-usable-emacs-in-android-feb-2014/feed/</wfw:commentRss>
+			<slash:comments>30</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://www.emacswiki.org/pics/official%20gnu.svg" medium="image">
+			<media:title type="html">Emacs logo.</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Why did I never get into Evernote?</title>
+		<link>https://quoderat.megginson.com/2013/12/31/why-did-i-never-get-into-evernote/</link>
+					<comments>https://quoderat.megginson.com/2013/12/31/why-did-i-never-get-into-evernote/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 31 Dec 2013 21:11:40 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderatech.wordpress.com/?p=785</guid>
+
+					<description><![CDATA[I just noticed that the Evernote app updated itself on my phone, and that got me thinking about how I just don&#8217;t use it much. I made a serious effort a year or two ago, in the middle of my &#8230; <a href="https://quoderat.megginson.com/2013/12/31/why-did-i-never-get-into-evernote/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I just noticed that the <a href="https://evernote.com">Evernote</a> app updated itself on my phone, and that got me thinking about how I just don&#8217;t use it much. I made a serious effort a year or two ago, in the middle of my last big project, dutifully taking pictures of white boards, making notes during meetings, TODO checklists, etc.; however, I almost never went back and reread the notes, reviewed the snapshots, or worked through the TODO lists, and somehow, the project still chugged along just fine.</p>
+<p>The surprising part (for me) is that Evernote is exactly what I would have designed if you&#8217;d asked me to design a note-taking/idea-organising app. From my POV, the app did everything right:</p>
+<ul>
+<li>Search works</li>
+<li>You can group notes by subject or by tags</li>
+<li>You can share notes</li>
+<li>The smartphone app works offline and syncs when you&#8217;re back online</li>
+<li>It organises media like pictures the same way it organizes text notes</li>
+<li>The UI is simple and uncluttered (at least, it was back when I was using it)</li>
+</ul>
+<p>Maybe the problem isn&#8217;t Evernote, but <strong>the idea of taking notes at meetings</strong>. I have piles of old engineering notebooks from past consulting gigs, and I doubt I ever went back and reviewed 0.5% of them after I wrote them.</p>
+<p>I guess this is a good lesson for information architecture and tech design. I started with a process that <em>didn&#8217;t</em> work for me (paper-based note taking) and assumed that if I added some tech pixie dust to it &mdash; web apps, search, tags, smartphone app, etc. &mdash; it would suddenly change and become functional. That didn&#8217;t happen, because it almost never happens, and it&#8217;s not Evernote&#8217;s fault.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2013/12/31/why-did-i-never-get-into-evernote/feed/</wfw:commentRss>
+			<slash:comments>5</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Can open data route around damage?</title>
+		<link>https://quoderat.megginson.com/2013/10/01/can-open-data-route-around-damage/</link>
+					<comments>https://quoderat.megginson.com/2013/10/01/can-open-data-route-around-damage/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 01 Oct 2013 20:58:01 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=754</guid>
+
+					<description><![CDATA[Today, the US government&#8217;s data.gov temporarily went dark, and along with it, what is likely the world&#8217;s most important collection of open data sets: You are welcome to use this as a chance to rail against the juvenile hijinks in &#8230; <a href="https://quoderat.megginson.com/2013/10/01/can-open-data-route-around-damage/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>Today, the US government&#8217;s <a href="http://data.gov">data.gov</a> temporarily went dark, and along with it, what is likely the world&#8217;s most important collection of <a href="http://en.wikipedia.org/wiki/Open_data">open data</a> sets:  </p>
+<div data-shortcode="caption" id="attachment_755" style="width: 650px" class="wp-caption alignleft"><a href="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png"><img aria-describedby="caption-attachment-755" data-attachment-id="755" data-permalink="https://quoderat.megginson.com/2013/10/01/can-open-data-route-around-damage/data-gov-blackout/" data-orig-file="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png" data-orig-size="964,483" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="data-gov-blackout" data-image-description="" data-image-caption="&lt;p&gt;The US government&#8217;s data.gov home page on 1 October 2013.&lt;/p&gt;
+" data-medium-file="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=300" data-large-file="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=640" src="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=640&#038;h=320" alt="The US government's data.gov home page on 1 October 2013." width="640" height="320" class="size-full wp-image-755" srcset="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=640&amp;h=320 640w, https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=150&amp;h=75 150w, https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=300&amp;h=150 300w, https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png?w=768&amp;h=385 768w, https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png 964w" sizes="(max-width: 640px) 100vw, 640px" /></a><p id="caption-attachment-755" class="wp-caption-text">The US government&#8217;s data.gov home page on 1 October 2013.</p></div>
+<p>You are welcome to use this as a chance to rail against the juvenile hijinks in the US Congress, but I think there&#8217;s a far more important lesson: if you depend on any <em>centralised</em> data source, even one run by the world&#8217;s richest and most-powerful government, it can fail and leave you cut off.</p>
+<section id="routing">
+<h2>Nuclear bombs and censorship</h2>
+<p>There is a proverbial story that ARPAnet, which later grew into the Internet, was designed to route around failed nodes so that it could keep functioning after a nuclear attack.  Even if that story is <a href="http://en.wikipedia.org/wiki/ARPANET#Misconceptions_of_design_goals">not <em>strictly</em> true</a> (the design had more to do with the unreliable networking hardware of the time), the actual networking layers of the Internet are highly failure-tolerant.</p>
+<p>Information-freedom activist <a href="http://en.wikipedia.org/wiki/John_Gilmore_(activist)">John Gilmore</a> took that ARPAnet creation myth a step further, and argued that</p>
+<blockquote><p>The Net interprets censorship as damage and routes around it.</p></blockquote>
+<p>Just as the Internet (as a network) can route around damage, &#8220;The Net&#8221; (as a culture) can route around censorship using Internet-the-network as a tool.  History has proven Mr. Gilmore right: the entertainment industry, for example, has entirely failed to control and restrict the distribution of movies and music online, and the US government &mdash; which could reduce dozens of other countries to ash with the push of a button &mdash; could do nothing to prevent the spread of the (unauthorized) <a href="http://en.wikipedia.org/wiki/WikiLeaks">WikiLeaks</a> data.<br />
+</section>
+<section id="replication">
+<h2>Replication, not routing</h2>
+<p>The Internet consists of a large collection of specifications and standards that define and enable its ability to route around damage; there&#8217;s no similar set of standards for getting information around censorship barriers (whether related to intellectual property or restriction of basic human rights).  So how does it work?  Why <em>can&#8217;t</em> the music industry, for example, take a song offline once people have started sharing it?  How does &#8220;The Net&#8221; route so-called &#8220;pirated&#8221; content around huge, angry corporations spending millions of dollars hiring lawyers and lobbying legislators?</p>
+<p>The trick with content seems not to be routing, but <em>replication</em>.  To survive online, a piece of information simply has to be copied faster than its opponents can take it offline.  Because it&#8217;s possible to make perfect, lossless copies of digital content, it becomes irrelevant whether a copy is first generation or 10th generation. For example, if five people make copies of content, then five more people make copies of each of those copies, etc., by the 10th generation you have 5<sup>10</sup> &mdash; or nearly 10 million &mdash; perfect copies spread out around the world, and with extremely-popular content, that process can take place in minutes.<br />
+</section>
+<section id="rebuilding">
+<h2>Could we rebuild data.gov?</h2>
+<p>It&#8217;s likely that most Americans won&#8217;t suffer any real harm from today&#8217;s shutdown of data.gov: open data is still in its infancy.  However, if we in the open-data community realize our hopes and succeed at making open data a critical part of how the world works, then the next shutdown could be far more harmful.  Companies that rely on open data might have to close their doors and furlough employees; emergency responders in the field might have trouble helping victims of a flood or earthquake; maps or navigation systems might stop working; and so on.  The more-successful open data becomes, the higher the cost of having it fail.</p>
+<p>It would not be a complete disaster, however.  A lot of the open data on data.gov exists in copies elsewhere, and if the site were to disappear, we could probably find copies of individual datasets on hard drives scattered around the world, and reproduce most of the data that was on it on 30 September.  It would take time, and we wouldn&#8217;t know if the data was corrupt or fraudulent, but in most cases, it would <em>probably</em> be OK.  As the world moved further and further beyond 30 September 2013, we&#8217;d also have to figure out how to get <em>new</em> data from the departments, offices, and organisations who had previously centralised their datasets in data.gov.<br />
+</section>
+<section id="pirates">
+<h2>Learning from the pirates &#8230;</h2>
+<p>How can we make this recovery process easier?  Let&#8217;s imitate the people who have already solved this problem: the so-called content &#8220;pirates.&#8221;  We expect centralized open-data sites like data.gov to be available all of the time; the pirates expect their sources to vanish at any moment.  We expect data providers to help and encourage us to use their data; the pirates expect legal action trying to shut them down. We get funding; they get fines or even sometimes go to jail. Yet they flourish, while we&#8217;re vulnerable to any government&#8217;s or organisations internal financial squabbling.</p>
+<p>The answer is to copy, copy, copy, and copy.  Make copies of all the open data you can find, share your copies with as many people as you can, and keep the copies somewhere safe, just as you would with MP3s of your favourite artist.  Open-data sites that discourage bulk downloading need to rethink their priorities, but if they don&#8217;t, find a way around any barriers that they throw up.  We need 1,000 sites providing the data.gov data, spread around the world, some publicly-funded, and some private.  In a sense, a litigious recording company and a government-funded open-data site present exactly the same risks to their users, and we have to learn not to trust the availability of any single site.<br />
+</section>
+<section id="not-pirates">
+<h2>&#8230; but sailing under true colours</h2>
+<p>But still, we&#8217;re <em>not</em> pirates.  Unlike content piracy, open-data sharing can stay out in the daylight.  Ministers and heads of state support us, international organisations and foundations fund us, and the media praise us.  That means that we have the opportunity to get together and come up with real standards or specs for keeping open data available, just as the ARPANet founders did for network resiliency.  These processes are hard, they will take time, and most ideas will go nowhere, but eventually, we could come up with something as useful as the collection of the <a href="http://en.wikipedia.org/wiki/Internet_Standard">Internet standards</a> and less-formal, ad-hoc that allow you to get to this blog even around a broken router.</p>
+<p>Working in the open also allows us to address issues of trust that are difficult to deal with in the piracy world.  If you download an unauthorised copy of Microsoft Word, for example, how do you know that it&#8217;s authentic?  Is it going to introduce malicious software onto your computer?  If you download an unauthorized movie Disney movie, how do you know that it won&#8217;t suddenly flash a <a href="http://en.wikipedia.org/wiki/Goatse.cx">Goatse</a> on the screen at minute 51?  </p>
+<p>In the open, we can talk about how to sign digital content and build a <a href="http://en.wikipedia.org/wiki/Web_of_trust">web of trust</a>, so that you can rely on a US government dataset even if you loaded it from a Russian web site.  We can talk about standardizing how open-data sites notify other systems about new or updated datasets (e.g. using <a href="http://en.wikipedia.org/wiki/RSS">RSS</a> or <a href="http://en.wikipedia.org/wiki/Atom_(standard)">Atom</a>), so that sites can easily and automatically mirror one-another.  And we can talk about discarding &mdash; in our field &mdash; broken concepts like the <a href="http://en.wikipedia.org/wiki/Creative_Commons_license#Attribution">Creative Commons attribution licenses</a>, which actually <em>discourage</em> sharing and using open data.</p>
+<p>If we get this stuff right, we&#8217;ll be ready the next time data.gov goes down, when open data really <em>matters</em> to the world.  And maybe we&#8217;ll see the pirates starting to imitate us.</p>
+</section>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2013/10/01/can-open-data-route-around-damage/feed/</wfw:commentRss>
+			<slash:comments>3</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="https://quoderat.megginson.com/wp-content/uploads/2013/10/data-gov-blackout.png" medium="image">
+			<media:title type="html">The US government&#039;s data.gov home page on 1 October 2013.</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>A technology architect&#8217;s disclaimer</title>
+		<link>https://quoderat.megginson.com/2013/09/16/a-technology-architects-disclaimer/</link>
+					<comments>https://quoderat.megginson.com/2013/09/16/a-technology-architects-disclaimer/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 16 Sep 2013 17:52:12 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=751</guid>
+
+					<description><![CDATA[I&#8217;m working on a large application architecture for an international organisation right now, and am including this disclaimer in the introduction: 1.1. Limitations Like all technology-related architectural designs, this is a vision of how XXX could work, not a blueprint &#8230; <a href="https://quoderat.megginson.com/2013/09/16/a-technology-architects-disclaimer/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>I&#8217;m working on a large application architecture for an international organisation right now, and am including this disclaimer in the introduction:</p>
+<blockquote><p>
+<b>1.1. Limitations</b></p>
+<p>Like all technology-related architectural designs, this is a vision of how XXX <u>could</u> work, not a blueprint for how XXX <u>will</u> work — we will change much or all of this architecture during the implementation, some in minor ways, and some in major ways, as we discover more about the problem space, change our priorities, and work around the strengths and limitations of the people and technologies involved.  The architecture in this report points the way for the implementation team at the beginning, and captures our initial understanding and goals. The XXX team will endeavour to keep the specification up to date as the <i>actual</i> architecture emerges during implementation.
+</p></blockquote>
+<h2>Further reading</h2>
+<p>Neal <b>Ford</b>, &ldquo;<a href="http://www.ibm.com/developerworks/java/library/j-eaed1/index.html">Evolutionary architecture and emergent design: Investigating architecture and design</a>.&rdquo;  IBM developerWorks, 24 February 2009.</p>
+<p>Martin <b>Fowler</b>, &ldquo;<a href="http://martinfowler.com/ieeeSoftware/whoNeedsArchitect.pdf">Who Needs an Architect</a>.&rdquo;  <cite>IEEE Software</cite>, July/August 2003. </p>
+<p>Eric S. <b>Raymond</b>.  &ldquo;<a href="http://www.catb.org/esr/writings/homesteading/cathedral-bazaar/">The Cathedral and the Bazaar</a>.&rdquo;  Version 3.0, 2000.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2013/09/16/a-technology-architects-disclaimer/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>The diffusion of innovations, or of products?</title>
+		<link>https://quoderat.megginson.com/2013/09/04/the-diffusion-of-innovations-or-of-products/</link>
+					<comments>https://quoderat.megginson.com/2013/09/04/the-diffusion-of-innovations-or-of-products/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Wed, 04 Sep 2013 21:55:14 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=740</guid>
+
+					<description><![CDATA[If you work anywhere near IT, you&#8217;ve probably been confronted with Everett Rogers&#8217; Bell Curve on more than one eager PowerPoint slide deck, explaining how the presenter&#8217;s new standard, product, or initiative will move through the five audiences of Innovators, &#8230; <a href="https://quoderat.megginson.com/2013/09/04/the-diffusion-of-innovations-or-of-products/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<div style="border:1px solid;padding:1ex;margin:1ex;float:right;"><a href="http://en.wikipedia.org/wiki/File:Diffusion_of_ideas.svg"><img src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/thumb/1/11/Diffusion_of_ideas.svg/500px-Diffusion_of_ideas.svg.png" width="200" alt="Rogers Bell Curve" /></a></div>
+<p>If you work anywhere near IT, you&#8217;ve probably been confronted with <a href="http://en.wikipedia.org/wiki/Diffusion_of_innovations">Everett Rogers&#8217; Bell Curve</a> on more than one eager PowerPoint slide deck, explaining how the presenter&#8217;s new standard, product, or initiative will move through the five audiences of <i>Innovators</i>, <i>Early Adopters</i>, <i>Early Majority</i>, <i>Late Majority</i>, and <i>Laggards</i>.  There&#8217;s even a book, Geoffrey Moore&#8217;s 1991 <cite><a href="http://en.wikipedia.org/wiki/Crossing_the_chasm">Crossing the Chasm: Marketing and Selling High-Tech Products to Mainstream Customers</a></cite>, about how to move your product from the <i>Early Adopter</i> to the <i>Early Majority</i> (mainstream market) stage. After a (very) small amount of background reading, though, I&#8217;m starting to wonder if people are misuing Mr. Rogers&#8217; curve, confusing the ideas of &#8220;innovation&#8221; and &#8220;product.&#8221;  </p>
+<h2>You can&#8217;t invest in an idea</h2>
+<p>In 1962, Prof. Rogers, along with two other original collaborators, was studying how new practices spread among farmers in the US Midwest, not how, say, a new model of harvester found its market.  In other words, they were studying what people <b>do</b>, not what people <b>buy</b>.</p>
+<p>Does it matter?  Consider the 1995 Netscape IPO, which started the dot.com bubble.  The World Wide Web was a genuine innovation &mdash; a new way of doing things (building on existing technology) &mdash; and by 1995, it was clear that the Web was going to be important.  However, people confused Netscape&#8217;s browser (a specific product) with the Web itself (an innovation), and assumed that by investing in the company that made the browser, they were investing in the Web.  However, the two were not inseparable &mdash; Netscape&#8217;s browser tanked, while the idea of the Web grew stronger and stronger.  Later, investors would pump up Apple&#8217;s and Facebook&#8217;s stock in a similar way, assuming that by doing so, they were investing in the innovations of mobile computing and social networking.  Apple in particular has been able to deliver revenue to justify some of its stock price, but as it loses more and more of the smartphone and tablet market to Android manufacturers, the difference between innovation (mobile computing) and product (iPhone/iPad) becomes very clear.</p>
+<p>Despite all that, most of the time I see people using Rogers&#8217; curve, they&#8217;re using it for a specific product, project, or initiative, not for new ideas or practices.  Does it make sense in that context, or are we being as lazy and confused as the 1995 Netscape investors?  Rogers based his 1962 book on over 500 studies of how ideas spread; it would be interesting to see if there&#8217;s similar research to back the claims of over-eager sales VPs and project managers.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2013/09/04/the-diffusion-of-innovations-or-of-products/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+
+		<media:content url="http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Diffusion_of_ideas.svg/500px-Diffusion_of_ideas.svg.png" medium="image">
+			<media:title type="html">Rogers Bell Curve</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

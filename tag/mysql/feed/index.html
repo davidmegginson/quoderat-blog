@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>mysql &#8211; Quoderat</title>
+	<atom:link href="https://quoderat.megginson.com/tag/mysql/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 21 Jun 2011 19:30:59 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='quoderat.megginson.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>https://s0.wp.com/i/buttonw-com.png</url>
+		<title>mysql &#8211; Quoderat</title>
+		<link>https://quoderat.megginson.com</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="https://quoderat.megginson.com/osd.xml" title="Quoderat" />
+	<atom:link rel='hub' href='https://quoderat.megginson.com/?pushpress=hub'/>
+	<item>
+		<title>MySQL wrapper script: variables from the command line</title>
+		<link>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/</link>
+					<comments>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/#comments</comments>
+		
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Tue, 21 Jun 2011 19:30:59 +0000</pubDate>
+				<category><![CDATA[General]]></category>
+		<category><![CDATA[databases]]></category>
+		<category><![CDATA[mysql]]></category>
+		<category><![CDATA[perl]]></category>
+		<category><![CDATA[tips]]></category>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=528</guid>
+
+					<description><![CDATA[There&#8217;s a lot I like about PostgreSQL, and I&#8217;ll probably switch eventually, but for now, I&#8217;m still more comfortable with MySQL, especially its ability to update huge amounts of existing data in-place very quickly. I do have some technical gripes &#8230; <a href="https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/">Continue reading <span class="meta-nav">&#8594;</span></a>]]></description>
+										<content:encoded><![CDATA[<p>There&#8217;s a lot I like about <a href="http://www.postgresql.org/">PostgreSQL</a>, and I&#8217;ll probably switch eventually, but for now, I&#8217;m still more comfortable with <a href="http://www.mysql.com/">MySQL</a>, especially its ability to update huge amounts of existing data in-place very quickly.</p>
+<p>I do have some technical gripes with MySQL, though:</p>
+<ul>
+<li>InnoDB doesn&#8217;t support fulltext indexes, so I&#8217;ve forced to give up referential integrity for any table that needs fulltext searching.</li>
+<li>The <code>mysql(1)</code> command-line tool doesn&#8217;t allow setting user variables on the command line when invoking a script.</li>
+</ul>
+<p>The first is too big a problem for me to take on right now, but the second looked like it just needed a bit of perl magic, so I wrote a wrapper script:</p>
+<blockquote><p>
+<a href="http://www.megginson.com/downloads/runmysql.gz">runmysql</a>
+</p></blockquote>
+<p>This script scans each command-line option for a string beginning with &#8220;@&#8221;, and pulls it out of the arguments before passing the rest on to mysql.  Any option in the format <var>@name=value</var> will be converted to a SQL variable declaration and passed to mysql; any other option gets passed through unmodified.</p>
+<h2>Example</h2>
+<p>Let&#8217;s say that you have a SQL script named <code>getstuff.sql</code>:</p>
+<pre>
+use mydatabase;
+
+select * from Stuff where type=@type;
+</pre>
+<p>You can invoke this script like this:</p>
+<pre>
+runmysql @type=foo -X &lt; getstuff.sql
+</pre>
+<p>The script will run the command &#8220;mysql -X&#8221; (the &#8220;-X&#8221; means XML output &#8212; it&#8217;s just there to demonstrate how other options get passed through), and prepend a declaration to the SQL script, so that MySQL actually sees this:</p>
+<pre>
+set @type = 'foo';
+use mydatabase;
+
+select * from Stuff where type=@type;
+</pre>
+<p>That&#8217;s it, really.  Of course, it&#8217;s not that useful in a trivial script like this, but for scripts that load data from many different files (for example), it makes life much simpler.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://quoderat.megginson.com/2011/06/21/mysql-wrapper-script-variables-from-the-command-line/feed/</wfw:commentRss>
+			<slash:comments>10</slash:comments>
+		
+		
+		
+		<media:content url="https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">davidmegginson</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

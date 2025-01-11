@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+All markup ends up looking like XML | Quoderat</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://quoderat.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=153'
+					+ '&is_singular=1';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9xdW9kZXJhdC5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14988159"
+		+ "&time=1736548428";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Feed" href="../../../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Comments Feed" href="../../../../comments/feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; All markup ends up looking like&nbsp;XML Comments Feed" href="feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJxtzFsKgCAQQNENZaMg+BWtRXQI39KMtP0ogiD6PHC5cHThWmWsDGWInscWKkFE7talx0CjQml+ZCTYMVtGL3oj/mh2RBP8H3NI+H5vXflaFmWU0VJLo+MJKT40cA==&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s1.wp.com/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s0.wp.com/_static/??-eJyNjcsKQjEMBX/ImlsQry7ET5GahrbXNCmmRfx7H7gRN+7OwGEGbs2hSifpUIdrPFIRg4V6C3j5MNgQqBoHk4HlcKUYYry/Z5G0RrMV/C06FUEwxRLYsSa1L/iR9Uz1mc0bSKznwK/DsR787Kd5P/ntbnkAuNBIYA==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14988159","postID":"153","siteURL":"https:\/\/quoderat.megginson.com","xhrURL":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/p10T6v-2t","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://quoderat.megginson.com/2007/01/03/all-markup-ends-up-looking-like-xml/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/sun\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/_static/??/wp-content/mu-plugins/jetpack-plugin/sun/_inc/build/related-posts/related-posts.min.js,/wp-content/js/rlt-proxy.js?m=1733765333j'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://quoderatech.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="index.html" />
+<link rel='shortlink' href='https://wp.me/p10T6v-2t' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2007%2F01%2F03%2Fall-markup-ends-up-looking-like-xml%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fquoderat.megginson.com%2F2007%2F01%2F03%2Fall-markup-ends-up-looking-like-xml%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="All markup ends up looking like XML" />
+<meta property="og:url" content="https://quoderat.megginson.com/2007/01/03/all-markup-ends-up-looking-like-xml/" />
+<meta property="og:description" content="In the current JSON vs. XML debate (see Bray, Winer, Box, Obasanjo, and many others), there are three things that important to understand: There is no information that can be represented in an XML …" />
+<meta property="article:published_time" content="2007-01-03T21:33:38+00:00" />
+<meta property="article:modified_time" content="2010-08-08T20:44:39+00:00" />
+<meta property="og:site_name" content="Quoderat" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:creator" content="@david_megginson" />
+<meta name="twitter:site" content="@david_megginson" />
+<meta name="twitter:text:title" content="All markup ends up looking like&nbsp;XML" />
+<meta name="twitter:card" content="summary" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s2.wp.com/i/webclip.png" />
+<link rel='openid.server' href='../../../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../../../osd.xml" title="Quoderat" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Quoderat" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Open information and technology." /><meta name="description" content="In the current JSON vs. XML debate (see Bray, Winer, Box, Obasanjo, and many others), there are three things that important to understand: There is no information that can be represented in an XML document that cannot be represented in a JSON document. There is no information that can be represented in a JSON document&hellip;" />
+</head>
+
+<body class="post-template-default single single-post postid-153 single-format-standard customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="../../../../index.html" title="Quoderat" rel="home">Quoderat</a>
+					</span>
+				</div>
+				<div id="site-description">Open information and technology.</div>
+
+									<a class="home-link" href="../../../../index.html" title="Quoderat" rel="home">
+						<img src="../../../../wp-content/uploads/2010/08/cropped-manuscript-scribe12-172v-1604.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="../../../../2006/12/23/templating-languages-and-xml/index.html" rel="prev"><span class="meta-nav">&larr;</span> Templating languages and&nbsp;XML</a></div>
+					<div class="nav-next"><a href="../../04/in-praise-of-architecture-astronauts/index.html" rel="next">In praise of architecture&nbsp;astronauts <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-153" class="post-153 post type-post status-publish format-standard hentry category-general">
+											<h2 class="entry-title"><a href="index.html" rel="bookmark">All markup ends up looking like&nbsp;XML</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="index.html" title="4:33 pm" rel="bookmark"><span class="entry-date">January 3, 2007</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>In the current <a href="http://en.wikipedia.org/wiki/JSON">JSON</a> vs. <a href="http://en.wikipedia.org/wiki/XML">XML</a> debate (see <a href="http://www.tbray.org/ongoing/When/200x/2006/12/21/JSON">Bray</a>, <a href="http://scripting.wordpress.com/2006/12/20/scripting-news-for-12202006/">Winer</a>, <a href="http://pluralsight.com/blogs/dbox/archive/2007/01/03/45560.aspx">Box</a>, <a href="http://www.25hoursaday.com/weblog/PermaLink.aspx?guid=39842a17-781a-45c8-ade5-58286909226b">Obasanjo</a>, and many others), there are three things that important to understand:</p>
+<ol>
+<li>There is no information that can be represented in an XML document that cannot be represented in a JSON document.</li>
+<li>There is no information that can be represented in a JSON document that cannot be represented in an XML document.</li>
+<li>There is no information that can be represented in an XML or JSON document that cannot be represented by a LISP <a href="http://en.wikipedia.org/wiki/S-expression">S-expression</a>.</li>
+</ol>
+<p>They are all capable of modeling recursive, hierarchical data structures with labeled nodes.  Do we have a term for that, like <a href="http://en.wikipedia.org/wiki/Turing_completeness">Turing completeness</a> for programming languages?  It would certainly be convenient in discussions like this.</p>
+<div id="syntax">
+<h2>Syntactic sugar</h2>
+<p>The only important differences among the three are the size of the user base (and opportunity for network effects), software support, and syntactic convenience or inconvenience.  The first two are fickle — where are the Pascal programmers of yesteryear? — so let&#8217;s concentrate on syntax.  Here&#8217;s a simple list of three names in each of the three representations:</p>
+<pre>&lt;!-- XML --&gt;
+&lt;names&gt;
+  &lt;name&gt;Anna Maria&lt;/name&gt;
+  &lt;name&gt;Fitzwilliam&lt;/name&gt;
+  &lt;name&gt;Maurice&lt;/name&gt;
+&lt;/names&gt;</pre>
+<pre>/* JSON */
+{"names": ["Anna Maria", "Fitzwilliam", "Maurice"]}</pre>
+<pre>;; LISP
+'(names "Anna Maria" "Fitzwilliam" "Maurice")</pre>
+<p>Nearly all comparisons between XML and JSON look something like this, and I have to admit, it&#8217;s a slam dunk — in an example like this, XML seems to go out of its way to violate <a href="http://en.wikipedia.org/wiki/Larry_Wall">Larry Wall</a>&#8216;s second slogan: &#8220;Easy things should be easy and hard things should be possible.&#8221;  On the other hand, I rarely see any data structures that are really this simple, outside of toy examples in books or tutorials, so a comparison like this might not have a lot of value; after all, I could have written the XML like this:</p>
+<pre>&lt;names&gt;Anna Maria, Fitzwilliam, Maurice&lt;/names&gt;</pre>
+<p>Let&#8217;s dig a bit deeper and see what we find.</p>
+</div>
+<div id="labels">
+<h2>Node labels</h2>
+<p>In the previous example, I made some important assumptions: I assumed that node label for the individual names (&#8220;name&#8221;) didn&#8217;t matter and could be omitted from the JSON and LISP, and I assumed that the node label for the entire list (&#8220;names&#8221;) was a legal XML and LISP identifier.  Let&#8217;s break both of those assumptions now, and make the label for the list &#8220;names!&#8221; and the labels for the items &#8220;male-name&#8221; or &#8220;female-name&#8221;.  Here&#8217;s what we can do now to handle this in XML, JSON, and LISP:</p>
+<pre>&lt;!-- XML --&gt;
+&lt;list label="names!"&gt;
+  &lt;female-name&gt;Anna Maria&lt;/female-name&gt;
+  &lt;male-name&gt;Fitzwilliam&lt;/male-name&gt;
+  &lt;male-name&gt;Maurice&lt;/male-name&gt;
+&lt;/list&gt;</pre>
+<pre>/* JSON */
+{"names!": [
+  {"female-name": "Anna Maria"},
+  {"male-name: "Fitzwilliam"},
+  {"male-name": "Maurice"}]}</pre>
+<pre>;; LISP
+'(names!
+  (female-name "Anna Maria")
+  (male-name "Fitzwilliam")
+  (male-name "Maurice"))</pre>
+<p>XML is forced to use a secondary syntactic construction (an attribute value) to represent the top-level label, because it no longer matches XML&#8217;s syntactic rules for element names. LISP <del>simply switches from a token to a string to represent &#8220;names!&#8221;</del><ins>can still use <var>names!</var> as a token</ins>, and JSON doesn&#8217;t notice, because it has been using a string all along — XML syntax is convenient for trees of labeled nodes only when the labels are heavily restricted.  That aside, however, note that as soon as we add any non-trivial complexity to the information — as soon as we assume that node labels matter — then all three formats start to look a little more like XML.</p>
+</div>
+<div id="attributes">
+<h2>Additional node attributes</h2>
+<p>Now, let&#8217;s add the next wrinkle, by allowing additional attributes (beside a label) for each node.  In this case, we&#8217;re going to add a &#8220;lang&#8221; (language) attribute to each of the nodes:</p>
+<pre>
+&lt;!-- XML --&gt;
+&lt;list label="names!"&gt;
+  &lt;female-name xml:lang="it"&gt;Anna Maria&lt;/female-name&gt;
+  &lt;male-name xml:lang="en"&gt;Fitzwilliam&lt;/male-name&gt;
+  &lt;male-name xml:lang="fr"&gt;Maurice&lt;/male-name&gt;
+&lt;/list&gt;
+</pre>
+<pre>/* JSON */
+{"names!": [
+  {"female-name": [{"lang": "it"}, "Anna Maria"]},
+  {"male-name: [{"lang": "en"}, "Fitzwilliam"]},
+  {"male-name": [{"lang": "fr"}, "Maurice"]}]}</pre>
+<pre>;; LISP
+'(names!
+  (female-name (((lang it)) "Anna Maria"))
+  (male-name (((lang en)) "Fitzwilliam"))
+  (male-name (((lang fr)) "Maurice")))</pre>
+<p>Now, while XML is still using ad-hoc convention to represent the &#8220;name!&#8221; label, JSON and LISP are forced to use ad-hoc conventions to represent attribute lists (a dictionary list for JSON, and an a-list for LISP).  It&#8217;s also worth noting that JSON and LISP now look so much like XML, both in length and complexity, that it&#8217;s hardly possible to distinguish them.  Node attributes are not esoteric — they&#8217;re the basis of such simple things as hyperlinks.</p>
+</div>
+<div id="typing">
+<h2>Data typing</h2>
+<p>XML certainly looks better for the attributes, but now let&#8217;s jump to data typing.  Let&#8217;s assume that there is a country where people use real numbers as names, and we need to find a way to distinguish names that are real numbers from names that just happen to <em>look</em> like real numbers (say, a person named &#8220;1.7&#8221; in a country where names are strings).  JSON and LISP can make that distinction naturally using first-class syntax, while XML has to use a different standard that is not part of the core language:</p>
+<pre>
+&lt;!-- XML --&gt;
+&lt;list label="names!" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;female-name xml:lang="it"&gt;Anna Maria&lt;/female-name&gt;
+  &lt;male-name xml:lang="en"&gt;Fitzwilliam&lt;/male-name&gt;
+  &lt;male-name xml:lang="fr"&gt;Maurice&lt;/male-name&gt;
+  &lt;female-name xsd:type="xsi:float" xml:lang="de"&gt;7.9&lt;/female-name&gt;
+&lt;/list&gt;
+</pre>
+<pre>/* JSON */
+{"names!": [
+  {"female-name": [{"lang": "it"}, "Anna Maria"]},
+  {"male-name: [{"lang": "en"}, "Fitzwilliam"]},
+  {"male-name": [{"lang": "fr"}, "Maurice"]},
+  {"female-name": [{"lang": "de"}, 7.9]}]}</pre>
+<pre>;; LISP
+'(names!
+  (female-name (((lang it)) "Anna Maria"))
+  (male-name (((lang en)) "Fitzwilliam"))
+  (male-name (((lang fr)) "Maurice"))
+  (female-name (((lang de)) 7.9)))</pre>
+<p>XML loses badly on this particular example; however, if the extra data were (say) a date or currency, we would have to make up an ad-hoc way to label its type in JSON and LISP as well, since they have no special syntax to distinguish a date or monetary value from a regular number or string. For anything other than simple numeric data types, this one&#8217;s actually a draw.</p>
+</div>
+<div id="mixed-content">
+<h2>Mixed content</h2>
+<p>And now, finally, for mixed content.  I will add surnames to all of the (non-numeric) names in the list, and (here&#8217;s the kicker) will put those in their own labeled nodes:</p>
+<pre><!-- XML -->
+&lt;!-- XML --&gt;
+&lt;list label="names!" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;female-name xml:lang="it"&gt;Anna Maria 
+    &lt;surname&gt;Mozart&lt;/surname&gt;&lt;/female-name&gt;
+  &lt;male-name xml:lang="en"&gt;Fitzwilliam 
+    &lt;surname&gt;Darcy&lt;/surname&gt;&lt;/male-name&gt;
+  &lt;male-name xml:lang="fr"&gt;Maurice 
+    &lt;surname&gt;Chevalier&lt;/surname&gt;&lt;/male-name&gt;
+  &lt;female-name xsd:type="xsi:float" xml:lang="de"&gt;7.9&lt;/female-name&gt;
+&lt;/list&gt;
+</pre>
+<pre>/* JSON */
+{"names!": [
+  {"female-name": [{"lang": "it"}, "Anna Maria", {surname: "Mozart"}]},
+  {"male-name: [{"lang": "en"}, "Fitzwilliam", {surname: "Darcy"}]},
+  {"male-name": [{"lang": "fr"}, "Maurice", {"surname": "Chevalier"}]},
+  {"female-name": [{"lang": "de"}, 7.9]}]}</pre>
+<pre>;; LISP
+'(names!
+  (female-name (((lang it)) "Anna Maria" (surname "Mozart")))
+  (male-name (((lang en)) "Fitzwilliam" (surname "Darcy")))
+  (male-name (((lang fr)) "Maurice" (surname "Chevalier")))
+  (female-name (((lang de)) 7.9)))</pre>
+<p>Character for character, the JSON and LISP are still shorter, but the difference is not nearly as dramatic as it was in the very first example.  In fact, typing all of these examples by hand, I find myself appreciating the redundant end tags on the XML parts, because it&#8217;s getting very hard to keep track of all the closing &#8220;]&#8221;, &#8220;}&#8221; and &#8220;)&#8221; for JSON and LISP.</p>
+</div>
+<div id="silver-bullet">
+<h2>No silver bullet</h2>
+<p>There are a few morals here. First, with markup, as with coding, there&#8217;s <a href="http://en.wikipedia.org/wiki/No_Silver_Bullet">no silver bullet</a>.  JSON (and LISP) have the important advantage that they make the most trivial cases easy to represent, but as soon as we introduce even the slightest complexity, all of the markup starts to look about equally verbose.  That means that the real problems we have to solve with structured data are no longer syntactic, and anyone trying to find a syntactic solution to structured data is really missing the point: JSON, XML (and LISP) people would be best making common cause to start dealing with more important problems than whether we use braces, pointy brackets, or parentheses.  That&#8217;s why I was excited to have JSON inventor <a href="http://en.wikipedia.org/wiki/Douglas_Crockford">Doug Crockford</a> speak at <a href="http://2006.xmlconference.org/">XML 2006</a>, and why I hope that we&#8217;ll get more submissions about JSON as well as XML for 2007.</p>
+<p>Personally, I like XML because it&#8217;s familiar and has a lot of tool support, but I could easily (and happily) build an application based on any of the three — after all, once I stare long enough, they all look the same to me.</p>
+</div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-153" class="share-facebook sd-button share-icon" href="index.html%3Fshare=facebook.html" target="_blank" title="Click to share on Facebook" ><span>Facebook</span></a></li><li class="share-x"><a rel="nofollow noopener noreferrer" data-shared="sharing-x-153" class="share-x sd-button share-icon" href="index.html%3Fshare=x.html" target="_blank" title="Click to share on X" ><span>X</span></a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14988159-153-6781a04c3b801' data-src='//widgets.wp.com/likes/index.html?ver=20250110#blog_id=14988159&amp;post_id=153&amp;origin=quoderatech.wordpress.com&amp;obj_id=14988159-153-6781a04c3b801&amp;domain=quoderat.megginson.com' data-name='like-post-frame-14988159-153-6781a04c3b801' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="../../../../category/general/index.html" rel="category tag">General</a>. Bookmark the <a href="index.html" title="Permalink to All markup ends up looking like&nbsp;XML" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-153 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="../../../../2006/12/23/templating-languages-and-xml/index.html" rel="prev"><span class="meta-nav">&larr;</span> Templating languages and&nbsp;XML</a></div>
+					<div class="nav-next"><a href="../../04/in-praise-of-architecture-astronauts/index.html" rel="next">In praise of architecture&nbsp;astronauts <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			53 Responses to <em>All markup ends up looking like&nbsp;XML</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="comment even thread-even depth-1" id="li-comment-562">
+		<div id="comment-562">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.ccil.org/~cowan" class="url" rel="ugc external nofollow">John Cowan</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-562">
+				January 3, 2007 at 5:58 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Nits:  you left off the ! in the JSON examples, and few if any Lisp dialects have any trouble with ! in a symbol, so stringification is not necessary.  (When there *is* a problem, as with an embedded space, you want to wrap the symbol in |&#8230;| instead of quotes anyhow, so that internally it&#8217;s still a symbol.)</p>
+<p>There&#8217;s no doubt about your general conclusion, though JSON does lose really badly on mixed content, which is outside its intended domain of application.  JSON is about sequences and maps whose (leaf) domains are Unicode strings, real numbers, booleans, and the null value.  Using it to represent, say, HTML, is just silly.</p>
+<p>I would also point you to SXML at <a href="http://okmij.org/ftp/Scheme/SXML.html" rel="nofollow ugc">http://okmij.org/ftp/Scheme/SXML.html</a> , which is a complete representation of arbitrary DTDless XML in standard S-expressions that preserves the document infoset in full.  It&#8217;s pretty well accepted in the Lisp community.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-563">
+		<div id="comment-563">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e4dd8ab32f2f42b710b571796884991d7b7868960009f527af15b79a7fe72e8d?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">stand</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-563">
+				January 3, 2007 at 6:00 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>This is brilliant, David! I recently implemented a &#8220;JSON mode&#8221; for a RESTful style xml based service. I went in with the same preconceptions about the simplicity of JSON and was taken aback by how complex it became. I didn&#8217;t fully appreciate the point though until reading this.</p>
+<p>I think it would also be instructive to compare the three formats in terms of how data is accessed from them; i.e. xml via parsers or some usage of XPath, JSON through javascript or a specific language library and s expressions via LISP. My initial thought is that LISP wins here because it is itself made up of s expressions, and javascript comes second because JSON uses the native array and list structures. But I think that the javascript/JSON advantage over xml may suffer similarly to the way you have illustrated here. I&#8217;ll have to think more on that.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-564">
+		<div id="comment-564">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/7ad5799f51d3a49372333d148b0263fd37bb3f1f1539b7c55afd798cea8f6867?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.25hoursaday.com/weblog" class="url" rel="ugc external nofollow">Dare Obasanjo</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-564">
+				January 3, 2007 at 6:00 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>You XML folks completely miss the point. JSON is important because it is better supported in the browser than XML. That&#8217;s why it has taken hold. Arguing that angle brackets, S-expressions and JSON syntax are all semantically equivalent is the height of architecture astronautics[0] and COMPLETELY misses the point.</p>
+<p>[0] <a href="http://www.joelonsoftware.com/articles/fog0000000018.html" rel="nofollow ugc">http://www.joelonsoftware.com/articles/fog0000000018.html</a></p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-565">
+		<div id="comment-565">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-565">
+				January 3, 2007 at 7:27 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>John: thanks, I&#8217;ve corrected the omission in the JSON examples, but have left the LISP symbols quoted for now, until I have time to confirm that &#8220;!&#8221; is legal in a symbol in most dialects.</p>
+<p>Dare: my point is not that JSON isn&#8217;t important, but rather that the functional differences between JSON and XML are so insignificant that I don&#8217;t care much which (if either) wins &#8212; either one will accomplish what I need to do.  As far as the specifics of tool support go, JSON is supported well in the browser only if you use eval(), which is inherently extremely dangerous, as you&#8217;ve pointed out elsewhere.  If you&#8217;re not willing to do that (and as a semi-responsible web developer, I wouldn&#8217;t be), then you have to use a separate library &#8212; albeit a small one &#8212; to do the JSON parsing.  On the other hand, all modern browsers have support built-in for parsing XML safely, though the interface they present to the programmer (DOM) is low-level and awkward, so in practice, you have to install some kind of separate library to simplify processing.  Browser-side data support is a lose-lose situation right now, whether you&#8217;re using JSON or XML.</p>
+<p>I remember reading that early PHP started out with some apparently friendly features like prepopulating top-level variables automatically from GET or POST parameters, so that if someone invoked <a href="http://example.org/foo.php?x=y" rel="nofollow ugc">http://example.org/foo.php?x=y</a>, in the PHP script $x would be set to &#8220;y&#8221;.  Guess how fast that was deprecated.  I do think that JSON will probably continue to grow in browser-side use at XML&#8217;s expense, but ironically, as it gets more popular it will lose most of the features that make it seem simple right now.  Don&#8217;t be surprised if JavaScript eval() disappears completely (or at least requires explicit user authorization after reading a warning dialog) in future browser versions if there are high-visibility exploits in the next couple of years.  Perhaps they&#8217;ll add an equivalent of PHP&#8217;s <a href="http://www.php.net/manual/en/function.unserialize.php" rel="nofollow">unserialize</a> function, which is just as convenient but much safer.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-566">
+		<div id="comment-566">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/37a00b08c269bf10dea8ee6bdb1ad4a1da1cb23bc680ef390c4725746a66120e?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Chris Nokleberg</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-566">
+				January 3, 2007 at 8:04 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>You can use eval with JSON safely, you just need check the input string for evilness. In the official json.org code this is a one-line regexp. Not sure if this will come through in the comment, but you can find it yourself in <a href="http://www.json.org/json.js" rel="nofollow ugc">http://www.json.org/json.js</a>: /^(&#8220;(\\.|[^&#8221;\\\n\r])*?&#8221;|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment odd alt depth-2" id="li-comment-4099">
+		<div id="comment-4099">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/afc207a65efe977ac7d2b5f2e4c51c0e497e0ad9cb17fb2811981ac49e4569d4?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.facebook.com/profile.php?id=100003406026696" class="url" rel="ugc external nofollow">Oliviero</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4099">
+				May 24, 2012 at 1:35 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Masklinn: you&#8217;re right that my examples were not very ceiclmpatod and could have been represented more simply in all three markup syntaxes   see Crockford&#8217;s comment earlier, which made the same point as yours.Just to throw a wrench into it, though, you cannot always assume that order doesn&#8217;t matter.  For example, try this:Saddam HusseinIf you break this down to a map then try to reconstruct the name, you&#8217;ll end up with  Hussein Saddam  instead of  Saddam Hussein .  The solution then, of course, is to add *another* property specifying whether the surname comes first or last.Next, you see a name like this:James Fitzwilliam Godwin IIIA simple ordering property won&#8217;t work now.  Instead, for your map, you&#8217;ll have to include a surname, pre-surname, and post-surname property.  And then you have the problem of honorifics, which can come before ( Dr. ,  Sir ) or after ( PhD ,  OBE ) the name, or prepositions like  de  in French and Spanish, which go with the surname but drop off for collation, etc.I think most people who work with real, non-trival data have experienced these kinds of problems, even when XML has never entered the equation   notice how relational database schemas in production systems usually end up resembling a ball of tangled string more than the neat diagrams in textbooks.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-567">
+		<div id="comment-567">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/c4ce404cf130be5a6845264127a1b3519155698f16108afb24c0383ea318d847?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Dilip</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-567">
+				January 3, 2007 at 8:23 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Don&#8217;s link in your first line of your post is not pointing to his blog entry.  Here it is:<br />
+<a href="http://pluralsight.com/blogs/dbox/archive/2007/01/03/45560.aspx" rel="nofollow ugc">http://pluralsight.com/blogs/dbox/archive/2007/01/03/45560.aspx</a></p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-568">
+		<div id="comment-568">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/35eddc8dad78989cff2ff0e02cb60acaa3437abb491669c06f236ae298547e79?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.pluralsight.com/blogs/dbox/" class="url" rel="ugc external nofollow">Don Box</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-568">
+				January 3, 2007 at 8:51 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>David,</p>
+<p>I could swear that Safari didn&#8217;t have support for XML parsing from javascript.  Not sure if this is still true nor if it matters given firefox penetration on Mac OS.</p>
+<p>DB</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-569">
+		<div id="comment-569">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-569">
+				January 3, 2007 at 9:03 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks to Dilip &#8212; I&#8217;ve fixed the link.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-570">
+		<div id="comment-570">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/78fef03d74e9da734758b77793d7c2b244b633a3bbde5971df50c9646f128bc5?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Ed</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-570">
+				January 3, 2007 at 9:15 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Are we all seriously still comparing the syntax of a data format to the syntax of an object literal in a programming language? why?</p>
+<p>I ignored this debate when I saw it start but I&#8217;m sure it&#8217;s gonna get me somehow. I bet the next company I walk into one of the developers will ask me what I think is best? JSON or XML? *sigh* At least it may replace my most hated apples/oranges question: Which do you think is best? PHP or Ruby on Rails?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-571">
+		<div id="comment-571">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://cime.net/~ricky/" class="url" rel="ugc external nofollow">Ricky Clarkson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-571">
+				January 3, 2007 at 10:07 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>It looks to me that out of the 3, only LISP stays clear with extra complexity.</p>
+<p>I assume there&#8217;s no security problem with using LISP here; after all, you&#8217;re treating code as data, not data as code.</p>
+<p>The magic about LISP is that writing a parser (for at least basic syntax) is so easy that the average coder could probably do it in JavaScript.  It&#8217;s just nested CSV effectively.  Writing a parser for JSON or XML is much more tricky.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-572">
+		<div id="comment-572">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://krugle.com/" class="url" rel="ugc external nofollow">John D. Mitchell</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-572">
+				January 4, 2007 at 12:10 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Nice comparison.</p>
+<p>While the nominal complicatedness is similar, note the clarity differences &#8212; particularly in the last, most complicated example.  The xml example is almost completely un-scannable and so has to be (slowly, carefully) read.  The Lisp is easy/fast to scan.  The JSON is somewhere in-between.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-573">
+		<div id="comment-573">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/3b39ead323089a8f22a94ea0d10670f21f736a933e00d1c92d63cd649de70845?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://kevin.sb.org" class="url" rel="ugc external nofollow">Kevin Ballard</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-573">
+				January 4, 2007 at 3:54 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I&#8217;m curious to know how YAML stacks up in this comparison.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-574">
+		<div id="comment-574">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/04d80d2b48ea5bd48b60a1711d33726bc31e99a449d20232bac9893733907a9b?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">jml</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-574">
+				January 4, 2007 at 6:32 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>JSON works pretty well in practice, even if it&#8217;s something of a hack. It&#8217;s meant for fast delivery of simple structured data to a browser, and it works nicely for that purpose. If you use an encoder with proper escaping there shouldn&#8217;t be any security risk. Badly escaped XML can also lead to cross-site scripting attacks. You probably shouldn&#8217;t use JSON for cross-domain data transfer, which requires some ugly security policy abuse (e.g. JSONP) and isn&#8217;t easy to do for XML.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-575">
+		<div id="comment-575">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-575">
+				January 4, 2007 at 8:15 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>John Mitchell: I think that&#8217;s pretty subjective.  I have about 20 years experience with LISP and C, and 17 with perl, SGML and XML.  I find the LISP and XML examples about equal for scanning (the LISP looks cleaner, but it&#8217;s a pain having to count closing parentheses to figure out nesting), while the JSON is a fair bit harder.  I don&#8217;t claim that anyone else should have exactly the same experience as me, but it is worth noting that this is a pretty heavily subjective area.</p>
+<p>Kevin: I decided to pick just three examples for this posting, but I imagine that if I added YAML (or even LaTeX) they&#8217;d end up looking about the same.  The hard part of structured markup has never been the syntax, at least not since we got rid of SGML with its excessive number of variants and configuration options.</p>
+<p>JML: Agreed &#8212; in 2000 or 2001 I gave a keynote talk on XML security where I outlined a whole series of exploits that were possible using XML on the Web, and the only reason we haven&#8217;t had a problem with them is that general-purpose XML on the web hasn&#8217;t become popular (it&#8217;s mainly messaging and data dumps). That said, I don&#8217;t think that simply using a proper encoder is enough, because that protects only on the server side &#8212; you also need to do something on the browser side, either using a dedicated JSON parsing library, or at least (as John Cowan suggests) running the JSON through a regex before passing it to eval().</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://ajaxian.com/archives/json-vs-xml-the-debate" class="url" rel="ugc external nofollow">Ajaxian &raquo; JSON vs. XML: The Debate</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.megginson.com/blogs/quoderat/2007/01/04/in-praise-of-architecture-astronauts/" class="url" rel="ugc external nofollow">Quoderat &raquo; In praise of architecture astronauts</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-578">
+		<div id="comment-578">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/48663eb5ff747f6cdc58d4249064a7062e4eaff9181957f68fd3b172e4e4be43?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://krugle.com/" class="url" rel="ugc external nofollow">John D. Mitchell</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-578">
+				January 4, 2007 at 11:05 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Re: Subjectivity in Readability/Scannability</p>
+<p>I think you&#8217;re helping to prove my point&#8230; You&#8217;ve been &#8220;reading&#8221; XML for so long that you think that it&#8217;s scannable. 🙂</p>
+<p>Seriously, there&#8217;s a huge difference between in the ability to carefully read something and the ability to glance at it and get it that is, IMHO, grossly underestimated by advocates of &#8220;dense&#8221; languages.  This cost goes up as the length and complicatedness of the documents increases.</p>
+<p>Re: Counting parens</p>
+<p>Um, er, why are you having to do that?  Ah, must not be using any good editors that do that matching for you.</p>
+<p>I generally find the &#8220;counting parens&#8221; argument to be a bit disingenuous given how people list XML-aware editors as a &#8220;pro&#8221; for XML.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-579">
+		<div id="comment-579">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/325b960c8a25d861c5f04764a2d525af438789a4c66a141cb0a1807f54e2ead1?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.ccil.org/~cowan" class="url" rel="ugc external nofollow">John Cowan</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-579">
+				January 4, 2007 at 11:25 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Here are your Lisp references:</p>
+<p>Common Lisp:  <a href="http://www.lisp.org/HyperSpec/Body/sec_2-3-4.html" rel="nofollow ugc">http://www.lisp.org/HyperSpec/Body/sec_2-3-4.html</a> (not explicit, because in Common Lisp symbols are defined by what they aren&#8217;t, and because it would be possible to define &#8220;!&#8221; to have special meaning to the reader)</p>
+<p>R5RS Scheme: <a href="http://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1" rel="nofollow ugc">http://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1</a></p>
+<p>Emacs Lisp: <a href="http://www.gnu.org/software/emacs/elisp-manual/html_node/Symbol-Type.html#Symbol-Type" rel="nofollow ugc">http://www.gnu.org/software/emacs/elisp-manual/html_node/Symbol-Type.html#Symbol-Type</a></p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-580">
+		<div id="comment-580">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/2eba309a3bd46bfcaae49415d68d88e2c1bdcd344456bb299e7010864be69e79?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.JSON.org/" class="url" rel="ugc external nofollow">Douglas Crockford</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-580">
+				January 4, 2007 at 11:46 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I would first argue with the terminology in your first statement: It is not correct to say &#8220;JSON document&#8221;. JSON is not a document format.</p>
+<p>One of the advantages of JSON is that its adoption invites you to reconsider the design of your structures. There are cases, such as here, where dependence on XML has caused an unnecessary injection of structural complexity. So I would want to render the final example differently:</p>
+<p>{&#8220;names!&#8221;: [<br />
+  {&#8220;gender&#8221; : &#8220;female&#8221;, &#8220;given-name&#8221;: &#8220;Anna Maria&#8221;, &#8220;lang&#8221;: &#8220;it&#8221;, &#8220;surname&#8221;: &#8220;Mozart&#8221;},<br />
+  {&#8220;gender&#8221; : &#8220;male&#8221;, &#8220;given-name: &#8220;Fitzwilliam&#8221;, &#8220;lang&#8221;: &#8220;en&#8221;, &#8220;surname&#8221;: &#8220;Darcy&#8221;},<br />
+  {&#8220;gender&#8221; : &#8220;male&#8221;, &#8220;given-name&#8221;: &#8220;Maurice&#8221;, &#8220;lang&#8221;: &#8220;fr&#8221;, &#8220;surname&#8221;: &#8220;Chevalier&#8221;},<br />
+  {&#8220;gender&#8221; : &#8220;female&#8221;, &#8220;given-name&#8221;: 7.9, &#8220;lang&#8221;: &#8220;de&#8221;}<br />
+]}</p>
+<p>This comes from a different perspective, regarding the information as data rather than a document. Of course you could make these same improvements in XML.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-581">
+		<div id="comment-581">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-581">
+				January 4, 2007 at 11:50 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>John (Mitchell): It might be fair to argue that both of us have been reading LISP too long if we find it easy to scan.</p>
+<p>Seriously, I use emacs for both LISP and XML (and would do so for JSON as well), but if we&#8217;re talking about the ability to scan a syntax, we&#8217;re talking about the ability to interpret it without mechanical help.  That means counting parens for LISP, or matching start/end tags for XML.  Clever indentation can help in both cases, of course.  I&#8217;ve never belonged to the faction that says syntactic complexity doesn&#8217;t matter because tools can hide it &#8212; I think that XML, JSON, and LISP all benefit from being relatively easy to scan and create without special tools.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-582">
+		<div id="comment-582">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/0dd16bd7f0fba5ac29fe98f9e165d1667025d90f70feb60265759ab079b3c0c4?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://binkley.blogspot.com/" class="url" rel="ugc external nofollow">B. K. Oxley (binkley)</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-582">
+				January 4, 2007 at 12:34 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Great comparison!</p>
+<p>I hadn&#8217;t thought about it much, but for my eyes the S-expression wins for simplicity and compactness.</p>
+<p>Using a decent editor (e.g., if IntelliJ magically had EMACS&#8217;s LISP support), proper formatting and breaking up of the strings of parentheses make the S-expression very readable.</p>
+<p>Alas, I do not have such magic tools at my fingertips.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.subbu.org/weblogs/main/2007/01/json_as_a_gener.html" class="url" rel="ugc external nofollow">subbu.org</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-584">
+		<div id="comment-584">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/62561f86f0e273e82d23175d57f23578487b59293c73745cdba6ff1713ad65e2?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://cime.net/~ricky/" class="url" rel="ugc external nofollow">Ricky Clarkson</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-584">
+				January 5, 2007 at 7:26 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>There are experiments in making Lisp indentation-based rather than parenthesis-based &#8211; or a combination of the two.</p>
+<p><a href="http://www.dwheeler.com/readable/readable-s-expressions.html" rel="nofollow ugc">http://www.dwheeler.com/readable/readable-s-expressions.html</a></p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-585">
+		<div id="comment-585">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/a3f6360417df91bbf267f8990d20b6be46e93bfb1105be472703671b37a7eb72?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.zenucom.com" class="url" rel="ugc external nofollow">Rick Marshall</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-585">
+				January 6, 2007 at 2:14 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi David &#8211; and every tree structure can be normalised to a relational structure (if we allow nulls) so I suggest we already have the equivalent of a Turing Machine in relational structures and therefore we can apply a complete computational model. I suspect this is the real reason that XML is working so well.</p>
+<p>ie Turing for computation, relational for data.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.arcadianvisions.com/blog/?p=43" class="url" rel="ugc external nofollow">Arcadian Visions &raquo; Blog Archive &raquo; This is My Data, This is My Code. Pt. 1.</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://blogs.nitobi.com/dave/?p=178" class="url" rel="ugc external nofollow">Dave Johnson &raquo; Blog Archive &raquo; XML vs JSON: A Second Sober Look</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://tal.univ-paris3.fr/blogtal/index.php?p=585" class="url" rel="ugc external nofollow">(pluri)TAL / ILPGA [U. Paris 3]</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.ajaxgirl.com/2007/01/04/json-vs-xml-the-debate/" class="url" rel="ugc external nofollow">JSON vs. XML: The Debate</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-590">
+		<div id="comment-590">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/75ba583b972a984e63fa2c2e8aec74290f9dc5e242c10b1e4e4045c0ee30806c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Masklinn</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-590">
+				January 25, 2007 at 4:26 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Wow&#8230;</p>
+<p>David, have you at no point considered refactoring your Lisp and JSON markups? They&#8217;re horrible, you&#8217;re piling crap on crap it&#8217;s idiotic.</p>
+<p>I won&#8217;t talk about Lisp because i&#8217;m not a specialist in Lisp data structures, but</p>
+<p>* Syntactic Sugar section<br />
+  The final XML you suggest is definitely not equivalent to the JSON and Lisp markups: in JSON and Lisp the `names` element directly holds independent names as full fledged object of the markup, while in the final XML markup the `name` element only holds a single string that you have to parse and split manually, you can&#8217;t just iterate on it or manipulate it in a simple way.</p>
+<p>* Additional node attributes<br />
+  What the hell&#8217;s the point of creating lists of objects here?<br />
+How about mapping every key to an object/alist/&#8230; and removing the complexity of having thousands of layers? e.g.</p>
+<p>{&#8220;names!&#8221;: [<br />
+  {&#8220;female-name&#8221;: {&#8220;lang&#8221;: &#8220;it&#8221;, &#8220;value&#8221;:&#8221;Anna Maria&#8221;},<br />
+  {&#8220;male-name: {&#8220;lang&#8221;: &#8220;en&#8221;, &#8220;value&#8221;:&#8221;Fitzwilliam&#8221;},<br />
+  {&#8220;male-name&#8221;: {&#8220;lang&#8221;: &#8220;fr&#8221;, &#8220;value&#8221;:&#8221;Maurice&#8221;}]}</p>
+<p>And this holds true for the Mixed Content section as well, put the surname in its own node in XML if you with, but in JSON you should just add an other entry to the base *-name objects/maps, creating yet-another-object in a useless redundant list is not only an annoyance for the user, but it makes the access code *much* more verbose and less readable than it needs be.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-591">
+		<div id="comment-591">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/2a39d4f70084580d9408a37a3d0d4eb3710633873b4470b92ab76fd4bc98814d?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">sumfag</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-591">
+				January 25, 2007 at 6:20 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Try adding unescaped binary data to a JSON-document; poissible with CDATA in XML, but of course a monkey like you only knows about 3% of the XML-spec, right? Thought so.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-592">
+		<div id="comment-592">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-592">
+				January 25, 2007 at 6:58 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p><strong>Masklinn:</strong> you&#8217;re right that my examples were not very complicated and could have been represented more simply in all three markup syntaxes &mdash; see Crockford&#8217;s comment earlier, which made the same point as yours.</p>
+<p>Just to throw a wrench into it, though, you cannot always assume that order doesn&#8217;t matter.  For example, try this:</p>
+<blockquote>
+<pre>
+&lt;male-name&gt;&lt;surname&gt;Saddam&lt;/surname&gt; Hussein&lt;/male-name&gt;
+</pre>
+</blockquote>
+<p>If you break this down to a map then try to reconstruct the name, you&#8217;ll end up with &#8220;Hussein Saddam&#8221; instead of &#8220;Saddam Hussein&#8221;.  The solution then, of course, is to add *another* property specifying whether the surname comes first or last.</p>
+<p>Next, you see a name like this:</p>
+<blockquote>
+<pre>
+&lt;male-name&gt;James Fitzwilliam &lt;surname&gt;Godwin&lt;/surname&gt; III&lt;/male-name&gt;
+</pre>
+</blockquote>
+<p>A simple ordering property won&#8217;t work now.  Instead, for your map, you&#8217;ll have to include a surname, pre-surname, and post-surname property.  And then you have the problem of honorifics, which can come before (&#8220;Dr.&#8221;, &#8220;Sir&#8221;) or after (&#8220;PhD&#8221;, &#8220;OBE&#8221;) the name, or prepositions like &#8220;de&#8221; in French and Spanish, which go with the surname but drop off for collation, etc.</p>
+<p>I think most people who work with real, non-trival data have experienced these kinds of problems, even when XML has never entered the equation &mdash; notice how relational database schemas in production systems usually end up resembling a ball of tangled string more than the neat diagrams in textbooks.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-593">
+		<div id="comment-593">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-593">
+				January 25, 2007 at 7:00 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>To the commenter calling him/herself <strong>sumfag</strong>: I appreciate your desire to defend XML, but CDATA sections cannot hold arbitrary binary data.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-594">
+		<div id="comment-594">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/03e0e87aebd5ad0f50db90ecba820d5237c0cc0d808de1085b265a92975dc3ae?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://phildawes.net/" class="url" rel="ugc external nofollow">Phil Dawes</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-594">
+				January 25, 2007 at 7:09 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>It&#8217;s not important to the point of the piece, but lisp alists are lists of pairs, so if you were using an alist to model the attribute bit it would be:</p>
+<p>&#8216;(names!<br />
+  (female-name (((lang . it)) &#8220;Anna Maria&#8221;))<br />
+  (male-name (((lang . en)) &#8220;Fitzwilliam&#8221;))<br />
+  (male-name (((lang . fr)) &#8220;Maurice&#8221;)))</p>
+<p>(unless lisp is different to scheme, in which case ignore this!)</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-595">
+		<div id="comment-595">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/95d52a065eb6015b6c9449037c6c5ad2fd519cdc0b3dbc8a9daae7a883c9b380?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://knome.net" class="url" rel="ugc external nofollow">Michael Speer</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-595">
+				January 25, 2007 at 9:44 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>&#8216;( names!</p>
+<p>   ( :name<br />
+     :gender female<br />
+     :lang it<br />
+     :given &#8220;Anna Maria&#8221;<br />
+     :sur &#8220;Mozart&#8221; )</p>
+<p>   ( :name<br />
+     :gender male<br />
+     :lang en<br />
+     :given &#8220;Fitzwilliam&#8221;<br />
+     :sur &#8220;Darcy&#8221; )</p>
+<p>   ( :name<br />
+     :gender male<br />
+     :lang fr<br />
+     :given &#8220;Maurice&#8221;<br />
+     :sur &#8220;Chevalier&#8221; )</p>
+<p>   ( :name<br />
+     :gender female<br />
+     :lang de<br />
+     :given 7.9<br />
+     :sur NIL ) )</p>
+<p>? The lisp can be made clearer, I think.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-596">
+		<div id="comment-596">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/8f00b07061c53a62c1d3d6dce7ee879085aa0dc82fd58879a915d4beff7e4e50?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.voodoowarez.com" class="url" rel="ugc external nofollow">rektide</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-596">
+				January 25, 2007 at 2:36 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>the thing I like about JSON is that it maps to a object oriented data structure, and the tooling surrounding it is just about serial/deserialization.  in comparison, the DOM data structure used by XML is immensely frustrating to deal with.  multiple text node children hanging off elements, content validation before you can .InnerText, theres just a never ending rigamaroll to do what is ultimately a very very simple task, and i for one do not enjoy writing such verbose kludgtastic code.  the data structures built by xml tooling just suck horrendous ass.</p>
+<p>i&#8217;m still unsure as to the ultimate feasibility, but projects like jsonml to bridge json and xml seem like they could be vital in the future.  there&#8217;s a lot of xml out there already, but at this moment, i can say i would like very much to be able to ignore it for the rest of my days, and consume it as json.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				<ul class="children">
+		<li class="comment odd alt depth-2" id="li-comment-4096">
+		<div id="comment-4096">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/6d11532a57a82298cae59ff13c2fd3e400d92bb25a2ad2beea57ef0e51af4516?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://www.facebook.com/profile.php?id=100003406026679" class="url" rel="ugc external nofollow">Castino</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-4096">
+				May 24, 2012 at 5:10 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>finally can append to it but the type atruibttes  1  will write to the tag once i re-run the program Is that any way where it will continue the numbers instead of starting from 1 .Currently Xml file: ok1no2 Not I wanted Peter7 Hope to become: ok1no2 This is what I wanted Peter7 My Coding:Dim m As String =  1 Private Sub btnAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAdd.Click        Dim doc As New Xml.XmlDocument         load file        doc.Load( data.xml )        Dim root As XmlNode = doc.SelectSingleNode( //Books )        If root Is Nothing Then             if this is a new document create root            root = doc.SelectSingleNode( //Books )        Else             create node             get root node named users            Dim Usersnode As Xml.XmlElement = doc.SelectSingleNode( //Books )             add the new node            Dim newNode As Xml.XmlElement = doc.CreateElement( Book )             add atruibttes            newNode.SetAttribute( type , m)             add children nodes if any            Dim child As Xml.XmlElement = doc.CreateElement( Author )            child.InnerText = txtAuthor.Text            newNode.AppendChild(child)            child = doc.CreateElement( Section )            child.InnerText = txtSection.Text            newNode.AppendChild(child)             add new node to users node            Usersnode.AppendChild(newNode)            m += 1        End If         save doc        doc.Save( data.xml )    End SubThanks  Was this answer helpful?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-597">
+		<div id="comment-597">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-597">
+				January 25, 2007 at 4:35 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p><strong>rektide:</strong> I think you hit on a major problem with XML in the browser &mdash; it&#8217;s not XML itself, but the DOM, which is an extremely awkward interface to use.  Part of that is because DOM has to be able to handle mixed content as well as fielded data, but a lot of it is simply the DOM&#8217;s design history.  Personally, I always use some kind of a simple helper library with browser-based DOM.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-598">
+		<div id="comment-598">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/871c072f71b6f76a364de75e147b5b46319ca6361257be8817c1cee77548ac74?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://plasmasturm.org/" class="url" rel="ugc external nofollow">Aristotle Pagaltzis</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-598">
+				January 25, 2007 at 11:24 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I used to hate XML. Then I discovered XPath.</p>
+<p>The funny thing is that XPath conversely is such a <em>nice</em> <abbr>API</abbr> for querying <abbr>XML</abbr> that now I find myself wishing I had it available for native datastructures. Manually writing code to traverse them is tedious at best. The CPAN has several modules that implement (some subset of) XPath for document types it was not designed for, even one that adds an XPath interface to regular classes so that you can use XPath to walk object hierarchies.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.voipblog.it/aggreg/megginson-technologies-quoderat-%c2%bb-blog-archive-%c2%bb-all-markup-ends-up-looking-like-xml/" class="url" rel="ugc external nofollow">del.icio.sfera &raquo; Megginson Technologies: Quoderat » Blog Archive » All markup ends up looking like XML</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-600">
+		<div id="comment-600">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/d864e4b010f93fa68a12609bbece9f27fbf1915d5852287101376e6853c0180e?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://dannyayers.com" class="url" rel="ugc external nofollow">Danny</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-600">
+				January 28, 2007 at 7:31 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Very nice comparison.</p>
+<p>So here&#8217;s another challenge (should you choose to accept it 😉 Given &#8220;There is no information that can be represented in an XML document that cannot be represented in a JSON document&#8221;. Ok, we all know RDF/XML syntax is really ugly. So how would you do RDF in JSON?</p>
+<p>(There are a few different systems which use RDF in Lisp, so that&#8217;s already covered. There&#8217;s also  Turtle RDF syntax which is JSON-like in terms of simplicity, and I&#8217;m pretty sure Javascript browsers are available, but an eval() would be so much easier&#8230;)</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-601">
+		<div id="comment-601">
+			<div class="comment-author vcard">
+				<img alt='' src='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G' srcset='https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=40&#038;d=identicon&#038;r=G 1x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=60&#038;d=identicon&#038;r=G 1.5x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=80&#038;d=identicon&#038;r=G 2x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=120&#038;d=identicon&#038;r=G 3x, https://1.gravatar.com/avatar/1630f6b23d8ba0103bc6c90c67f131d974058cab3998cfc45681c91f739f473c?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">david</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-601">
+				January 28, 2007 at 7:50 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p><strong>Danny:</strong> The easiest approach would be simply to encode the triples in JSON.  The only trouble is that, at least for RDF 1.0, the triples data model didn&#8217;t actually represent all of the information in the XML syntax.  Maybe that&#8217;s been fixed in a later RDF revision.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://zianet.dk/blog/2007/01/28/608/" class="url" rel="ugc external nofollow">Kristian Kristensen&#8217;s Blog &raquo;</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.megginson.com/blogs/quoderat/2007/01/28/thinking-about-structure/" class="url" rel="ugc external nofollow">Megginson Technologies: Quoderat &raquo; Blog Archive &raquo; Thinking about structure</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.martin-probst.com/2007/01/29/markups-raison-detre/" class="url" rel="ugc external nofollow">Martins Notepad &raquo; Blog Archive &raquo; Markups raison d&#8217;être</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-605">
+		<div id="comment-605">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/85cd61c49cdb1f11cd2f6e25f32cff60b7f282a81d9b7fdf762d4c486eafadb7?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Bob White</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-605">
+				February 6, 2007 at 4:56 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Is there an equivalent to XPath for JSON?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-606">
+		<div id="comment-606">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e97fd8572cc80128426703ad004b95fc798708897486cbdce608cb8a3cf095db?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Robert</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-606">
+				February 26, 2007 at 9:32 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>&gt;&gt; Manually writing code to traverse them is tedious at best.</p>
+<p>hmm.  that&#8217;s why Dr. Codd devised the relational model.  as one other commenter pointed out.  folks may continue to stuff data into hierarchy, whether it belongs there or not.  eventually, someone will &#8220;rediscover&#8221; that the magic of the relational algebra.  sigh.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-607">
+		<div id="comment-607">
+			<div class="comment-author vcard">
+				<img alt='' src='https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/36ce1ef944db6a55cce0b84c71e0079d52969de9023a502258afbb24123c6bbb?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Andrzej Taramina</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-607">
+				February 28, 2007 at 1:53 pm</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Might be worth considering HL Mencken&#8217;s thoughts on XML vs JSON vs LISP et all:</p>
+<p>&#8220;We must accept the other fellow&#8217;s religion, but only in the sense and to the extent that we respect his theory that his wife is beautiful and his children smart.&#8221;</p>
+<p>XML vs JSON vs LISP, that would be the &#8220;religion&#8221; part. 😉</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://blog.programmableweb.com/2010/08/11/is-json-the-developers-choice/" class="url" rel="ugc external nofollow">Is JSON the Developers Choice?</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-3369">
+		<div id="comment-3369">
+			<div class="comment-author vcard">
+				<img alt='' src='https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/b534f39449104edf9d709aa2ce3710310bc47b17f79a632f0c7af7618ced10e5?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Me, myself and I</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="index.html#comment-3369">
+				August 26, 2010 at 9:14 am</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>My personal experience with JSON and XML is with RPC calls from the browser to the server. Such calls never happen using simple argument lists, but structures. A responsive web application is not allowed to be chatty, and the best way to achieve this is not to do few complex calls instead of many simple calls. Complex calls rely on complex arguments. Once the data structures you encode become large and complex, both JSON and XML become increasingly hard to use. The only helpful thing in XML is that if you bothered to design a schema (which you won&#8217;t, in most cases), you&#8217;ll get a much earlier warning from the parser, whereas a bad data structure makes it up into the processing code when using JSON.</p>
+<p>Other than that, JSON rocks. As Larry Wall puts it, &#8220;easy things should be easy and hard things should be possible&#8221;. That&#8217;s definitely the case with JSON. With XML, it&#8217;s more like &#8220;easy things are hard like hell, whereas hard things are next to impossible&#8221;. At least for RPC from the browser.</p>
+<p>As for the scheme syntax: somebody (I think a speaker on google tech talk I saw on youtube) once said that Javascript is sort of a somewhat crippled Lisp with C syntax. Javascript is indeed a language in which you represent programs using the language&#8217;s own data structures, to a large extent &#8211; which is why JSON is so natural to Javascript. Which is probably why the scheme and JSON examples look so much alike.</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://www.dbms2.com/2011/02/07/notes-on-document-oriented-nosql/" class="url" rel="ugc external nofollow">Notes on document-oriented NoSQL | DBMS 2 : DataBase Management System Services</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://octodecillion.com/blog/groovy-object-notation-gron-for-data-interchange/" class="url" rel="ugc external nofollow">Groovy Object Notation (GrON) for Data Interchange | T. C. Mits</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="https://beta.faulkner.com/faccts/the-move-to-json/" class="url" rel="ugc external nofollow">The Move to JSON &#8211; FaulknerMigrate</a></p>
+				</li><!-- #comment-## -->
+			</ol>
+
+
+			<p class="nocomments">Comments are closed.</p>
+	
+
+
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="../../../../index.html">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="nav_menu-4" class="widget-container widget_nav_menu"><h3 class="widget-title">Featured articles</h3><div class="menu-featured-posts-container"><ul id="menu-featured-posts" class="menu"><li id="menu-item-328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="../../../../blogs/quoderat/2007/03/28/open-data-matters-more-than-open-source/index.html" title="Do you care if a web site runs on Open Source software, if it still locks up your information?">Open Data or Open Source?</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-323"><a href="../../../../2010/08/08/evil-or-misunderstood/index.html" title="Does net neutrality apply as much to content types as to providers?">Net neutrality and Google</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-322"><a href="../../../02/15/rest-the-quick-pitch/index.html" title="What actually matters for building RESTful web apps.">REST: the quick pitch</a></li>
+<li id="menu-item-326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-326"><a href="../../../../2005/08/08/patents-and-screwdrivers/index.html" title="Patents sometimes hurt their owners the most.">Patents and screwdrivers</a></li>
+<li id="menu-item-334" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-334"><a href="index.html" aria-current="page" title="When people complain about XML&#8217;s complexity, they&#8217;re often really complaining about the data&#8217;s complexity.">All markup ends up looking like XML</a></li>
+</ul></div></li><li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">See also &#8230;</h3><div class="menu-my-sites-container"><ul id="menu-my-sites" class="menu"><li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="http://www.megginson.com/">Megginson Technologies Ltd.</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="http://www.ourairports.com/">OurAirports airport directory</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="http://lahso.megginson.com/">Land and Hold Short (flying blog)</a></li>
+</ul></div></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../../../index.html" title="Quoderat" rel="home">
+					Quoderat				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-5583ee5cd9fc9109043328f4e0fdf7ae">
+	</div>
+	<div class="grofile-hash-map-41b92894dfcb8e72a8ecc58094bbda1c">
+	</div>
+	<div class="grofile-hash-map-579fbc756c0d918e2244dff914c9bf88">
+	</div>
+	<div class="grofile-hash-map-c5f095286dd8a3f1dbbc047412a10fb3">
+	</div>
+	<div class="grofile-hash-map-d415988c502c64b2ed4024ef6757d3ec">
+	</div>
+	<div class="grofile-hash-map-57e0589680ae44dbacfa8b7d431d2af7">
+	</div>
+	<div class="grofile-hash-map-8da867ace863264c1c27c110c1657776">
+	</div>
+	<div class="grofile-hash-map-cdef99c6b26883110262fcbce206eb7f">
+	</div>
+	<div class="grofile-hash-map-ecba29751333cb64231eb2a109721323">
+	</div>
+	<div class="grofile-hash-map-328bcf45b24e219e3ea9f4c57017b9b1">
+	</div>
+	<div class="grofile-hash-map-7cea90587ceb5068c2ebfb2abcf1c647">
+	</div>
+	<div class="grofile-hash-map-6451ee8093c9cedc94f6c813b4dde2c5">
+	</div>
+	<div class="grofile-hash-map-64cf58063c30128d48a66d2ff604c7d5">
+	</div>
+	<div class="grofile-hash-map-b871de839c31ddb1d9db8e33e0cb88a6">
+	</div>
+	<div class="grofile-hash-map-04448e6a27901b2d7117ebf4c69cce45">
+	</div>
+	<div class="grofile-hash-map-5d05af1527ed06bbd2e4d73075c0c204">
+	</div>
+	<div class="grofile-hash-map-d89d81f673dac06b16cade5b4bf19954">
+	</div>
+	<div class="grofile-hash-map-6900f7962103dcebbca06939416d0426">
+	</div>
+	<div class="grofile-hash-map-8e7d9085c84f574bb11df4899f5a8858">
+	</div>
+	<div class="grofile-hash-map-5d7fe904771aa932cb3ab37553916c45">
+	</div>
+	<div class="grofile-hash-map-8e08cd9c3593b8b3d0bf8ac5cef68287">
+	</div>
+	<div class="grofile-hash-map-cccf0adb51521c3de1c431d4d8b669f1">
+	</div>
+	<div class="grofile-hash-map-e17949267bbfe21a0fadf1bbf00592b4">
+	</div>
+	<div class="grofile-hash-map-7028f422ca6da0180de6c9d922a3228f">
+	</div>
+	<div class="grofile-hash-map-fe18a9c675c49babdc1e98da4649d1b6">
+	</div>
+	<div class="grofile-hash-map-93d81f304dd98d305b33bd3c089727f6">
+	</div>
+	<div class="grofile-hash-map-f98539796232b41df9eac8eca2a7a892">
+	</div>
+	<div class="grofile-hash-map-068d42181b9d57bde2e8d27c7be42c9a">
+	</div>
+	</div>
+	<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="index.html">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14988159" />
+										<input type="hidden" name="source" value="https://quoderat.megginson.com/2007/01/03/all-markup-ends-up-looking-like-xml/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="462a0c7898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2007%252F01%252F03%252Fall-markup-ends-up-looking-like-xml%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://quoderatech.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fquoderatech.wordpress.com%2F2007%2F01%2F03%2Fall-markup-ends-up-looking-like-xml%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2007%252F01%252F03%252Fall-markup-ends-up-looking-like-xml%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/p10T6v-2t">Copy shortlink</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://quoderat.megginson.com/2007/01/03/all-markup-ends-up-looking-like-xml/" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/blogs/14988159/posts/153">
+											View post in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/quoderat.megginson.com\/2007\/01\/03\/all-markup-ends-up-looking-like-xml\/":153};
+	</script>
+				<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/_static/??-eJx9zNEOwiAMBdAfkjXT6OKD8VMMg7qVQUGgMft70czEJ996e28OPJMykStyBVcgxJE8KimY9dR+ivgeO1d28LMLopKXibiApwULPAQFZ83WY/6OiY0X28qmmhjCG8uY/NoF4j+iw5q0WbYMRRhuzYJRyFsos85otbXr5ySeNu4aLv2wP54O/Xno3QvjtU8J'></script>
+<script type="text/javascript" id="sharing-js-js-after">
+/* <![CDATA[ */
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-x' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-x' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomx', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+/* ]]> */
+</script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src='https://widgets.wp.com/likes/master.html?ver=20250110#ver=20250110&amp;origin=https://quoderat.megginson.com' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' class='wpl-new-layout' role="dialog" aria-hidden="true" tabindex="-1">
+		<div class="likes-text">
+			<span>%d</span>		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14988159','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14988159','v':'wpcom','tz':'-5','user_id':'0','post':'153','subd':'quoderatech'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1mNzc2NTVTamdsRWFxcEV3XUtMXVR5aWlmMVNIcUxBaFstUWRrZVpWQ2tORExSfEpUVm05SlpEZzZWOEtlbW5nZHV0dkhDNjhwP35JbkdHLyZqSUh8WkZWbVl3Qll2LkguSkRJZGEtZV9DRDIwUGZ5XTdFRkNjSkxHdDMuQ0lOUmE2JTg3PXVRcFFHYWQseW9hflhRRU5hRlY0JVhVJSZOJTdBX256dlVdRVg5bnpOLkMtNERjOHBxOS0rRV1JWF9tNFdPR0EvRFtWZix6NlhzTFNNL1hhaDRZek9BaT96UlIwQ0tXRGJ8JSVxOHg5S1R1VVJ6eV9YZFtYZ1ppbldlMjhnS3RNL25FSjhbQX5LVU5F'}]);
+_stq.push([ 'clickTrackerInit', '14988159', '153' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: Tired of frameworks	</title>
+	<atom:link href="https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 25 Apr 2006 13:15:04 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Dave Lemen		</title>
+		<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/#comment-457</link>
+
+		<dc:creator><![CDATA[Dave Lemen]]></dc:creator>
+		<pubDate>Tue, 25 Apr 2006 13:15:04 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/04/23/tired-of-frameworks/#comment-457</guid>
+
+					<description><![CDATA[I&#039;m reminded of Spolsky&#039;s Law of Leaky Abstractions: http://www.joelonsoftware.com/articles/LeakyAbstractions.html]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m reminded of Spolsky&#8217;s Law of Leaky Abstractions: <a href="http://www.joelonsoftware.com/articles/LeakyAbstractions.html" rel="nofollow ugc">http://www.joelonsoftware.com/articles/LeakyAbstractions.html</a></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/#comment-456</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Mon, 24 Apr 2006 12:56:17 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/04/23/tired-of-frameworks/#comment-456</guid>
+
+					<description><![CDATA[Thanks for the comments, John, David, and Lars.
+
+John: That&#039;s the clearest argument I&#039;ve ever seen in favour of frameworks: to elaborate, frameworks are a bit like project managers -- unpleasant, but sometimes necessary once you have a certain number of people working on the same code. A large application is always going to need some kind of well-defined top-level architecture to allow people to work together, so the real question is whether an off-the-shelf framework will make a good fit or the top-level architecture should be customized for each application.  Unfortunately, the large projects that I&#039;ve seen that used frameworks like Struts or Spring have tended not to use them consistently, as if the framework were something that the developers had to work around.
+
+David: I don&#039;t know if this is universally accepted, but my definition of a framework is something that takes over much or all of the top-level control flow of your application -- in other words, instead of your application serving as the glue that holds the library components together, a framework serves as the glue that holds your application components together.  High-level library functions don&#039;t constitute a framework, because you still call them when and where you want.
+
+Lars: Swing is an interesting borderline case, as is SAX -- since they use callbacks, does that make them frameworks?  Since I can use Swing components individually in several different kinds of application architecture, I might exclude Swing; SAX *has* to use callbacks, though, so it really does constitute a parsing framework, though not a full application framework.]]></description>
+			<content:encoded><![CDATA[<p>Thanks for the comments, John, David, and Lars.</p>
+<p>John: That&#8217;s the clearest argument I&#8217;ve ever seen in favour of frameworks: to elaborate, frameworks are a bit like project managers &#8212; unpleasant, but sometimes necessary once you have a certain number of people working on the same code. A large application is always going to need some kind of well-defined top-level architecture to allow people to work together, so the real question is whether an off-the-shelf framework will make a good fit or the top-level architecture should be customized for each application.  Unfortunately, the large projects that I&#8217;ve seen that used frameworks like Struts or Spring have tended not to use them consistently, as if the framework were something that the developers had to work around.</p>
+<p>David: I don&#8217;t know if this is universally accepted, but my definition of a framework is something that takes over much or all of the top-level control flow of your application &#8212; in other words, instead of your application serving as the glue that holds the library components together, a framework serves as the glue that holds your application components together.  High-level library functions don&#8217;t constitute a framework, because you still call them when and where you want.</p>
+<p>Lars: Swing is an interesting borderline case, as is SAX &#8212; since they use callbacks, does that make them frameworks?  Since I can use Swing components individually in several different kinds of application architecture, I might exclude Swing; SAX *has* to use callbacks, though, so it really does constitute a parsing framework, though not a full application framework.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Lars Marius Garshol		</title>
+		<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/#comment-455</link>
+
+		<dc:creator><![CDATA[Lars Marius Garshol]]></dc:creator>
+		<pubDate>Mon, 24 Apr 2006 11:00:10 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/04/23/tired-of-frameworks/#comment-455</guid>
+
+					<description><![CDATA[I have to say I sympathize with your point of view, but I&#039;m not sure this is really black-and-white. To take some randomly chosen examples I find the framework approach taken by Axis (Java SOAP implementation) to be tiresome for exactly the reasons you give. I&#039;d be much happier did not take the framework attitude (don&#039;t call us, we&#039;ll call you), but instead left me with more control.
+
+On the other hand, when it comes to frameworks like Swing I really prefer the framework approach. There&#039;s just too much to worry about, and I&#039;d rather someone else took care of it, even if it does force me to work their way. The same goes for the operating system, I guess. :-)]]></description>
+			<content:encoded><![CDATA[<p>I have to say I sympathize with your point of view, but I&#8217;m not sure this is really black-and-white. To take some randomly chosen examples I find the framework approach taken by Axis (Java SOAP implementation) to be tiresome for exactly the reasons you give. I&#8217;d be much happier did not take the framework attitude (don&#8217;t call us, we&#8217;ll call you), but instead left me with more control.</p>
+<p>On the other hand, when it comes to frameworks like Swing I really prefer the framework approach. There&#8217;s just too much to worry about, and I&#8217;d rather someone else took care of it, even if it does force me to work their way. The same goes for the operating system, I guess. 🙂</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: M. David Peterson		</title>
+		<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/#comment-454</link>
+
+		<dc:creator><![CDATA[M. David Peterson]]></dc:creator>
+		<pubDate>Mon, 24 Apr 2006 09:40:38 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/04/23/tired-of-frameworks/#comment-454</guid>
+
+					<description><![CDATA[Wouldn&#039;t
+
+    * Turing complete;
+    * good library;
+    * get out of the way.
+
+be considered a framework?  I can understand the fact that you don&#039;t want to deal with bloatware frameworks that force you into doing things a certain way to accomplish a task. But a framework is a framework, whether that be commonly used modules in Scheme or Python that are grouped together to make common tasks simple (e.g. TurboGears) or whether they be Win32/COM or .NET DLL&#039;s.]]></description>
+			<content:encoded><![CDATA[<p>Wouldn&#8217;t</p>
+<p>    * Turing complete;<br />
+    * good library;<br />
+    * get out of the way.</p>
+<p>be considered a framework?  I can understand the fact that you don&#8217;t want to deal with bloatware frameworks that force you into doing things a certain way to accomplish a task. But a framework is a framework, whether that be commonly used modules in Scheme or Python that are grouped together to make common tasks simple (e.g. TurboGears) or whether they be Win32/COM or .NET DLL&#8217;s.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2006/04/23/tired-of-frameworks/#comment-453</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Mon, 24 Apr 2006 02:31:21 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/archives/2006/04/23/tired-of-frameworks/#comment-453</guid>
+
+					<description><![CDATA[Frameworks are necessary for what is called software engineering, which Dijkstra sardonically defined as &quot;How to program if you cannot.&quot;  You need them when you are working on a project too large to hold in any one hacker&#039;s head.  They suck, but churning out tens of thousands of lines of almost-repetitive code to handle the weird and idiosyncratic little details that every customer demands be done differently or else can&#039;t reasonably be done any other way.]]></description>
+			<content:encoded><![CDATA[<p>Frameworks are necessary for what is called software engineering, which Dijkstra sardonically defined as &#8220;How to program if you cannot.&#8221;  You need them when you are working on a project too large to hold in any one hacker&#8217;s head.  They suck, but churning out tens of thousands of lines of almost-repetitive code to handle the weird and idiosyncratic little details that every customer demands be done differently or else can&#8217;t reasonably be done any other way.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: Post in REST: create, update, or action?	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 05 Apr 2005 23:41:39 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-138</link>
+
+		<dc:creator><![CDATA[Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems]]></dc:creator>
+		<pubDate>Tue, 05 Apr 2005 23:41:39 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-138</guid>
+
+					<description><![CDATA[&lt;strong&gt;Can REST be considered a web service?&lt;/strong&gt;]]></description>
+			<content:encoded><![CDATA[<p><strong>Can REST be considered a web service?</strong></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-137</link>
+
+		<dc:creator><![CDATA[Dion Hinchcliffe's Blog - Musings and Ruminations on Building Great Systems]]></dc:creator>
+		<pubDate>Tue, 05 Apr 2005 23:40:33 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-137</guid>
+
+					<description><![CDATA[&lt;strong&gt;Can REST be considered a web service?&lt;/strong&gt;]]></description>
+			<content:encoded><![CDATA[<p><strong>Can REST be considered a web service?</strong></p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Robert Sayre		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-136</link>
+
+		<dc:creator><![CDATA[Robert Sayre]]></dc:creator>
+		<pubDate>Tue, 05 Apr 2005 00:22:56 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-136</guid>
+
+					<description><![CDATA[&quot;should I summarize it in a new post?&quot;
+
+Has it influenced your thinking? If so, yes.]]></description>
+			<content:encoded><![CDATA[<p>&#8220;should I summarize it in a new post?&#8221;</p>
+<p>Has it influenced your thinking? If so, yes.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mark Baker		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-135</link>
+
+		<dc:creator><![CDATA[Mark Baker]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 15:56:16 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-135</guid>
+
+					<description><![CDATA[FWIW, both POST and PUT can do creation; PUT for when the client knows the URI of the thing it&#039;s trying to create, and POST for when it doesn&#039;t.]]></description>
+			<content:encoded><![CDATA[<p>FWIW, both POST and PUT can do creation; PUT for when the client knows the URI of the thing it&#8217;s trying to create, and POST for when it doesn&#8217;t.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Leigh Dodds		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-134</link>
+
+		<dc:creator><![CDATA[Leigh Dodds]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 13:28:04 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-134</guid>
+
+					<description><![CDATA[For the APIs I&#039;ve designed so far I&#039;ve end up with POST doing the work of both create and update.
+
+E.g. POST to /pets to create a new pet. The POST containing the required metadata, the server responds with a 302 with the URL of the newly created pet resource. This allows the server to keep control over the ids. I&#039;ve justified this as considering &quot;/pets&quot; as a resource that I&#039;m modifying.
+
+Updates for an individual pet would be POSTed to e.g. /pets/lassie. The POST contains an XML document which can be the entire, updated pet description or just the revised elements. This is trivial when your API is mapping back to a relational system and you end up just updating individual columns; updates to document oriented XML might be a bit trickier.
+
+I don&#039;t understand your &quot;/pets/actions/buy&quot; example. Here I&#039;m creating another resource on the server: a transaction, or wishlist, or adding to a cart.]]></description>
+			<content:encoded><![CDATA[<p>For the APIs I&#8217;ve designed so far I&#8217;ve end up with POST doing the work of both create and update.</p>
+<p>E.g. POST to /pets to create a new pet. The POST containing the required metadata, the server responds with a 302 with the URL of the newly created pet resource. This allows the server to keep control over the ids. I&#8217;ve justified this as considering &#8220;/pets&#8221; as a resource that I&#8217;m modifying.</p>
+<p>Updates for an individual pet would be POSTed to e.g. /pets/lassie. The POST contains an XML document which can be the entire, updated pet description or just the revised elements. This is trivial when your API is mapping back to a relational system and you end up just updating individual columns; updates to document oriented XML might be a bit trickier.</p>
+<p>I don&#8217;t understand your &#8220;/pets/actions/buy&#8221; example. Here I&#8217;m creating another resource on the server: a transaction, or wishlist, or adding to a cart.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-133</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 13:24:59 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-133</guid>
+
+					<description><![CDATA[I think the discussion here is more valuable than my original post.  Will it show up in the weblog search engines, or should I summarize it in a new post?
+
+Thanks, everyone.]]></description>
+			<content:encoded><![CDATA[<p>I think the discussion here is more valuable than my original post.  Will it show up in the weblog search engines, or should I summarize it in a new post?</p>
+<p>Thanks, everyone.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mike Champion		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-132</link>
+
+		<dc:creator><![CDATA[Mike Champion]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 13:17:36 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-132</guid>
+
+					<description><![CDATA[Robert: That&#039;s a good point.  I&#039;m happy agreeing that sites should conform to HTTP.  I guess I think of POST in *practice* as a sortof generic doStuff() operation, but I wouldn&#039;t want to press that point.   My main skepticism is about the REST as a theory for how to build more complex systems on top of HTTP.]]></description>
+			<content:encoded><![CDATA[<p>Robert: That&#8217;s a good point.  I&#8217;m happy agreeing that sites should conform to HTTP.  I guess I think of POST in *practice* as a sortof generic doStuff() operation, but I wouldn&#8217;t want to press that point.   My main skepticism is about the REST as a theory for how to build more complex systems on top of HTTP.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Robert Sayre		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-131</link>
+
+		<dc:creator><![CDATA[Robert Sayre]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 04:02:13 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-131</guid>
+
+					<description><![CDATA[HTTP 0.9 includes the same definition of POST that Joe used (post a message to usenet or create a something somewhere). PUT and DELETE are namespace operations. PUT to create requires client control over the server&#039;s namespace.]]></description>
+			<content:encoded><![CDATA[<p>HTTP 0.9 includes the same definition of POST that Joe used (post a message to usenet or create a something somewhere). PUT and DELETE are namespace operations. PUT to create requires client control over the server&#8217;s namespace.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Ryan Tomayko		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-130</link>
+
+		<dc:creator><![CDATA[Ryan Tomayko]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 00:28:16 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-130</guid>
+
+					<description><![CDATA[I&#039;ve always thought POST made perfect sense for CREATE. &quot;Post&quot; as in &quot;Post a new item&quot;.
+
+Take, for example, a RESTful interface to message board / forum software. URI space like the following makes sense to me:
+
+GET / - Get links to the list of messages in the forum.
+
+GET /id - View message &quot;id&quot;
+
+POST / - Create a new message on the forum (response: 303 with URI to new resource)
+
+PUT /id - Create a new message using the specified ID.
+
+I think it comes down to whether the client understands how to create new pieces of URI space or whether the server needs to. If the server understands the URI space then POST makes sense, if the client understands the URI space then PUT makes sense.
+
+There was some really excellent discussion on PUT vs. POST for new resource creation on the ATOM mailing list and Wiki back around November.]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ve always thought POST made perfect sense for CREATE. &#8220;Post&#8221; as in &#8220;Post a new item&#8221;.</p>
+<p>Take, for example, a RESTful interface to message board / forum software. URI space like the following makes sense to me:</p>
+<p>GET / &#8211; Get links to the list of messages in the forum.</p>
+<p>GET /id &#8211; View message &#8220;id&#8221;</p>
+<p>POST / &#8211; Create a new message on the forum (response: 303 with URI to new resource)</p>
+<p>PUT /id &#8211; Create a new message using the specified ID.</p>
+<p>I think it comes down to whether the client understands how to create new pieces of URI space or whether the server needs to. If the server understands the URI space then POST makes sense, if the client understands the URI space then PUT makes sense.</p>
+<p>There was some really excellent discussion on PUT vs. POST for new resource creation on the ATOM mailing list and Wiki back around November.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Mike Champion		</title>
+		<link>https://quoderat.megginson.com/2005/04/03/post-in-rest-create-update-or-action/#comment-129</link>
+
+		<dc:creator><![CDATA[Mike Champion]]></dc:creator>
+		<pubDate>Mon, 04 Apr 2005 00:14:35 +0000</pubDate>
+		<guid isPermaLink="false">/?p=37#comment-129</guid>
+
+					<description><![CDATA[I agree about the &quot;write code, not blogs&quot; comment and really should just shut up about this, but am drawn to it like a moth to a flame, with similar results, at least on my productivity.  Here&#039;s what I would hope is my last word on the subject for awhile: Find the principles of Web development by induction from the most technically successful sites, not by deduction from Fielding&#039;s or anyone else&#039;s axioms. That is, identify those web applications (human-only or automated services) that are secure, reliable, scalable, capable of handling all sorts redundant or aborted operations without doing anything unpleasant, etc. ... then identify what the common factors are.  If they do turn out to be something like: (borrowing heavily from the Wikipedia article on REST)
+    *   Entities conceptualized as abstract resources about which applications transfer representations.
+    *   A fundamentally stateless client/server interaction where participants are not required to take additional steps to track states
+
+    * A limited number of well-defined protocol operations that correspond fairly closely with the basic CRUD functions required for data persistence.
+
+    * A universal means of resource-identification and -resolution: in a RESTful system, every piece of information is uniquely addressable in a single namespace through the use of a URI .
+
+    * The use of hypermedia both for application information and application state-transitions.
+
+THEN, let&#039;s all treat these (or Fielding&#039;s original wording) as axiomatic and figure out how to write better apps by being RESTful.  If some of these aren&#039;t found too often in the wild, then let&#039;s not waste energy arguing about how to implement them.
+
+This has practical implications for what David&#039;s post analyzes:  Why not just use POST as a pragmatic way of sending entire XML files to a server?  Why &quot;fix&quot; servers by opening PUT, in the world we live in where all sorts of slimeballs are trying to sabotage websites just for kicks?  If it turns out that there is solid empirical evidence that the REST prescirption about operations should be taken as axiomatic, then sure, fix the servers in the way the theory prescribes.  But if the REST principles just happen to partially intersect actual best practice, it&#039;s not clear to me why practice should change to accomodate the theory.]]></description>
+			<content:encoded><![CDATA[<p>I agree about the &#8220;write code, not blogs&#8221; comment and really should just shut up about this, but am drawn to it like a moth to a flame, with similar results, at least on my productivity.  Here&#8217;s what I would hope is my last word on the subject for awhile: Find the principles of Web development by induction from the most technically successful sites, not by deduction from Fielding&#8217;s or anyone else&#8217;s axioms. That is, identify those web applications (human-only or automated services) that are secure, reliable, scalable, capable of handling all sorts redundant or aborted operations without doing anything unpleasant, etc. &#8230; then identify what the common factors are.  If they do turn out to be something like: (borrowing heavily from the Wikipedia article on REST)<br />
+    *   Entities conceptualized as abstract resources about which applications transfer representations.<br />
+    *   A fundamentally stateless client/server interaction where participants are not required to take additional steps to track states</p>
+<p>    * A limited number of well-defined protocol operations that correspond fairly closely with the basic CRUD functions required for data persistence.</p>
+<p>    * A universal means of resource-identification and -resolution: in a RESTful system, every piece of information is uniquely addressable in a single namespace through the use of a URI .</p>
+<p>    * The use of hypermedia both for application information and application state-transitions.</p>
+<p>THEN, let&#8217;s all treat these (or Fielding&#8217;s original wording) as axiomatic and figure out how to write better apps by being RESTful.  If some of these aren&#8217;t found too often in the wild, then let&#8217;s not waste energy arguing about how to implement them.</p>
+<p>This has practical implications for what David&#8217;s post analyzes:  Why not just use POST as a pragmatic way of sending entire XML files to a server?  Why &#8220;fix&#8221; servers by opening PUT, in the world we live in where all sorts of slimeballs are trying to sabotage websites just for kicks?  If it turns out that there is solid empirical evidence that the REST prescirption about operations should be taken as axiomatic, then sure, fix the servers in the way the theory prescribes.  But if the REST principles just happen to partially intersect actual best practice, it&#8217;s not clear to me why practice should change to accomodate the theory.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

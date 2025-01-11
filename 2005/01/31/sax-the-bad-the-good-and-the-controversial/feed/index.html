@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: SAX: biggest regrets	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Tue, 08 Feb 2005 02:58:08 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Jason Aaron Osgood		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-14</link>
+
+		<dc:creator><![CDATA[Jason Aaron Osgood]]></dc:creator>
+		<pubDate>Tue, 08 Feb 2005 02:58:08 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-14</guid>
+
+					<description><![CDATA[Elliotte Rusty Harold wrote:
+
+&lt;blockquote cite=&quot;XML parsing is not I/O, and a SAXException is not a kind of IOException. This one you got right. Consider the case of an XML document stored in a String literal.&quot;&gt;
+
+Technically, you are correct.  And yet.  Both ByteArrayInputStream.read() and CharArrayReader.read() throw IOException.  This is done to enable composition and swapping.  For instance, I sometimes use handcoded stuff in unit tests.  The advantages outweigh the minor annoyances.  So I agree with David Megginson on this one.&lt;/blockquote&gt;]]></description>
+			<content:encoded><![CDATA[<p>Elliotte Rusty Harold wrote:</p>
+<blockquote cite="XML parsing is not I/O, and a SAXException is not a kind of IOException. This one you got right. Consider the case of an XML document stored in a String literal.">
+<p>Technically, you are correct.  And yet.  Both ByteArrayInputStream.read() and CharArrayReader.read() throw IOException.  This is done to enable composition and swapping.  For instance, I sometimes use handcoded stuff in unit tests.  The advantages outweigh the minor annoyances.  So I agree with David Megginson on this one.</p></blockquote>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Elliotte Rusty Harold		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-13</link>
+
+		<dc:creator><![CDATA[Elliotte Rusty Harold]]></dc:creator>
+		<pubDate>Sun, 06 Feb 2005 11:06:40 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-13</guid>
+
+					<description><![CDATA[XML parsing is not I/O, and a SAXException is not a kind of IOException. This one you got right. Consider the case of an XML document stored in a String literal. The XOM unit test suite is loaded with these things. No I/O needs to be performed to parse them. Everything already exists within memory. Parsing is a completely separate operation from input and output, and it should be logically separate. Parsing is defined to operate on a sequence of bytes or characters. We often choose to represent that sequence as a stream for the sake of convenience and efficiency. However, we don&#039;t need to. Parsing would work equally well if the data were represented as a byte array, char array, or something else.
+
+There&#039;s also the issue that even parsing a string may cause I/O to be done if an external DTD subset needs to be loaded. However, again the parsing of the XML and the input and output of that XML are two different operations. Problems in one are not problems in the other. They are conceptually distinct.]]></description>
+			<content:encoded><![CDATA[<p>XML parsing is not I/O, and a SAXException is not a kind of IOException. This one you got right. Consider the case of an XML document stored in a String literal. The XOM unit test suite is loaded with these things. No I/O needs to be performed to parse them. Everything already exists within memory. Parsing is a completely separate operation from input and output, and it should be logically separate. Parsing is defined to operate on a sequence of bytes or characters. We often choose to represent that sequence as a stream for the sake of convenience and efficiency. However, we don&#8217;t need to. Parsing would work equally well if the data were represented as a byte array, char array, or something else.</p>
+<p>There&#8217;s also the issue that even parsing a string may cause I/O to be done if an external DTD subset needs to be loaded. However, again the parsing of the XML and the input and output of that XML are two different operations. Problems in one are not problems in the other. They are conceptually distinct.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Norman Walsh		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-11</link>
+
+		<dc:creator><![CDATA[Norman Walsh]]></dc:creator>
+		<pubDate>Thu, 03 Feb 2005 19:59:34 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-11</guid>
+
+					<description><![CDATA[I wonder if I count as one of the twelve? :-) SAX is a fabulous piece of work, but I so desperately wish that it passed the base URI and original, possibly relative, system identifier to entityResolver() that it almost makes me want to cry when I think about it.]]></description>
+			<content:encoded><![CDATA[<p>I wonder if I count as one of the twelve? 🙂 SAX is a fabulous piece of work, but I so desperately wish that it passed the base URI and original, possibly relative, system identifier to entityResolver() that it almost makes me want to cry when I think about it.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; The complexity of XML parsing APIs		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-16</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; The complexity of XML parsing APIs]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-16</guid>
+
+					<description><![CDATA[[...] ry format then decide to cruft it up by layering a crufty XML API on it is beyond me. 	[0] &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;http://www.megginson.com/blogs/quoderat/archi [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ry format then decide to cruft it up by layering a crufty XML API on it is beyond me. 	[0] <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow"></a><a href="http://www.megginson.com/blogs/quoderat/archi" rel="nofollow ugc">http://www.megginson.com/blogs/quoderat/archi</a> [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; The complexity of XML parsing APIs		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-15</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; The complexity of XML parsing APIs]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-15</guid>
+
+					<description><![CDATA[[...] ry format then decide to cruft it up by layering a crufty XML API on it is beyond me. 	[0] &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;http://www.megginson.com/blogs/quoderat/archi [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ry format then decide to cruft it up by layering a crufty XML API on it is beyond me. 	[0] <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow"></a><a href="http://www.megginson.com/blogs/quoderat/archi" rel="nofollow ugc">http://www.megginson.com/blogs/quoderat/archi</a> [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Don Park's Daily Habit - Welcoming David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-8</link>
+
+		<dc:creator><![CDATA[Don Park's Daily Habit - Welcoming David Megginson]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-8</guid>
+
+					<description><![CDATA[[...] ginson&lt;/A&gt; who led that effort seemingly effortlessly although not without some noteworthy &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;regrets&lt;/A&gt; which I agree with.&#160;&#160;Wh [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ginson who led that effort seemingly effortlessly although not without some noteworthy <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow">regrets</a> which I agree with.&nbsp;&nbsp;Wh [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; Blame Larry Wall		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-12</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; Blame Larry Wall]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-12</guid>
+
+					<description><![CDATA[[...] t into SAX, and one that I sometimes wish we had taken up (though it&#8217;s not one of my &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;biggest regrets&lt;/a&gt;): represent any XML name [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] t into SAX, and one that I sometimes wish we had taken up (though it&#8217;s not one of my <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow">biggest regrets</a>): represent any XML name [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Quoderat &#187; SAX: biggest satisfactions		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-10</link>
+
+		<dc:creator><![CDATA[Quoderat &#187; SAX: biggest satisfactions]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-10</guid>
+
+					<description><![CDATA[[...] ions 	Filed under:  	programming &#8212; david @ 10:01 pm  	 	 			Recently, I mentioned my &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;biggest regrets&lt;/a&gt; about SAX. When we were b [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ions 	Filed under:  	programming &#8212; david @ 10:01 pm  	 	 			Recently, I mentioned my <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow">biggest regrets</a> about SAX. When we were b [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Don Park's Daily Habit - Welcoming David Megginson		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-9</link>
+
+		<dc:creator><![CDATA[Don Park's Daily Habit - Welcoming David Megginson]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-9</guid>
+
+					<description><![CDATA[[...] ginson&lt;/A&gt; who led that effort seemingly effortlessly although not without some noteworthy &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;regrets&lt;/A&gt; which I agree with.&#160;&#160;Wh [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ginson who led that effort seemingly effortlessly although not without some noteworthy <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow">regrets</a> which I agree with.&nbsp;&nbsp;Wh [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Danny Ayers, Raw Blog		</title>
+		<link>https://quoderat.megginson.com/2005/01/31/sax-the-bad-the-good-and-the-controversial/#comment-17</link>
+
+		<dc:creator><![CDATA[Danny Ayers, Raw Blog]]></dc:creator>
+		<pubDate>Tue, 30 Nov -0001 00:00:00 +0000</pubDate>
+		<guid isPermaLink="false">/?p=6#comment-17</guid>
+
+					<description><![CDATA[[...] ng for you and give you a predigested view of the information.  	Nearby, Megginson&#8217;s &lt;a href=&quot;http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/&quot; rel=&quot;nofollow&quot;&gt;biggest regrets&lt;/a&gt; and biggest satisfactions [...]]]></description>
+			<content:encoded><![CDATA[<p>[&#8230;] ng for you and give you a predigested view of the information.  	Nearby, Megginson&#8217;s <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/" rel="nofollow">biggest regrets</a> and biggest satisfactions [&#8230;]</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+Quoderat | Open information and technology. | Page 28</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://quoderat.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=12'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9xdW9kZXJhdC5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14988159"
+		+ "&time=1736549170";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Feed" href="../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Quoderat &raquo; Comments Feed" href="../../comments/feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-6-1' href='https://s2.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/coblocks-style.css?m=1681832297i&cssminify=yes' type='text/css' media='all' />
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s1.wp.com/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s2.wp.com/wp-content/themes/h4/global.css?m=1420737423i&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14988159","postID":"0","siteURL":"https:\/\/quoderat.megginson.com","xhrURL":"https:\/\/quoderat.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://quoderat.megginson.com/page/28/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/sun\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/wp-content/js/rlt-proxy.js?m=1720530689i'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://quoderatech.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel='shortlink' href='https://wp.me/10T6v' />
+
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Quoderat" />
+<meta property="og:description" content="Open information and technology." />
+<meta property="og:url" content="https://quoderat.megginson.com/" />
+<meta property="og:site_name" content="Quoderat" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:creator" content="@david_megginson" />
+<meta name="twitter:site" content="@david_megginson" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s2.wp.com/i/webclip.png" />
+<link rel='openid.server' href='../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../osd.xml" title="Quoderat" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Quoderat" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Open information and technology." /><meta name="description" content="Open information and technology." />
+</head>
+
+<body class="home blog paged paged-28 customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<h1 id="site-title">
+					<span>
+						<a href="../../index.html" title="Quoderat" rel="home">Quoderat</a>
+					</span>
+				</h1>
+				<div id="site-description">Open information and technology.</div>
+
+									<a class="home-link" href="../../index.html" title="Quoderat" rel="home">
+						<img src="../../wp-content/uploads/2010/08/cropped-manuscript-scribe12-172v-1604.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+	<div id="nav-above" class="navigation">
+		<div class="nav-previous"></div>
+		<div class="nav-next"><a href="../27/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+	</div><!-- #nav-above -->
+
+
+
+	
+			<div id="post-12" class="post-12 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2005/02/08/the-complexity-of-xml-parsing-apis/index.html" rel="bookmark">The complexity of XML parsing&nbsp;APIs</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/02/08/the-complexity-of-xml-parsing-apis/index.html" title="8:49 am" rel="bookmark"><span class="entry-date">February 8, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><a href="http://www.25hoursaday.com/weblog/">Dare Obasanjo</a> recently posted a <a href="http://lists.xml.org/archives/xml-dev/200502/msg00181.html">message</a> to the <a href="http://lists.xml.org/archives/xml-dev/">xml-dev</a> mailing list as part of the ancient and venerable <cite>binary XML</cite> permathread (just a bit down the list from <cite>attributes vs. elements</cite>, <cite>DOM vs. SAX</cite>, and <cite>why use CDATA?</cite>).  His message including the following:</p>
+<blockquote><p>
+I don&#8217;t understand this obsession with SAX and DOM. As APIs go they both suck[0,1]. Why would anyone come up with a simplified binary format then decide to cruft it up by layering a crufty XML API on it is beyond me.</p>
+<p>[0] <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/">http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/</a></p>
+<p>[1] <a href="http://www.artima.com/intv/dom.html">http://www.artima.com/intv/dom.html</a></p>
+</blockquote>
+<p>I supposed that I should rush to <a href="http://www.saxproject.org/">SAX</a>&#8216;s defense.  I can at least point to my related posting about <a href="http://www.megginson.com/blogs/quoderat/archives/2005/02/02/sax-biggest-satisfactions/">SAX&#8217;s good points</a>, but to be fair, I have to admit that Dare is absolutely right &#8212; building complex applications that use SAX and <a href="http://www.w3.org/DOM/">DOM</a> <em>is</em> very difficult and usually results in messy, hard-to-maintain code.</p>
+<p>The problem is that I have not yet been able to find an XML API that doesn&#8217;t, um, suck.  So-called simplified APIs like <a href="http://dev2dev.bea.com/technologies/stax/index.jsp">StAX</a> or <a href="http://www.jdom.org/">JDOM</a> always look easier with the simple examples used in introductions and tutorials, but as soon as you try to use them in a real-world application, their relatively minor advantages disappear in the noise of trying to deal with the complexity of XML structure.  For example, late last week I had decided to use StAX instead of SAX for a library I was writing, since it was getting very hard to manage context and flow control in a push parsing environment and my SAX handler had become (predictably) long and messy.  After an hour I realized that my StAX handler had become even longer and harder to read than the original SAX-based code, even though StAX lets me use the Java runtime stack to manage context instead of forcing me to do context management on my own.  Oh well.  StAX looked so much easier in Elliotte Rusty Harold&#8217;s <a href="http://www.xml.com/pub/a/2003/09/17/stax.html">excellent tutorial</a>, but as soon as I moved away from toy examples to a real XML data format, everything fell apart.</p>
+<p>My old <a href="http://search.cpan.org/~dmegg/SGMLSpm-1.03ii/">SGMLSpl</a> library was also hard to use, so we have a long history of awkward APIs in the markup world.  Only if you can restrict the kind of XML you&#8217;re dealing with somehow &#8212; say, by banning mixed content or even using a data metaformat like <a href="http://www.w3.org/RDF/">RDF</a> or <a href="http://www.topicmaps.org/">XTM</a> (more on these in a later posting) &#8212; can the user APIs get a little simpler, because the library can do some preprocessing for you and give you a predigested view of the information.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/02/08/the-complexity-of-xml-parsing-apis/index.html#comments">11 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-12 -->
+
+		
+	
+
+	
+			<div id="post-10" class="post-10 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2005/02/04/blame-larry-wall/index.html" rel="bookmark">Blame Larry Wall</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/02/04/blame-larry-wall/index.html" title="9:10 am" rel="bookmark"><span class="entry-date">February 4, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><img src="https://i0.wp.com/www.megginson.com/blogs/quoderat/images/larrywall.gif" alt="Larry Wall" align="right" /></p>
+<p>Late yesterday I was working on a mind-numbingly simple XML data library in <a href="http://en.wikipedia.org/wiki/Java_programming_language">Java</a> for use with a larger project.  I spent about an hour on the first iteration, which could read and write through an event-interface and/or into a data tree but used only simple names.  After supper, I came back and spent another hour writing a beautifully elegant <var>XMLName</var> class and refactoring the rest of the code to support <a href="http://en.wikipedia.org/wiki/XML_namespace">namespace</a>-qualified names.  The class supported getters and setters for the namespace URI and local name, <var>equals</var>, and <var>hashCode</var> methods, and at one point, support for the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Comparable.html">Comparable</a> and <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/Serializable.html">Serializable</a> interfaces, but it went even further &#8212; to support the <a href="http://en.wikipedia.org/wiki/Flyweight_pattern">flyweight design pattern</a> it was declared final and had a weak-reference lookup table for internalization, like the Java <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html">String</a> class.  To go even further, it had a static <var>intern</var> method that took two arguments, so that you could create an internalized XMLName directly without having to construct a non-internalized version first:</p>
+<pre>
+XMLName name = XMLName.intern("http://http://www.w3.org/1999/xlink", "href");
+</pre>
+<p>In other words, it was pretty cool &#8212; fast, memory-efficient, and properly designed.  I&#8217;m sure that many of the people reading this posting have designed similar classes for XML work and taken similar pride in them.  Unfortunately, before I went to bed, I realized I&#8217;d have to delete the class when I got up in the morning.</p>
+<p>Why?  I blame <a href="http://www.wall.org/~larry/">Larry Wall</a> for all my grief, because it was his voice that started playing in my head, saying &#8220;easy things should be easy, and hard things should be possible.&#8221;</p>
+<p>I messed up because I was focussing on the harder part of the problem.  For simple XML configuration files, most people won&#8217;t be using namespaces most of the time, so forcing them to write</p>
+<pre>
+branch.setName(XMLName.intern(null, "foo"))
+</pre>
+<p>instead of</p>
+<pre>
+branch.setName("foo")
+</pre>
+<p>is a bad idea.  Of course, I could hide that behind the scenes by adding extra method calls, say, <var>setNameString</var> and <var>getNameString</var>, but then I end up cluttering up my code (harder to learn, more bugs, trickier maintenance, etc.), again, just in an attempt to make the hard case easier.</p>
+<p>The right solution for this particular library is one that <a href="http://en.wikipedia.org/wiki/James_Clark_(XML_expert)">James Clark</a> suggested back in 1998 or 1999 when we were first trying to figure out how to get namespace support into SAX, and one that I sometimes wish we had taken up (though it&#8217;s not one of my <a href="http://www.megginson.com/blogs/quoderat/archives/2005/01/31/sax-the-bad-the-good-and-the-controversial/">biggest regrets</a>): represent any XML name as a single string, with the namespace URI and the local name merged together.  James preferred surrounding the namespace URI in braces, like this: &#8220;{http://http://www.w3.org/1999/xlink}href&#8221;; other option is to separate the two with a space, like this: &#8220;<a href="http://http://www.w3.org/1999/xlink" rel="nofollow">http://http://www.w3.org/1999/xlink</a> href&#8221;.  Of course, any library that does this should provide helper functions for splitting the string into its two parts or recombining.</p>
+<p>So, while I&#8217;m still channelling Larry&#8217;s voice, let&#8217;s see how well this solution fits.  First, the easy case:</p>
+<pre>
+String name = branch.getName();
+branch.setName("foo");
+</pre>
+<p>OK, looks good: the easy thing is easy.  Now, the hard case:</p>
+<pre>
+String name = branch.getName();
+String parts[2] = Utils.splitName(name);
+branch.setName("{http://www.example.org/ns}foo");
+</pre>
+<p>The hard thing is not easy, but it&#8217;s possible.  Perhaps Larry&#8217;s voice will leave my head now, and I can get on with life and coding, in that order.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/02/04/blame-larry-wall/index.html#comments">3 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-10 -->
+
+		
+	
+
+	
+			<div id="post-9" class="post-9 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2005/02/03/perl-xmlwriter-has-a-good-home/index.html" rel="bookmark">Perl XML::Writer has a good&nbsp;home</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/02/03/perl-xmlwriter-has-a-good-home/index.html" title="8:13 am" rel="bookmark"><span class="entry-date">February 3, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>I just stumbled on <a href="http://www.kafsemo.org/2005/02/02.html">this posting</a>, and was happy to see that the <a href="http://en.wikipedia.org/wiki/Perl">Perl</a> version of my XML writer (a library for creating XML) has found <a href="http://xml-writer-perl.berlios.de/">a good home</a>.  I originally wrote the XML writer in both <a href="http://en.wikipedia.org/wiki/Java_programming_language">Java</a> and Perl versions, but the Perl version was always the neglected sibling &#8212; I just don&#8217;t use perl that much any more, and wasn&#8217;t motivated to fix bugs, add features, etc.</p>
+<p>Over the years, several people offered to take over maintenance of the Perl branch, but usually nothing came of it, and I lost track of who, if anyone, was supposed to be managing it.  I recently revived the <a href="http://sourceforge.net/projects/xml-writer">XML-Writer Sourceforge project</a> and have been doing some maintenance on the Java branch, but again, hadn&#8217;t looked at the Perl.</p>
+<p>So I&#8217;ll do some work on the Java, but will leave the Perl in better hands.  This is a small but nice example of how open source is supposed to work: the people who care the most are the ones who do the work, and when the original maintainer loses interest, others are ready to step in.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/02/03/perl-xmlwriter-has-a-good-home/index.html#comments">2 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-9 -->
+
+		
+	
+
+	
+			<div id="post-8" class="post-8 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2005/02/02/sax-biggest-satisfactions/index.html" rel="bookmark">SAX: biggest satisfactions</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/02/02/sax-biggest-satisfactions/index.html" title="10:01 pm" rel="bookmark"><span class="entry-date">February 2, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Recently, I mentioned my <a href="http://www.megginson.com/blogs/quoderat/2005/01/31/sax-the-bad-the-good-and-the-controversial/">biggest regrets</a> about <a href="http://www.saxproject.org/">SAX</a>. When we were building SAX, however, there were an awful lot of things that went right.  Here are the three things that I&#8217;m happiest about:</p>
+<dl>
+<dt>SAX was useful right from the start</dt>
+<dd>
+<p>Not just useful, in fact, but <em>more</em> useful than any alternative at the time.  When I wrote the first draft of SAX over Christmas 1997 and put it up on the xml-dev mailing list for discussion and review in January 1998, the package included not only an interface definition but driver/adapters for all four existing Java XML parsers: <a href="http://www.jclark.com/bio.htm">Jame&#8217;s Clark</a>&#8216;s <a href="http://www.jclark.com/xml/xp/">XP</a>, <a href="http://www.tbray.org/ongoing/">Tim Bray</a>&#8216;s <a href="http://www.textuality.com/Lark/">Lark</a>, <a href="http://www.microsoft.com/">Microsoft</a>&#8216;s MSXML (I don&#8217;t think a Java version is still available), and my own <a href="http://saxon.sourceforge.net/aelfred.html">AElfred</a> (now maintained by others).  That meant that right away, a Java developer would be able to write code that worked with any existing XML parser.</p>
+<p>This was an important point because I was afraid that the big computer companies (<a href="http://www.ibm.com/">IBM</a> and <a href="http://www.oracle.com/">Oracle</a> were also working on parsers) were going to try to lock developers into their platforms through proprietary parser interfaces.  XML is an open format, but if all your code and all the libraries available to you work only with (say) IBM&#8217;s or Microsoft&#8217;s parser interface, then you haven&#8217;t gained much over using a proprietary format.</p>
+<p>Another advantage, that I hadn&#8217;t anticipated, was that people started developing large-scale projects with SAX right away, so they shook out bugs and design problems very quickly.  Running code is always a good thing, but running code that actually makes developers&#8217; lives easier trumps anything else.</p>
+</dd>
+<dt>SAX is efficient</dt>
+<dd>
+<p>There are so many things that we could have done to kill SAX&#8217;s efficiency: we could have returned strings for character data instead of arrays (which can be indexed directly into the parser&#8217;s buffer); we could have returned elaborate objects for events, managed from some kind of pool; we could have managed a context stack for the user, whether she needed it or not; but we did none of those things.  I was tempted, sometimes, but the other volunteers in the project quickly slapped me back into line.</p>
+<p>The rationale was simple: it is easy to build all of those things on top of SAX if you need them (and, in fact, <a href="http://users.breathe.com/mhkay/">Michael Kay</a>&#8216;s <a href="http://saxon.sourceforge.net/">SAXON</a> started life as a friendly SAX helper library, before it evolved into an XSLT framework), but there is no way to remove them if you <em>don&#8217;t</em> need them.  As a result, SAX concentrated on standardizing the way that parsers deliver information rather than providing a friendly user experience &#8212; once that was standardized, it would be easy to build layers on top that would work with any parser.  In short, the motto was <em>do no harm</em> rather than <em>make it fun and simple</em>; it turned out being a perfect example of <a href="http://www.jwz.org/doc/worse-is-better.html">worse is better</a>.</p>
+<p>I had assumed that just about everyone would work through those higher-level libraries, but in the end (to my surprise), lots of developers learned to love the clumsy, low-level SAX interfaces in all their ugly glory.  I myself have messed around with writing higher-level libraries on top of SAX, only to go back to the raw <a href="http://www.saxproject.org/apidoc/org/xml/sax/ContentHandler.html">ContentHandler</a> and its friends every time.  For some reason, hard-core XML developers like to stay close to the metal, no matter how many friendly high-level tools people offer them.</p>
+</dd>
+<dt>SAX supports filter chains</dt>
+<dd>
+<p>SAX <a href="http://www.saxproject.org/?selected=filters">filter chains</a> may seem obvious now, but I doubt I would ever have been able to think them up.  I cannot remember who first suggested using SAX handlers in chains, like a Unix pipeline &#8212; perhaps the idea just evolved gradually as a kind-of group think &#8212; but it was well established by SAX2 and officially supported by a dedicated interface.  We don&#8217;t support filters perfectly (error handling is a bit kludgy), but people make beautifully simple yet powerful systems using them. </p>
+</dd>
+</dl>
+<p>I don&#8217;t think that there will ever be substantial changes to SAX.  Now that I&#8217;ve resumed maintaining it, I&#8217;ll try to fix bugs and keep it up to date with any new XML versions, but otherwise, it is what it is.  Perhaps something newer, like <a href="http://dev2dev.bea.com/technologies/stax/index.jsp">StAX</a> or some other pull interface will eventually displace SAX, and that would be fine too.  For now, though, it is an essential part of the XML infrastructure, used at tens or hundreds of thousands of sites, and the best thing I can do is keep it stable and make as few changes as possible.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/02/02/sax-biggest-satisfactions/index.html#comments">3 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-8 -->
+
+		
+	
+
+	
+			<div id="post-7" class="post-7 post type-post status-publish format-standard hentry tag-blogging">
+			<h2 class="entry-title"><a href="../../2005/02/01/wikipedia-urls-as-subject-codes/index.html" rel="bookmark">Wikipedia URLs as blog subject&nbsp;codes</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/02/01/wikipedia-urls-as-subject-codes/index.html" title="9:03 am" rel="bookmark"><span class="entry-date">February 1, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>[Updated] Over in my <a href="http://www.megginson.com/blogs/lahso/">aviation weblog</a>, I find myself more and more linking to <a href="http://www.wikipedia.org/">Wikipedia</a> whenever I&#8217;m discussing a concept, person, place, or anything else that doesn&#8217;t have its own, canonical home page.  If, as I suspect, lots of other bloggers are doing the same, then links to Wikipedia articles may soon be the blogsphere&#8217;s answer to subject codes.</p>
+<p><img src="https://i0.wp.com/www.megginson.com/img/wikipedia-logo.png" alt="Wikipedia Logo" align="right" /></p>
+<p>News wire services like <a href="http://www.reuters.com/">Reuters</a> or <a href="http://www.dowjones.com/">Dow Jones</a> put a lot of time and money into maintaining long lists of subject codes to attach to their news products.  Unlike the simple categories used in blogs, subject codes tell you not just that an article is about (say) computer technology, but that it is about specific companies, industries, people, places, and concepts.  News customers use the codes to classify stories automatically, routing them to the appropriate editorial sections, displaying them on trading screens, sorting them into categories on web sites, or using them to improve searches. The providers are constantly sending out updated lists, keeping their customers&#8217; technical departments very busy.</p>
+<p>Should weblogs be using some kind of subject code (beyond categories)?  Some areas already have standard identifiers that we could use, such as <a href="http://en.wikipedia.org/wiki/ICAO_airport_code">ICAO codes</a> for airports, <a href="http://en.wikipedia.org/wiki/Universal_Product_Code">UPCs</a> for retail products, <a href="http://en.wikipedia.org/wiki/ISBN">ISBNs</a> for books, <a href="http://en.wikipedia.org/wiki/CUSIP">CUSIPs</a> for financial instruments, or ISO codes for <a href="http://en.wikipedia.org/wiki/ISO_3166">countries</a>, <a href="http://en.wikipedia.org/wiki/ISO_639">languages</a>, and <a href="http://en.wikipedia.org/wiki/ISO_4217">currencies</a>.  However, each of those requires some surrounding context: you need not only the code, but some indication that it refers to a currency or an airport.  They&#8217;re also managed by central authorities, making them less attractive to the weblog community.</p>
+<p>Enter Wikipedia.  If I&#8217;m posting about Washington <em>the U.S. state</em>, I can link to the Wikipedia <a href="http://en.wikipedia.org/wiki/Washington">article about the state</a>; if I&#8217;m posting about Washington <em>the  U.S. president</em>, I can link to the <a href="http://en.wikipedia.org/wiki/George_Washington">article about the president</a>; if I&#8217;m posting about Washington <em>the U.S. capital</em>, I can link to the <a href="http://en.wikipedia.org/wiki/Washington%2C_D.C.">article about the city</a>; and if I&#8217;m using the word <em>Washington</em> by metonymy to refer to the U.S. government, I can link to the <a href="http://en.wikipedia.org/wiki/Federal_government_of_the_United_States">article about the government</a>.</p>
+<p>Bingo &#8212; subject codes, just like the big newswires use, only a lot more useful and totally open.  I can link to abstraction subjects like <a href="http://en.wikipedia.org/wiki/Love">love</a> or <a href="http://en.wikipedia.org/wiki/Communism">communism</a> or to time periods like <a href="http://en.wikipedia.org/wiki/Middle_Ages">the middle ages</a> just as easily as I can link to concrete people, places, or things; if there&#8217;s not already a Wikipedia article on my subject, I can always start a stub.  If people keep linking to Wikipedia, search engines like <a href="http://www.technorati.com/">Technorati</a>  and aggregators like <a href="http://www.bloglines.com/">Bloglines</a> might start taking advantage of those links to do some automatic categorization, right down to offering links to other postings on the same subject (&#8220;Click here for other postings about <a href="http://en.wikipedia.org/wiki/Open_source">Open Source</a>&#8220;).  Once people know the search engines are doing that, they&#8217;ll be bound to link to Wikipedia even more than they already are, creating a virtuous circle where both Wikipedia and the blogsphere become more valuable.</p>
+<p>Of course, like anything that people actually do in the web (as opposed to drawing-board architectures that never get implemented), this approach is far from perfect.  Once the search engines are paying attention to Wikipedia links, some people will deliberately include misleading links to have their weblog entries miscategorized, though rankings like Technorati&#8217;s should help make sure that the most relevant ones stay near the top of the list.  Furthermore, Wikipedia URLs do change, especially for the sake of <a href="http://en.wikipedia.org/wiki/Category:Disambiguation">disambiguation</a>, so the Wikipedia URLs will never be 100% accurate as subject codes.  And finally, the Wikipedia project itself could shut down, leaving all of the subject codes orphaned.  Still, since linking to Wikipedia is something many of us do anyway, it looks like a good, quick-and-dirty webby alternative to the news industry&#8217;s subject codes &#8212; it might even work better.</p>
+<p>Update: <a href="http://jtauber.com/blog/">James Tauber</a> posted the <a href="http://jtauber.com/blog/2004/10/02/wikipedia_as_a_uri_lookup_service">same idea</a> with slightly different language back in October, and has just put up a <a href="http://jtauber.com/blog/2005/02/02/wikipedia_uris">followup</a>.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/blogging/index.html" rel="tag">blogging</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/02/01/wikipedia-urls-as-subject-codes/index.html#comments">6 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-7 -->
+
+		
+	
+
+	
+			<div id="post-6" class="post-6 post type-post status-publish format-standard hentry tag-programming">
+			<h2 class="entry-title"><a href="../../2005/01/31/sax-the-bad-the-good-and-the-controversial/index.html" rel="bookmark">SAX: biggest regrets</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/01/31/sax-the-bad-the-good-and-the-controversial/index.html" title="8:39 pm" rel="bookmark"><span class="entry-date">January 31, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>It&#8217;s seven years ago this January that I put out the first prerelease of <a href="http://www.saxproject.org/">SAX</a> for consideration by the xml-dev mailing list.  The final SAX releases contain the wisdom of a lot of people, but in the end, I had to make the final decisions about how it would work, and my record was mixed.  Now that SAX is a standard (if unremarkable) part of the XML infrastructure, I thought it would be worth making two or three posts about what went wrong and what went right.  In this post, I&#8217;ll start with my three biggest regrets about SAX/Java:</p>
+<dl>
+<dt>SAXException does not extend IOException</dt>
+<dd>
+<p>XML parsing <em>is</em> a kind of I/O, and the exception should have reflected that.  If we had done things that way, any library that does XML parsing could simply have thrown <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/IOException.html">IOException</a>, without having to expose any XML stuff at all or to force tunnelling of exceptions inside other exceptions, etc.  This one bugs me every time I code with SAX.</p>
+</dd>
+<dt>SAX uses callbacks instead of a pull interface</dt>
+<dd>
+<p>In this case, though, I probably wouldn&#8217;t do things differently if I could go back in time.  To get acceptance, SAX <em>had</em> to work with all existing Java/XML parsers.  They used callbacks, and the only way to get a pull interface would have been to run the parser in a separate thread, an approach wasn&#8217;t all that stable back in early 1998 (especially not on Windows).  Callbacks are not a serious problem for most applications, but they do make event dispatching much more difficult and sometimes they make for messy, hard-to-maintain code.  Now that Java thread support is rock-solid on all platforms, it&#8217;s easy enough to write a good pull-parsing adapter for SAX (I have one that I can release, if anyone cares).  I&#8217;ve played around with <a href="http://jcp.org/aboutJava/communityprocess/final/jsr173/index.html">StAX</a> a bit, but none of the StAX drivers seems as stable as the SAX ones.</p>
+</dd>
+<dt>SAX2 isn&#8217;t really simple</dt>
+<dd>
+<p>The original vision for SAX was to keep it dead simple.  The XML 1.0 REC required that we report certain information, like processing instructions, but otherwise, I wanted to keep it as close to elements-attributes-content as humanly possible.  SAX1 didn&#8217;t do too bad a job of that.  SAX2 had to add support for namespaces, which messed up all the interfaces; at that point, people were screaming for all kinds of esoteric stuff that about 12 people in the world care about (i.e. entity boundaries).  Instead of making SAX even more complicated, I invented the property and extension interfaces so that people could invent new things without cluttering the core.  Then SAX ended up with all kinds of <a href="http://www.saxproject.org/?selected=ext">new, optional interfaces</a> in the distribution anyway, so it&#8217;s quite nightmarish for a new user trying to figure out what matters and what doesn&#8217;t.  If I ever put out a SAX3, I&#8217;ll do most of the work using the delete key, but that&#8217;s probably not possible when things like JAXP depend so heavily on SAX.</p>
+</dd>
+</dl>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/programming/index.html" rel="tag">programming</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2005/01/31/sax-the-bad-the-good-and-the-controversial/index.html#comments">10 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-6 -->
+
+		
+	
+
+	
+			<div id="post-4" class="post-4 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2005/01/31/the-weblog-stack/index.html" rel="bookmark">The weblog stack</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/01/31/the-weblog-stack/index.html" title="7:33 am" rel="bookmark"><span class="entry-date">January 31, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Networking people love to talk about the <em>network stack</em>, like the 4-layer <a href="http://en.wikipedia.org/wiki/DoD_model">DoD model</a> or the 7-layer <a href="http://en.wikipedia.org/wiki/OSI_model">OSI model</a>, and web services boosters have picked up on that with their talk about the <em>web services stack</em> (an <a href="http://www-106.ibm.com/developerworks/webservices/library/ws-wsa/?open&amp;l=484,t=gr">example</a> from Judith Myerson at IBM , an <a href="http://dev2dev.bea.com/technologies/webservices/articles/ws_orchard.jsp">example</a> from David Orchard at BEA, and a <a href="http://www.xml.com/pub/a/2003/02/12/deviant.html">bit of skepticism</a> from Kendall Grant Clark) .</p>
+<p>Should we be talking about a <em>weblog stack</em>?  The web services stack almost always starts with HTTP rather than going all the way down into the lower-level networking protocols, so a similar weblog stack using <a href="http://blogs.law.harvard.edu/tech/rss">RSS 2.0</a> would look something like this:</p>
+<table border="border">
+<tbody align="center">
+<tr>
+<td>HTTP</td>
+</tr>
+<tr>
+<td>XML</td>
+</tr>
+<tr>
+<td>Namespaces</td>
+</tr>
+<tr>
+<td>RSS 2.0</td>
+</tr>
+<tr>
+<td>RSS 2.0 extensions (like the <a href="http://wellformedweb.org/news/wfw_namespace_elements/">well-formed web extensions</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>A diagram like this helps me to write an RSS library or aggregator, but does it leave me any more aware of how the blogsphere ticks? Not really,  because not everything passes through this stack.  For a non-full-text feed, for example, the headline and description show up this way, but then the main posting gets tome through a normal web HTTP+HTML route, totally independent of XML or RSS.  Other kinds of communication bypass my proposed stack completely, like <a href="http://www.movabletype.org/docs/mttrackback.html">trackback</a> and <a href="http://www.hixie.ch/specs/pingback/pingback">pingback</a>, or even <a href="http://www.technorati.com/">Technorati</a> rankings for that matter.</p>
+<p>Building a stack provides a cute technical model of one step in the weblog process, but it doesn&#8217;t explain how the whole thing works, much less <em>why</em> it works.  In fact, human social products are almost always too messy to capture in simple trees or stacks.  I faced exactly the same issue when I used to teach the history of the English language at university &#8212; technically, English is descended in a straight line from Old English, which is descended from proto-Germanic, which is descended from Indo-European.  In reality, though, English borrowed an enormous amount of vocabulary and even syntax from languages like Latin, Greek, and French, which are not direct ancestors: imagine that you had your grandmother&#8217;s ears, but the nose of someone your mother happened to pass by on the sidewalk one day and a heart condition inherited from your father&#8217;s favourite 17th century Dutch painter, and you&#8217;ll see the problem.</p>
+<p>Maybe the fact that weblog activities do not fit into a simple stack is not an unfortunate sign of a lack of intellectual rigour but the very reason for its success.  Web services people, take note &#8212; you might want to try thinking less about new specifications and more about human behaviour.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><span>Comments Off<span class="screen-reader-text"> on The weblog stack</span></span></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-4 -->
+
+		
+	
+
+	
+			<div id="post-263" class="post-263 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2005/01/29/linking-xml-documents/index.html" rel="bookmark">Linking XML documents</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/01/29/linking-xml-documents/index.html" title="10:13 pm" rel="bookmark"><span class="entry-date">January 29, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>[Update: help is on the way.] If you start with an XML document online (and granted, there are precious few of them), how do you use it to find other XML documents?  If they&#8217;re XML+<a href="http://www.w3.org/TR/xhtml1/">XHTML</a> documents, you can follow the URLs in any <var>xhtml:a/@href</var> attributes you find in the document; if they&#8217;re XML+<a href="http://www.w3.org/RDF/">RDF</a> documents, you can follow the <var>@rdf:about</var> and <var>@rdf:resource</var> attributes; if they&#8217;re XML+<a href="http://www.docbook.org/">Docbook</a> documents, you can follow the <var>ulink/@url</var> attributes; and so on.</p>
+<p>But what about plain old XML?  The best candidate seems to be <a href="http://www.w3.org/TR/xlink/">XLink</a>.  While the specification is excessively complicated, it does offer the global <var>xlink:href</var> attribute as a simple linking attribute that <strong>any</strong> type of XML document can use: some document types, like <a href="http://www.topicmaps.org/xtm/">XML Topic Maps</a>, have taken full advantage of it.</p>
+<p>Unfortunately, there is no conformant way to use just <var>xlink:href</var> in an XML document; every time it appears, you also need to have the <var>xlink:type</var> attribute set to the value &#8220;<code>simple</code>&#8220;.  Oops!  XTM gets around that by declaring the attribute with a <code>#FIXED</code> value in its DTD, so that it does not have to be repeated in the document itself, but we can hardly require every XML document online to use a DTD or schema, and if they don&#8217;t include <var>xlink:type</var>, they&#8217;re not conformant.  So we cannot simply have</p>
+<pre>
+&lt;musician xlink:href="http://www.example.org/bach/"/&gt;
+&lt;musician xlink:href="http://www.example.org/beethoven/"/&gt;
+&lt;musician xlink:href="http://www.example.org/vivaldi/"/&gt;
+</pre>
+<p>but rather, we are forced to use</p>
+<pre>
+&lt;musician <strong>xlink:type="simple"</strong> xlink:href="http://www.example.org/bach/"/&gt;
+&lt;musician <strong>xlink:type="simple"</strong> xlink:href="http://www.example.org/beethoven/"/&gt;
+&lt;musician <strong>xlink:type="simple"</strong> xlink:href="http://www.example.org/vivaldi/"/&gt;
+</pre>
+<p>That gets extremely annoying after a few hundred times, probably enough to prevent it from getting universal acceptance.  So what do we do?  Is there any way to cheat and say something like <em>all XML documents that do not have a DTD are assumed to have an implied DTD with a fixed declaration of <var>xlink:type</var> for every element</em>?  I don&#8217;t think so.  The XLink recommendation was written by some of the brightest people in XML, and I&#8217;m sure that they didn&#8217;t intend for it to be so awkward for the simplest (and most common) case.  It would be wonderful if the W3C could put out some kind of corrigendum stating that when <var>xlink:type</var> is missing, it defaults to &#8220;<code>simple</code>&#8220;.  That&#8217;s all we need.  Really.</p>
+<p>[Update: I forgot to mention that the W3C&#8217;s XML Linking working group <a href="http://www.w3.org/XML/Linking">no longer exists</a> to make any changes to the spec.]</p>
+<p>[Update: it turns out that the XML Core WG is working on this very issue: two days after my original posting, entirely by coincidence, Norm Walsh <a href="http://norman.walsh.name/2005/01/31/xlink">posted</a> that <var>xlink:type</var> will likely become optional.]</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2005/01/29/linking-xml-documents/index.html#comments">2 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-263 -->
+
+		
+	
+
+	
+			<div id="post-262" class="post-262 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2005/01/29/welcome-to-quoderat/index.html" rel="bookmark">Welcome to Quoderat</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2005/01/29/welcome-to-quoderat/index.html" title="10:44 am" rel="bookmark"><span class="entry-date">January 29, 2005</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Welcome to <a href="http://www.megginson.com/blogs/quoderat/">Quoderat</a>, David Megginson&#8217;s middle-aged grumblings about technology.  My background is largely in XML and the web (I led the development of <a href="http://www.saxproject.org/">SAX</a> and spent some time on <a href="http://www.w3.org/">W3C</a> working groups), so markup, networking, and software development will be the primary topics, though the weblog will likely strike off in other directions.  If you get bored of all this, feel free to wander off and read about airplanes in my other weblog, <a href="http://www.megginson.com/blogs/lahso/">Land and Hold Short</a>.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2005/01/29/welcome-to-quoderat/index.html#comments">4 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-262 -->
+
+		
+	
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"></div>
+					<div class="nav-next"><a href="../27/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="../../index.html">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li><li id="nav_menu-4" class="widget-container widget_nav_menu"><h3 class="widget-title">Featured articles</h3><div class="menu-featured-posts-container"><ul id="menu-featured-posts" class="menu"><li id="menu-item-328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="../../blogs/quoderat/2007/03/28/open-data-matters-more-than-open-source/index.html" title="Do you care if a web site runs on Open Source software, if it still locks up your information?">Open Data or Open Source?</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-323"><a href="../../2010/08/08/evil-or-misunderstood/index.html" title="Does net neutrality apply as much to content types as to providers?">Net neutrality and Google</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-322"><a href="../../2007/02/15/rest-the-quick-pitch/index.html" title="What actually matters for building RESTful web apps.">REST: the quick pitch</a></li>
+<li id="menu-item-326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-326"><a href="../../2005/08/08/patents-and-screwdrivers/index.html" title="Patents sometimes hurt their owners the most.">Patents and screwdrivers</a></li>
+<li id="menu-item-334" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-334"><a href="../../2007/01/03/all-markup-ends-up-looking-like-xml/index.html" title="When people complain about XML&#8217;s complexity, they&#8217;re often really complaining about the data&#8217;s complexity.">All markup ends up looking like XML</a></li>
+</ul></div></li><li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">See also &#8230;</h3><div class="menu-my-sites-container"><ul id="menu-my-sites" class="menu"><li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="http://www.megginson.com/">Megginson Technologies Ltd.</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="http://www.ourairports.com/">OurAirports airport directory</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="http://lahso.megginson.com/">Land and Hold Short (flying blog)</a></li>
+</ul></div></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../index.html" title="Quoderat" rel="home">
+					Quoderat				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+	<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14988159" />
+										<input type="hidden" name="source" value="https://quoderat.megginson.com/page/28/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="462a0c7898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2005%252F02%252F08%252Fthe-complexity-of-xml-parsing-apis%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://s2.wp.com/i/logo/wpcom-gray-white.png' srcset='https://s2.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				Quoderat			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://quoderatech.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fquoderatech.wordpress.com%2Fpage%2F28%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fquoderat.megginson.com%252F2005%252F02%252F08%252Fthe-complexity-of-xml-parsing-apis%252F">Log in</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://quoderat.megginson.com" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/feeds/6985636">
+											View site in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/wp-content/js/mobile-useragent-info.js?m=1609849039i'></script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script><script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14988159','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14988159','v':'wpcom','tz':'-5','user_id':'0','subd':'quoderatech'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1mNzc2NTVTamdsRWFxcEV3XUtMXVR5aWlmMVNIcUxBaFstUWRrZVpWQ2tORExSfEpUVm05SlpEZzZWOEtlbW5nZHV0dkhDNjhwP35JbkdHLyZqSUh8WkZWbVl3Qll2LkguSkRJZGEtZV9DRDIwUGZ5XTdFRkNjSkxHdDMuQ0lOUmE2JTg3PXVRcFFHYWNNbGt4eXY4US1MLlt5P3lraDJ8LjE2OXUrUzFWSC4tWy52fjZSUzZbJXMxNXAtSmNbLUtmen4wQW5vUllCJjhLdHg4K2E3OTJPOH4xeUF0cjdSZ2p4bTktfE9nV2x2UTFRRH45WGE4JWdfc0tLVw=='}]);
+_stq.push([ 'clickTrackerInit', '14988159', '0' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

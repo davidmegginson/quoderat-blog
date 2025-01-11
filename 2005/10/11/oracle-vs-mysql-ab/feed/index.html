@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: Oracle vs MySQL AB	</title>
+	<atom:link href="https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Thu, 16 Nov 2006 04:57:39 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Mike		</title>
+		<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/#comment-322</link>
+
+		<dc:creator><![CDATA[Mike]]></dc:creator>
+		<pubDate>Thu, 16 Nov 2006 04:57:39 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=65#comment-322</guid>
+
+					<description><![CDATA[jeff - what you are looking for is called triggers, and is a &#039;new&#039; feature in mysql 5. triggers enable you to execute  code upon a certain condition. you may also be vaguely referring to foreign key constraints. a foreign key is a key in one table (the linked table) that points to the primary key of another table (the foreign table). This means that if the contents of the foreign table change, then by the foreign key relationship, the linked table is pointing to somewhat different information.
+
+foreign key example:
+
+an employee database:
+
+employee table
+department table
+
+the employee table would hold employee specific data such as salary, and other employee info for all company employees.
+
+the department table would hold data specific to the company&#039;s departments
+
+th employee table might have a key called department_id, which could point to the primary key of the department table (perhaps called department_id, id, etc)
+
+lets say we adjust the name of a department - now all employees in that department will have a different department name showing by their name in a report of employees and their departments.
+
+lets say we change the department_id key value for some employees to a different department_id value - now a report which lists the employees in that department will be affected accordingly.
+
+this is foreign keys. a consequence of foreign key constraints is that you cannot delete a specific key in the foreign table if any rows in the linked table point to that specific key.
+
+triggers are a whole different story, and they dont necessarily impose any constraints on the data of tables you use them on, as there isnt a real relationship between them. you could use a trigger, for example, to update the salary of everyone affected in a specific department, if a minimum salary amount stored in the departments table is increased, and you would otherwise have employees whos salary is below the department minimum. if you have a foreign key relationship between tables, this kind of a situation might have to be updated with a trigger, as foreign key constraints will not update data in another table.
+
+
+these are just crude examples, as triggers have much more useful purpose, i just cant think of a practical example right now, and most databases have far more complex databases than just an employee and a department table, but hopefully this helps.]]></description>
+			<content:encoded><![CDATA[<p>jeff &#8211; what you are looking for is called triggers, and is a &#8216;new&#8217; feature in mysql 5. triggers enable you to execute  code upon a certain condition. you may also be vaguely referring to foreign key constraints. a foreign key is a key in one table (the linked table) that points to the primary key of another table (the foreign table). This means that if the contents of the foreign table change, then by the foreign key relationship, the linked table is pointing to somewhat different information.</p>
+<p>foreign key example:</p>
+<p>an employee database:</p>
+<p>employee table<br />
+department table</p>
+<p>the employee table would hold employee specific data such as salary, and other employee info for all company employees.</p>
+<p>the department table would hold data specific to the company&#8217;s departments</p>
+<p>th employee table might have a key called department_id, which could point to the primary key of the department table (perhaps called department_id, id, etc)</p>
+<p>lets say we adjust the name of a department &#8211; now all employees in that department will have a different department name showing by their name in a report of employees and their departments.</p>
+<p>lets say we change the department_id key value for some employees to a different department_id value &#8211; now a report which lists the employees in that department will be affected accordingly.</p>
+<p>this is foreign keys. a consequence of foreign key constraints is that you cannot delete a specific key in the foreign table if any rows in the linked table point to that specific key.</p>
+<p>triggers are a whole different story, and they dont necessarily impose any constraints on the data of tables you use them on, as there isnt a real relationship between them. you could use a trigger, for example, to update the salary of everyone affected in a specific department, if a minimum salary amount stored in the departments table is increased, and you would otherwise have employees whos salary is below the department minimum. if you have a foreign key relationship between tables, this kind of a situation might have to be updated with a trigger, as foreign key constraints will not update data in another table.</p>
+<p>these are just crude examples, as triggers have much more useful purpose, i just cant think of a practical example right now, and most databases have far more complex databases than just an employee and a department table, but hopefully this helps.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: jeff		</title>
+		<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/#comment-321</link>
+
+		<dc:creator><![CDATA[jeff]]></dc:creator>
+		<pubDate>Tue, 19 Sep 2006 12:21:34 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=65#comment-321</guid>
+
+					<description><![CDATA[hello there,
+i am trying to reproduce a data server that a company uses to present information to its customers via the web. No problem. What they are using right now is Microsoft Access, connecting via ODBC to a server on line. The cool thing that they can do is have several tables linked together. Like if a certain field is updated in one table, it updates the same info automatically in another table. So, i want to reproduce this in MySQL, but i can&#039;t seem to find out how. Is there a way to pull this off on the server side ? or does that have to be done on the client side ?
+thanks for any tips.]]></description>
+			<content:encoded><![CDATA[<p>hello there,<br />
+i am trying to reproduce a data server that a company uses to present information to its customers via the web. No problem. What they are using right now is Microsoft Access, connecting via ODBC to a server on line. The cool thing that they can do is have several tables linked together. Like if a certain field is updated in one table, it updates the same info automatically in another table. So, i want to reproduce this in MySQL, but i can&#8217;t seem to find out how. Is there a way to pull this off on the server side ? or does that have to be done on the client side ?<br />
+thanks for any tips.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: david		</title>
+		<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/#comment-320</link>
+
+		<dc:creator><![CDATA[david]]></dc:creator>
+		<pubDate>Wed, 12 Oct 2005 12:19:14 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=65#comment-320</guid>
+
+					<description><![CDATA[There&#039;s no need for the ODBC or JDBC driver itself to be GPL, though -- it&#039;s just a client that communicates over the network with the database server.  Following that logic, only GPL&#039;d browsers would be allowed to connect with a GPL&#039;d web server.]]></description>
+			<content:encoded><![CDATA[<p>There&#8217;s no need for the ODBC or JDBC driver itself to be GPL, though &#8212; it&#8217;s just a client that communicates over the network with the database server.  Following that logic, only GPL&#8217;d browsers would be allowed to connect with a GPL&#8217;d web server.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: Markus		</title>
+		<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/#comment-319</link>
+
+		<dc:creator><![CDATA[Markus]]></dc:creator>
+		<pubDate>Wed, 12 Oct 2005 07:43:55 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=65#comment-319</guid>
+
+					<description><![CDATA[If they go completly GPL, what will happen will all those thousands of commercial projects that have licensed MySQL to be used i proprietary products? If you use the C library or the JDBC driver in you code you have to have a MySQL commercial license to keep your product closed source. These projects will have to kick out MySQL or go Open Source.]]></description>
+			<content:encoded><![CDATA[<p>If they go completly GPL, what will happen will all those thousands of commercial projects that have licensed MySQL to be used i proprietary products? If you use the C library or the JDBC driver in you code you have to have a MySQL commercial license to keep your product closed source. These projects will have to kick out MySQL or go Open Source.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2005/10/11/oracle-vs-mysql-ab/#comment-318</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Tue, 11 Oct 2005 18:44:58 +0000</pubDate>
+		<guid isPermaLink="false">http://www.megginson.com/blogs/quoderat/?p=65#comment-318</guid>
+
+					<description><![CDATA[I think it shows that dual licensing is dangerous if you&#039;re using other people&#039;s code in the core of your own.]]></description>
+			<content:encoded><![CDATA[<p>I think it shows that dual licensing is dangerous if you&#8217;re using other people&#8217;s code in the core of your own.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>

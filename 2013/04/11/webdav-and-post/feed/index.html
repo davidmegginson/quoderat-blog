@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>
+	Comments on: WebDAV and POST	</title>
+	<atom:link href="https://quoderat.megginson.com/2013/04/11/webdav-and-post/feed/" rel="self" type="application/rss+xml" />
+	<link>https://quoderat.megginson.com/2013/04/11/webdav-and-post/</link>
+	<description>Open information and technology.</description>
+	<lastBuildDate>Fri, 12 Apr 2013 18:49:02 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>
+		By: Hello		</title>
+		<link>https://quoderat.megginson.com/2013/04/11/webdav-and-post/#comment-4264</link>
+
+		<dc:creator><![CDATA[Hello]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 18:49:02 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=651#comment-4264</guid>
+
+					<description><![CDATA[If you&#039;re expecting to upload a new file, you do a conditional PUT. The pre-condition will fail if some one else beets you to it.]]></description>
+			<content:encoded><![CDATA[<p>If you&#8217;re expecting to upload a new file, you do a conditional PUT. The pre-condition will fail if some one else beets you to it.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: David Megginson		</title>
+		<link>https://quoderat.megginson.com/2013/04/11/webdav-and-post/#comment-4259</link>
+
+		<dc:creator><![CDATA[David Megginson]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 15:10:50 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=651#comment-4259</guid>
+
+					<description><![CDATA[That&#039;s a good, clear distinction, John, and it will help me decide which use cases do or don&#039;t lead to WebDAV as a solution.]]></description>
+			<content:encoded><![CDATA[<p>That&#8217;s a good, clear distinction, John, and it will help me decide which use cases do or don&#8217;t lead to WebDAV as a solution.</p>
+]]></content:encoded>
+		
+			</item>
+		<item>
+		<title>
+		By: John Cowan		</title>
+		<link>https://quoderat.megginson.com/2013/04/11/webdav-and-post/#comment-4257</link>
+
+		<dc:creator><![CDATA[John Cowan]]></dc:creator>
+		<pubDate>Fri, 12 Apr 2013 01:24:19 +0000</pubDate>
+		<guid isPermaLink="false">http://quoderat.megginson.com/?p=651#comment-4257</guid>
+
+					<description><![CDATA[The reason WebDAV doesn&#039;t provide what you want is that it is a file-server protocol like FTP, which assumes that the client is in control of the names used on the file space.  When you write a file to some network drive, you are expected to specify the name it will have on that drive.  If someone else has already written a file with that name, &lt;i&gt;tant pis&lt;/i&gt; &#8212; and if someone else comes along and writes a file with that same name after you, you lose.
+
+In general, the model of POST, when properly used in a REST style, is that the server makes up the URL of the new entry and tells the client about it.  There is nothing to prevent the client from providing a hint, but I don&#039;t think it makes sense for the hint to be in the URL itself.   Rather the URL should point to a container where the new object will reside, and you&#039;ll get back an extended URL specifying the new object&#039;s server-created name appended to the container URL.]]></description>
+			<content:encoded><![CDATA[<p>The reason WebDAV doesn&#8217;t provide what you want is that it is a file-server protocol like FTP, which assumes that the client is in control of the names used on the file space.  When you write a file to some network drive, you are expected to specify the name it will have on that drive.  If someone else has already written a file with that name, <i>tant pis</i> &mdash; and if someone else comes along and writes a file with that same name after you, you lose.</p>
+<p>In general, the model of POST, when properly used in a REST style, is that the server makes up the URL of the new entry and tells the client about it.  There is nothing to prevent the client from providing a hint, but I don&#8217;t think it makes sense for the hint to be in the URL itself.   Rather the URL should point to a container where the new object will reside, and you&#8217;ll get back an extended URL specifying the new object&#8217;s server-created name appended to the container URL.</p>
+]]></content:encoded>
+		
+			</item>
+	</channel>
+</rss>
